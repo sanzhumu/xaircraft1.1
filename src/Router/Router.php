@@ -53,11 +53,11 @@ class Router
             'tail'       => self::PATTERN_TAIL,
         );
     /**
-     * @var \Nebula\RouteResult
+     * @var \Xaircraft\RouteResult
      */
     public $routeResult;
     /**
-     * @var array Nebula\Filter
+     * @var array Xaircraft\Filter
      */
     private $filters = array();
     private $isAbort = false;
@@ -69,7 +69,7 @@ class Router
     private $timestamp = -1;
     private $source;
     /**
-     * @var \Nebula\RouteCache
+     * @var \Xaircraft\RouteCache
      */
     private $routeCache;
     private $filterBinders = array();
@@ -190,7 +190,7 @@ class Router
         if ($this->isMatched() === true) {
             list($beforeFilters, $afterFilters) = $this->matchFilter();
             /**
-             * @var $route \Nebula\Route
+             * @var $route \Xaircraft\Route
              */
             $route = $this->routes[$this->routeResult->mappingName];
             array_push($route->beforeFilters, $beforeFilters);
@@ -265,7 +265,7 @@ class Router
     public function reverseByRoute($routeName, $params)
     {
         /**
-         * @var $route \Nebula\Route
+         * @var $route \Xaircraft\Route
          */
         $route      = $this->routes[$routeName];
         $expression = $this->mappings[$routeName]['expression'];
@@ -381,7 +381,7 @@ class Router
                 $expression = $expression . '[' . $key . '=' . $value . ']';
             }
             /**
-             * @var $filterBinder \Nebula\FilterBinder
+             * @var $filterBinder \Xaircraft\FilterBinder
              */
             foreach ($this->filterBinders as $filterBinder) {
                 //优先匹配
