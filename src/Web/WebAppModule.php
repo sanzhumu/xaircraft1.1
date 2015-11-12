@@ -10,9 +10,12 @@ namespace Xaircraft\Web;
 
 
 use Xaircraft\App;
+use Xaircraft\DI;
 use Xaircraft\Globals;
 use Xaircraft\Module\AppModule;
 use Xaircraft\Router\Router;
+use Xaircraft\Web\Http\Request;
+use Xaircraft\Web\Http\Response;
 
 class WebAppModule extends AppModule
 {
@@ -29,6 +32,16 @@ class WebAppModule extends AppModule
 
         $this->router = Router::getInstance(App::path('routes'), App::path('filter'));
 
-        var_dump($this->router);
+        $defaultRouterToken = App::environment(Globals::ROUTER_DEFAULT_TOKENS);
+        if (isset($defaultRouterToken) && !empty($defaultRouterToken)) {
+            $this->router->baseMappings['default']['default'] = $defaultRouterToken;
+        }
+
+        $this->router->registerDefaultMatchedHandler(function ($params) {
+            DI::bindSingleton(Request::class, new Request($params));
+            DI::bindSingleton(Response::class, new Response());
+        });
+
+
     }
 }

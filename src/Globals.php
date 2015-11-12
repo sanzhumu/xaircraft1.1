@@ -25,6 +25,8 @@ class Globals
     const MODE_DEV = 2003;
     const MODE_PUB = 2004;
 
+    const ROUTER_DEFAULT_TOKENS = 2005;
+
     //// Exception code
     const EXCEPTION_ERROR_ENVIRONMENT = 4001;
     const EXCEPTION_ERROR_ENVIRONMENT_SET_LIMIT = 4002;

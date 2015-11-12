@@ -11,4 +11,5 @@ return array(
     'app'       => __DIR__ . '/../app',
     'routes'    => __DIR__.'/../app/config/routes.php',
     'filter'    => __DIR__.'/../app/config/filter',
+    'autoload'  => __DIR__.'/../app/config/autoload.php',
 );

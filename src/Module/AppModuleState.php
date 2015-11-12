@@ -9,7 +9,7 @@
 namespace Xaircraft\Module;
 
 
-use Xaircraft\Container;
+use Xaircraft\Core\Container;
 
 class AppModuleState extends Container
 {

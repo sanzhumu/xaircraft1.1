@@ -10,10 +10,12 @@
 namespace Xaircraft;
 
 
+use Xaircraft\Core\Container;
 use Xaircraft\Module\AppModuleLoader;
 use Xaircraft\Module\AppModuleState;
 use Xaircraft\Core\Runtime;
 use Xaircraft\Exception\AppModuleException;
+use Xaircraft\Module\AutoLoader;
 use Xaircraft\Web\WebAppModule;
 
 class App extends Container
@@ -122,6 +124,7 @@ class App extends Container
     private function initializeBaseModules()
     {
         self::module(AppModuleLoader::class);
+        self::module(AutoLoader::class);
         self::module(WebAppModule::class);
     }
 

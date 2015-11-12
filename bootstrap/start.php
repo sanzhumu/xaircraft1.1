@@ -12,11 +12,6 @@ use \Xaircraft\App;
 $app = App::instance();
 $app->bindPath(require_once __DIR__.'/paths.php');
 
-var_dump($app->path('base'));
-
 $app->environment(\Xaircraft\Globals::ENV_MODE, \Xaircraft\Globals::MODE_DEV);
-
-var_dump($app);
-
 
 return $app;
