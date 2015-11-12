@@ -14,8 +14,7 @@ use Xaircraft\Module\AppModuleLoader;
 use Xaircraft\Module\AppModuleState;
 use Xaircraft\Core\Runtime;
 use Xaircraft\Exception\AppModuleException;
-use Xaircraft\Router\Router;
-use Xaircraft\Router\RouterAppModule;
+use Xaircraft\Web\WebAppModule;
 
 class App extends Container
 {
@@ -39,7 +38,7 @@ class App extends Container
                 foreach ($this->appModules as $item) {
                     $currentModule = $item;
                     /**
-                     * @var $module \Xaircraft\Core\AppModule
+                     * @var $module \Xaircraft\Module\AppModule
                      */
                     $module = DI::get($item, array('state' => $state));
                     $module->handle();
@@ -123,7 +122,7 @@ class App extends Container
     private function initializeBaseModules()
     {
         self::module(AppModuleLoader::class);
-        self::module(RouterAppModule::class);
+        self::module(WebAppModule::class);
     }
 
     private function getEnvironment($key)
