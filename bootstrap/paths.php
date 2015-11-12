@@ -10,4 +10,5 @@ return array(
     'base'      => __DIR__ . '/..',
     'app'       => __DIR__ . '/../app',
     'routes'    => __DIR__.'/../app/config/routes.php',
+    'filter'    => __DIR__.'/../app/config/filter',
 );
