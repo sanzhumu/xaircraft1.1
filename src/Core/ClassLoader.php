@@ -1,6 +1,7 @@
 <?php
 
 namespace Xaircraft\Core;
+use Xaircraft\App;
 
 
 /**

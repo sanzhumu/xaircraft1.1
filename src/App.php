@@ -160,6 +160,6 @@ class App extends Container
 
     private function onErrorAppModule(AppModuleException $ex)
     {
-        var_dump($ex);
+        throw $ex;
     }
 }

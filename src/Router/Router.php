@@ -31,7 +31,8 @@ class Router
                 'expression' => '/{controller}?/{action}?/{id}?',
                 'default'    => array(
                     'controller' => 'home',
-                    'action'     => 'index'
+                    'action'     => 'index',
+                    'id'         => 0
                 )
             )
         );
