@@ -50,7 +50,7 @@ class App extends Container
                     }
                 }
             } catch (\Exception $ex) {
-                $this->onErrorAppModule(new AppModuleException($currentModule, $ex->getMessage(), $ex->getCode(), $ex));
+                $this->onError(new AppModuleException($currentModule, $ex->getMessage(), $ex->getCode(), $ex));
             }
         }
     }
@@ -118,6 +118,7 @@ class App extends Container
             $this->environment[Globals::ENV_RUNTIME_MODE] = php_sapi_name();
             $this->environment[Globals::ENV_OS] = Runtime::getOS();
             $this->environment[Globals::ENV_OS_INFO] = php_uname();
+            $this->environment[Globals::ENV_MVC_VIEW_FILE_EXTENSION] = 'phtml';
         }
     }
 
@@ -158,7 +159,7 @@ class App extends Container
         }
     }
 
-    private function onErrorAppModule(AppModuleException $ex)
+    private function onError(AppModuleException $ex)
     {
         throw $ex;
     }

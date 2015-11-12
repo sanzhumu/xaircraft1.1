@@ -13,5 +13,7 @@ class home_controller extends \Xaircraft\Web\Mvc\Controller
         var_dump($id);
         var_dump($title);
         var_dump($this->req->params());
+
+        return $this->view();
     }
 }

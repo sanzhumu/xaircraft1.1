@@ -8,10 +8,11 @@
  * @var $router \Xaircraft\Router\Router
  */
 
-$router->mappings['monitor'] = array(
-    'expression' => '/monitor/{controller}?/{action}?/{id}?',
+$router->mappings['user'] = array(
+    'expression' => '/user/{controller}?/{action}?/{id}?',
     'default' => array(
-        'controller' => 'weather',
-        'action' => 'index'
+        'controller' => 'home',
+        'action' => 'index',
+        'id' => 0
     )
 );

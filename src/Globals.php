@@ -18,6 +18,7 @@ class Globals
     const ENV_RUNTIME_MODE = 1005;
     const ENV_OS = 1006;
     const ENV_OS_INFO = 1007;
+    const ENV_MVC_VIEW_FILE_EXTENSION = 1008;
 
     const OS_WIN = 2001;
     const OS_LINUX = 2002;

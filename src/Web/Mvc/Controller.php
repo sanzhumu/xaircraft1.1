@@ -11,7 +11,13 @@ namespace Xaircraft\Web\Mvc;
 
 use Xaircraft\DI;
 use Xaircraft\Exception\WebException;
+use Xaircraft\Mvc\Action\TextResult;
 use Xaircraft\Web\Http\Request;
+use Xaircraft\Web\Mvc\Action\JsonResult;
+use Xaircraft\Web\Mvc\Action\LayoutResult;
+use Xaircraft\Web\Mvc\Action\ObjectResult;
+use Xaircraft\Web\Mvc\Action\StatusResult;
+use Xaircraft\Web\Mvc\Action\ViewResult;
 
 abstract class Controller
 {
@@ -20,7 +26,17 @@ abstract class Controller
      */
     public $req;
 
+    /**
+     * @var array
+     */
+    protected $data = array();
+
+    /**
+     * @var bool 结束action执行并返回结果
+     */
     private $isEnded = false;
+
+    private $layoutName;
 
     public static function invoke($controller, $action, $namespace)
     {
@@ -82,5 +98,71 @@ abstract class Controller
     public function end()
     {
         $this->isEnded = true;
+    }
+
+    public function json($object = null)
+    {
+        $result       = new JsonResult($object);
+        $result->data = $this->data;
+        return $result;
+    }
+
+    public function status($message, $statusCode, $object = null)
+    {
+        $result = new StatusResult($message, $statusCode, $object);
+        $result->data = $this->data;
+        return $result;
+    }
+
+    public function text($text)
+    {
+        $result = new TextResult($text);
+        return $result;
+    }
+
+    public function view($viewName = null)
+    {
+        $viewResult       = new ViewResult($viewName);
+        $viewResult->data = $this->data;
+        if (!isset($this->layoutName)) {
+            return $viewResult;
+        } else {
+            $layoutResult       = new LayoutResult($this->layoutName, $viewResult);
+            $layoutResult->data = $this->data;
+            return $layoutResult;
+        }
+    }
+
+    public function object($object = null)
+    {
+        $result = new ObjectResult($object);
+        return $result;
+    }
+
+    public function layout($layoutName)
+    {
+        $this->layoutName = $layoutName;
+    }
+
+    public function disableLayout()
+    {
+        unset($this->layoutName);
+    }
+
+    public function __set($key, $value)
+    {
+        if (isset($key) && is_string($key))
+            $this->data[$key] = $value;
+    }
+
+    public function __get($key)
+    {
+        if (isset($key) && array_key_exists($key, $this->data))
+            return $this->data[$key];
+        else
+            throw new WebException(
+                $this->req->param('controller'),
+                $this->req->param('action'),
+                "Can't find [$key] in data.");
     }
 }
