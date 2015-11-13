@@ -35,7 +35,7 @@ class Session
         if (!isset(self::$instance)) {
             $provider = DI::get(SessionProvider::class);
             if (!isset($provider)) {
-                //DI::bindSingleton(SessionProvider::class, new FileSessionProvider());
+                DI::bindSingleton(SessionProvider::class, new FileSessionProvider());
                 $provider = DI::get(SessionProvider::class);
             }
             self::$instance = new Session($provider);

@@ -14,6 +14,6 @@ class user_home_controller extends \Xaircraft\Web\Mvc\Controller
         var_dump($username);
         var_dump($password);
 
-        return $this->status('test', 200, array('username' => $username));
+        return $this->status('test', 200, array('username' => \Xaircraft\Web\Session::get('test')));
     }
 }
