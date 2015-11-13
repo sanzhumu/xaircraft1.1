@@ -10,6 +10,7 @@
 namespace Xaircraft;
 
 
+use Xaircraft\Configuration\Settings;
 use Xaircraft\Core\Container;
 use Xaircraft\Module\AppModuleLoader;
 use Xaircraft\Module\AppModuleState;
@@ -31,18 +32,25 @@ class App extends Container
 
     private $appModules = array();
 
+    private $killedAppModules = array();
+
     public function run()
     {
         if (isset($this->appModules) && !empty($this->appModules)) {
             $currentModule = "";
             try {
                 $state = new AppModuleState();
-                foreach ($this->appModules as $item) {
-                    $currentModule = $item;
+                $index = 0;
+                while ($index < count($this->appModules)) {
+                    $currentModule = $this->appModules[$index];
+                    $index++;
+                    if (false !== array_search($currentModule, $this->killedAppModules)) {
+                        continue;
+                    }
                     /**
                      * @var $module \Xaircraft\Module\AppModule
                      */
-                    $module = DI::get($item, array('state' => $state));
+                    $module = DI::get($currentModule, array('state' => $state));
                     $module->handle();
                     $state = $module->state();
                     if ($state->stop) {
@@ -91,7 +99,20 @@ class App extends Container
     public static function module($module)
     {
         DI::bindSingleton($module, $module);
-        self::instance()->appModules[] = $module;
+        if (false === array_search($module, self::instance()->appModules)) {
+            self::instance()->appModules[] = $module;
+        }
+        $killedIndex = array_search($module, self::instance()->killedAppModules);
+        if (false !== $killedIndex) {
+            unset(self::instance()->killedAppModules[$killedIndex]);
+        }
+    }
+
+    public static function killModule($module)
+    {
+        if (false !== array_search($module, self::instance()->appModules)) {
+            self::instance()->killedAppModules[] = $module;
+        }
     }
 
     private function initialize()
@@ -124,8 +145,8 @@ class App extends Container
 
     private function initializeBaseModules()
     {
-        self::module(AppModuleLoader::class);
         self::module(AutoLoader::class);
+        self::module(AppModuleLoader::class);
         self::module(WebAppModule::class);
     }
 

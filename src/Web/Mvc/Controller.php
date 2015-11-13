@@ -72,20 +72,18 @@ abstract class Controller
             return $pageLoadResult;
         }
         if (!$controller->isEnded) {
-            $reflector = new \ReflectionMethod($controller, $action);
-            $parameters = $reflector->getParameters();
-            $args = array();
-            $params = $controller->req->params();
-            foreach ($parameters as $parameter) {
-                if (array_key_exists($parameter->name, $params)) {
-                    $args[$parameter->name] = $params[$parameter->name];
-                } else {
-                    $args[$parameter->name] = null;
-                }
-            }
+            $actionInfo = new ActionInfo($controller, $action);
 
-            $actionResult = $reflector->invokeArgs($controller, $args);
-            return $actionResult;
+            try {
+                $actionResult = $actionInfo->invoke($controller->req->params());
+                return $actionResult;
+            } catch (\Exception $ex) {
+                if ($controller instanceof OutputStatusException || $actionInfo->getIfOutputStatusException()) {
+                    $status = $controller->status($ex->getMessage(), $ex->getCode());
+                    return $status;
+                }
+                throw new WebException($controller, $action, $ex->getMessage(), $ex->getCode(), $ex);
+            }
         }
         return null;
     }
