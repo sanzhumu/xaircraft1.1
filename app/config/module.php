@@ -6,6 +6,5 @@
  * Time: 9:49
  */
 
-use Xaircraft\Web\WebAppModule;
-
-\Xaircraft\App::module(TestModule::class);
+\Xaircraft\App::module(WhoopsModule::class);
+\Xaircraft\App::module(UbenchModule::class);

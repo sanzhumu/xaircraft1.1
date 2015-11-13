@@ -8,11 +8,10 @@ use Xaircraft\Module\AppModuleState;
  * Date: 2015/11/13
  * Time: 9:50
  */
-class TestModule extends \Xaircraft\Module\AppModule
+class WhoopsModule extends \Xaircraft\Module\AppModule
 {
     public function appStart()
     {
-        // TODO: Implement appStart() method.
         $whoops = new \Whoops\Run;
         $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
         $whoops->register();

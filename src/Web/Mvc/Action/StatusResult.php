@@ -1,6 +1,7 @@
 <?php
 
 namespace Xaircraft\Web\Mvc\Action;
+use Xaircraft\App;
 
 
 /**
@@ -56,6 +57,8 @@ class StatusResult extends ActionResult
         }
 
         echo json_encode($json);
+
+        App::killModule('UbenchModule');
     }
 }
 

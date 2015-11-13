@@ -1,6 +1,7 @@
 <?php
 
 namespace Xaircraft\Web\Mvc\Action;
+use Xaircraft\App;
 
 
 /**
@@ -33,6 +34,8 @@ class JsonResult extends ActionResult {
             $json = $this->object;
         }
         echo json_encode($json);
+
+        App::killModule('UbenchModule');
     }
 }
 

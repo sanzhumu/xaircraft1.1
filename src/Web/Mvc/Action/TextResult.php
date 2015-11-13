@@ -1,7 +1,6 @@
 <?php
 
-namespace Xaircraft\Mvc\Action;
-use Xaircraft\Web\Mvc\Action\ActionResult;
+namespace Xaircraft\Web\Mvc\Action;
 
 
 /**

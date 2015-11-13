@@ -11,12 +11,12 @@ namespace Xaircraft\Web\Mvc;
 
 use Xaircraft\DI;
 use Xaircraft\Exception\WebException;
-use Xaircraft\Mvc\Action\TextResult;
 use Xaircraft\Web\Http\Request;
 use Xaircraft\Web\Mvc\Action\JsonResult;
 use Xaircraft\Web\Mvc\Action\LayoutResult;
 use Xaircraft\Web\Mvc\Action\ObjectResult;
 use Xaircraft\Web\Mvc\Action\StatusResult;
+use Xaircraft\Web\Mvc\Action\TextResult;
 use Xaircraft\Web\Mvc\Action\ViewResult;
 
 abstract class Controller
