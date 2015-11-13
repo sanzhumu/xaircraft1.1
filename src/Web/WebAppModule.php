@@ -72,4 +72,14 @@ class WebAppModule extends AppModule
 
         $this->router->routing();
     }
+
+    public function appStart()
+    {
+        // TODO: Implement appStart() method.
+    }
+
+    public function appEnd()
+    {
+        // TODO: Implement appEnd() method.
+    }
 }

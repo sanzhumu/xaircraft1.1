@@ -9,6 +9,8 @@
 namespace Xaircraft\Module;
 
 
+use Xaircraft\DI;
+
 abstract class AppModule
 {
     /**
@@ -18,13 +20,17 @@ abstract class AppModule
 
     private $className;
 
-    public function __construct(AppModuleState $state)
+    public function __construct()
     {
-        $this->state = $state;
+        $this->state = DI::get(AppModuleState::class);
         $this->className = get_called_class();
     }
 
+    public abstract function appStart();
+
     public abstract function handle();
+
+    public abstract function appEnd();
 
     public function state()
     {

@@ -14,8 +14,18 @@ use Xaircraft\Configuration\Settings;
 class AppModuleLoader extends AppModule
 {
 
-    public function handle()
+    public function appStart()
     {
         Settings::load('module');
+    }
+
+    public function handle()
+    {
+        // TODO: Implement appEnd() method.
+    }
+
+    public function appEnd()
+    {
+        // TODO: Implement appEnd() method.
     }
 }

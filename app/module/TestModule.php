@@ -1,4 +1,6 @@
 <?php
+use Xaircraft\Module\AppModuleLoader;
+use Xaircraft\Module\AppModuleState;
 
 /**
  * Created by PhpStorm.
@@ -8,9 +10,21 @@
  */
 class TestModule extends \Xaircraft\Module\AppModule
 {
+    public function appStart()
+    {
+        // TODO: Implement appStart() method.
+        $whoops = new \Whoops\Run;
+        $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+        $whoops->register();
+    }
 
     public function handle()
     {
-        //var_dump('i am module.');
+        // TODO: Implement handle() method.
+    }
+
+    public function appEnd()
+    {
+        // TODO: Implement appEnd() method.
     }
 }

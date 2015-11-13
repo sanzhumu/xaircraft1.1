@@ -20,7 +20,7 @@ class AutoLoader extends AppModule
      */
     private $classLoader;
 
-    public function handle()
+    public function appStart()
     {
         $this->classLoader = new ClassLoader();
 
@@ -40,5 +40,15 @@ class AutoLoader extends AppModule
         foreach ($paths as $item) {
             $this->classLoader->addPath(App::path('app').$item);
         }
+    }
+
+    public function handle()
+    {
+        // TODO: Implement appStart() method.
+    }
+
+    public function appEnd()
+    {
+        // TODO: Implement appEnd() method.
     }
 }

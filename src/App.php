@@ -9,8 +9,6 @@
 
 namespace Xaircraft;
 
-
-use Xaircraft\Configuration\Settings;
 use Xaircraft\Core\Container;
 use Xaircraft\Module\AppModuleLoader;
 use Xaircraft\Module\AppModuleState;
@@ -34,31 +32,43 @@ class App extends Container
 
     private $killedAppModules = array();
 
+    private $currentModule;
+
     public function run()
     {
         if (isset($this->appModules) && !empty($this->appModules)) {
-            $currentModule = "";
             try {
-                $state = new AppModuleState();
-                $index = 0;
-                while ($index < count($this->appModules)) {
-                    $currentModule = $this->appModules[$index];
-                    $index++;
-                    if (false !== array_search($currentModule, $this->killedAppModules)) {
-                        continue;
-                    }
-                    /**
-                     * @var $module \Xaircraft\Module\AppModule
-                     */
-                    $module = DI::get($currentModule, array('state' => $state));
-                    $module->handle();
-                    $state = $module->state();
-                    if ($state->stop) {
-                        break;
-                    }
-                }
+                DI::bindSingleton(AppModuleState::class, new AppModuleState());
+                $this->fireAppModule('appStart');
+                $this->fireAppModule('handle');
+                $this->fireAppModule('appEnd');
             } catch (\Exception $ex) {
-                $this->onError(new AppModuleException($currentModule, $ex->getMessage(), $ex->getCode(), $ex));
+                $this->onError(new AppModuleException($this->currentModule, $ex->getMessage(), $ex->getCode(), $ex));
+            }
+        }
+    }
+
+    private function fireAppModule($action)
+    {
+        if (!isset($action) || false === array_search($action, array('appStart', 'handle', 'appEnd'))) {
+            return;
+        }
+
+        $index = 0;
+        while ($index < count($this->appModules)) {
+            $this->currentModule = $this->appModules[$index];
+            $index++;
+            if (false !== array_search($this->currentModule, $this->killedAppModules)) {
+                continue;
+            }
+            /**
+             * @var $module \Xaircraft\Module\AppModule
+             */
+            $module = DI::get($this->currentModule);
+            call_user_func(array($module, $action));
+            $state = $module->state();
+            if ($state->stop) {
+                break;
             }
         }
     }
@@ -182,6 +192,7 @@ class App extends Container
 
     private function onError(AppModuleException $ex)
     {
+        var_dump($ex);
         throw $ex;
     }
 }
