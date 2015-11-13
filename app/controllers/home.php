@@ -18,7 +18,6 @@ class home_controller extends Controller
      */
     public function index($id, $title)
     {
-        throw new \Exception("test", 200);
-        //return $this->json(array($id, $title));
+        \Xaircraft\Web\Session::put('test', 123);
     }
 }

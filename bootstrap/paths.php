@@ -13,4 +13,5 @@ return array(
     'filter'    => __DIR__ . '/../app/config/filter',
     'autoload'  => __DIR__ . '/../app/config/autoload.php',
     'module'    => __DIR__ . '/../app/config/module.php',
+    'inject'    => __DIR__ . '/../app/config/inject.php',
 );
