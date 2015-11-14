@@ -1,4 +1,5 @@
 <?php
+use Xaircraft\Database\TableSchema;
 use Xaircraft\Web\Mvc\Controller;
 use Xaircraft\Web\Mvc\OutputStatusException;
 
@@ -13,11 +14,13 @@ class home_controller extends Controller
     /**
      * @param $id
      * @param $title
-     * @throws Exception
+     * @return \Xaircraft\Web\Mvc\Action\TextResult
      * @output_status_exception
      */
     public function index($id, $title)
     {
-        \Xaircraft\Web\Session::put('test', 123);
+        $schema = new TableSchema('users');
+
+        return $this->text('test');
     }
 }

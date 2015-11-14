@@ -19,6 +19,7 @@ class Globals
     const ENV_OS = 1006;
     const ENV_OS_INFO = 1007;
     const ENV_MVC_VIEW_FILE_EXTENSION = 1008;
+    const ENV_DATABASE_PROVIDER = 1009;
 
     const OS_WIN = 2001;
     const OS_LINUX = 2002;
@@ -28,9 +29,12 @@ class Globals
 
     const ROUTER_DEFAULT_TOKENS = 2005;
 
+    const DATABASE_PROVIDER_PDO = 2006;
+
     //// Exception code
     const EXCEPTION_ERROR_ENVIRONMENT = 4001;
     const EXCEPTION_ERROR_ENVIRONMENT_SET_LIMIT = 4002;
+    const EXCEPTION_ERROR_DATABASE = 4100;
 
     const RUNTIME_MODE_APACHE2HANDLER = 'apache2handler';
     const RUNTIME_MODE_CLI = 'cli';

@@ -151,6 +151,7 @@ class App extends Container
             $this->environment[Globals::ENV_OS] = Runtime::getOS();
             $this->environment[Globals::ENV_OS_INFO] = php_uname();
             $this->environment[Globals::ENV_MVC_VIEW_FILE_EXTENSION] = 'phtml';
+            $this->environment[Globals::ENV_DATABASE_PROVIDER] = Globals::DATABASE_PROVIDER_PDO;
         }
     }
 
