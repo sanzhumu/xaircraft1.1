@@ -19,7 +19,7 @@ class home_controller extends Controller
      */
     public function index($id, $title)
     {
-        $schema = new TableSchema('users');
+        $schema = new TableSchema('user');
 
         return $this->text('test');
     }

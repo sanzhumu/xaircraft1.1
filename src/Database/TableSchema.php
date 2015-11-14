@@ -36,5 +36,38 @@ class TableSchema
         if (false === $result) {
             throw new DataTableException($this->table, "Table not exists - [$this->table]");
         }
+
+        $this->columns = array();
+
+        foreach ($result as $row) {
+            $this->columns[] = $this->parseColumn($row);
+        }
+        var_dump($this->columns);
+    }
+
+    private function parseColumn($source)
+    {
+        //var_dump($source);
+        $column = new ColumnInfo();
+        $column->table = $this->table;
+        $column->name = $source['Field'];
+        $this->parseType($source['Type'], $column);
+        $column->nullable = 'YES' === $source['Null'] ? true : false;
+        $column->primary = 'PRI' === $source['Key'] ? true : false;
+        $column->default = $source['Default'];
+
+        return $column;
+    }
+
+    private function parseType($source, ColumnInfo &$column)
+    {
+        if (preg_match('#(?<type>[a-zA-Z][a-zA-Z]+)(\((?<length>\d+)(\,(?<precision>\d+))?\))?#i', $source, $matches)) {
+            $column->type = array_key_exists('type', $matches) ? $matches['type'] : null;
+            $column->length = array_key_exists('length', $matches) ? $matches['length'] : null;
+            $column->numericPrecision = array_key_exists('precision', $matches) ? $matches['precision'] : null;
+            $column->numericUnsigned = !(false === strpos($source, 'unsigned'));
+        }
+
+        return null;
     }
 }

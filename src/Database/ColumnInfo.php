@@ -11,39 +11,39 @@ namespace Xaircraft\Database;
 
 class ColumnInfo
 {
-    private $name;
+    public $name;
 
-    private $type;
+    public $type;
 
-    private $default;
+    public $default;
 
-    private $length;
+    public $length;
 
-    private $comment;
+    public $comment;
 
-    private $nullable = false;
+    public $nullable = false;
 
-    private $primary = false;
+    public $primary = false;
 
-    private $autoIncrement = false;
+    public $autoIncrement = false;
 
-    private $table;
+    public $table;
 
-    private $dateType;
+    public $dateType;
 
-    private $charMaxLength;
+    public $charMaxLength;
 
-    private $charOctetLength;
+    public $charOctetLength;
 
-    private $numericPrecision;
+    public $numericPrecision;
 
-    private $numericScale;
+    public $numericScale;
 
-    private $numericUnsigned;
+    public $numericUnsigned;
 
-    private $dateTimePrecision;
+    public $dateTimePrecision;
 
-    private $charSetName;
+    public $charSetName;
 
-    private $collationName;
+    public $collationName;
 }
