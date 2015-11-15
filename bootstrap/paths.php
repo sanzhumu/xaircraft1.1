@@ -15,4 +15,6 @@ return array(
     'module'    => __DIR__ . '/../app/config/module.php',
     'inject'    => __DIR__ . '/../app/config/inject.php',
     'config'    => __DIR__ . '/../app/config',
+    'cache'     => __DIR__ . '/../app/cache',
+    'schema'    => __DIR__ . '/../app/cache/schema',
 );

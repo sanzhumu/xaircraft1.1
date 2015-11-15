@@ -74,7 +74,7 @@ class App extends Container
         }
     }
 
-    public function bindPath($paths)
+    public function bindPaths($paths)
     {
         if (isset($paths)) {
             if (is_array($paths) && !empty($paths)) {

@@ -315,7 +315,7 @@ class PdoDatabase implements Database {
     public function table($tableName)
     {
         if (isset($tableName)) {
-            return new TableQuery($this, $tableName, $this->prefix);
+            return new TableQuery($tableName, $this->prefix);
         }
 
         return null;
@@ -375,7 +375,7 @@ class PdoDatabase implements Database {
      */
     public function raw($value)
     {
-        // TODO: Implement raw() method.
+        return new Raw($value);
     }
 
     /**

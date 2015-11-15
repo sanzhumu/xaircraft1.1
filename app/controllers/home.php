@@ -15,11 +15,20 @@ class home_controller extends Controller
      * @param $id
      * @param $title
      * @return \Xaircraft\Web\Mvc\Action\TextResult
-     * @output_status_exception
      */
     public function index($id, $title)
     {
-        $schema = new TableSchema('user');
+        $query = \Xaircraft\DB::table('project')->select(array(
+            'id', 'title',
+            'user' => function () {
+
+            },
+            '创建时间' => 'create_at'
+        ))->where(function () {
+
+        })->orWhere('id', 'test')
+            ->where('title', '>', \Xaircraft\DB::raw('hello world!'))
+            ->whereIn('id', function () {})->whereIn('title', array('asdf', 'sfsdfsfd', 234))->execute();
 
         return $this->text('test');
     }
