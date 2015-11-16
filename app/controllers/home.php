@@ -15,27 +15,30 @@ class home_controller extends Controller
      * @param $id
      * @param $title
      * @return \Xaircraft\Web\Mvc\Action\TextResult
+     * @output_status_exception
      */
     public function index($id, $title)
     {
         $query = \Xaircraft\DB::table('project')->select(array(
             'id', 'title',
             'user' => function (\Xaircraft\Database\WhereQuery $whereQuery) {
-                $whereQuery->select()->from('user')->where('id', 1);
+                $whereQuery->select('title')->from('user')->whereIn('id', array(1));
                 //$whereQuery->where('id', 0);
             },
             '创建时间' => 'create_at'
         ))->where(function (\Xaircraft\Database\WhereQuery $whereQuery) {
-            $whereQuery->where("id", 2)->orWhere('title', 3);
+            $whereQuery->where("id", 4)->orWhere('title', 5);
         })->orWhere('id', 'test')
-            ->where('title', '>', \Xaircraft\DB::raw('hello world!'))
+            ->where('title', '>', 2)
             ->whereIn('id', function (\Xaircraft\Database\WhereQuery $whereQuery) {
-                $whereQuery->select('id')->from('user')->where('id', 4);
+                $whereQuery->select('id')->from('user')->where('id', 6);
                 //$whereQuery->where('id', 0);
             })
-            ->whereBetween('id', array(5, 6))
-            ->whereNotBetween('id', array(7, 8))
-            ->whereIn('title', array('9', '10', 11))->execute();
+            ->whereBetween('id', array(7, 8))
+            ->whereNotBetween('id', array(9, 10))
+            ->whereIn('title', array('11', '12', 13))->execute();
+
+        var_dump($query);
 
         return $this->text('test');
     }

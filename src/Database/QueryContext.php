@@ -17,4 +17,9 @@ class QueryContext
     {
         $this->parameters[] = $value;
     }
+
+    public function getParams()
+    {
+        return $this->parameters;
+    }
 }

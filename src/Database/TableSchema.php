@@ -17,13 +17,15 @@ use Xaircraft\Exception\DataTableException;
 
 class TableSchema
 {
+    const SOFT_DELETE_FIELD = 'delete_at';
+
     private $table;
 
     private $columns;
 
     private $source;
 
-    private $softDelete = false;
+    private $canSoftDelete = false;
 
     public function __construct($table)
     {
@@ -50,7 +52,7 @@ class TableSchema
 
     public function getSoftDelete()
     {
-        return $this->softDelete;
+        return $this->canSoftDelete;
     }
 
     private function initialize()
@@ -87,8 +89,8 @@ class TableSchema
         $column->default = $source['Default'];
         $column->autoIncrement = !(false === strpos($source['Extra'], 'auto_increment'));
 
-        if ('delete_at' === $column->name) {
-            $this->softDelete = true;
+        if (self::SOFT_DELETE_FIELD === $column->name) {
+            $this->canSoftDelete = true;
         }
 
         return $column;

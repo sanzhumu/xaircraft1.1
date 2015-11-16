@@ -164,7 +164,7 @@ class WhereQuery implements QueryStringBuilder
 
     public function softDeleteLess()
     {
-        $this->softDeleteLess = false;
+        $this->softDeleteLess = true;
 
         return $this;
     }
@@ -177,6 +177,13 @@ class WhereQuery implements QueryStringBuilder
             }
             return ConditionQueryBuilder::toString($this->conditions);
         } else {
+            if (!$this->softDeleteLess) {
+                $this->addCondition(ConditionInfo::make(
+                    ConditionInfo::CONDITION_AND,
+                    WhereConditionBuilder::makeNormal($this->context, TableSchema::SOFT_DELETE_FIELD, '=', 0)
+                ));
+            }
+
             $statements = array();
             $statements[] = SelectionQueryBuilder::toString($this->context, $this->selectFields);
             $statements[] = 'FROM ' . $this->subQueryTableSchema->getTableName();

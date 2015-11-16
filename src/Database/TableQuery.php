@@ -39,7 +39,7 @@ class TableQuery implements QueryStringBuilder
 
     private $selectFields = array();
 
-    private $softDeleteLess = true;
+    private $softDeleteLess = false;
 
     public function __construct($table)
     {
@@ -50,9 +50,15 @@ class TableQuery implements QueryStringBuilder
 
     public function execute()
     {
-        $result = SelectionQueryBuilder::toString($this->context, $this->selectFields) . ' FROM ' . $this->schema->getTableName() . ' WHERE ' . ConditionQueryBuilder::toString($this->conditions);
-        var_dump($result);
-        var_dump($this->context);
+        switch ($this->queryType) {
+            case self::QUERY_SELECT:
+                $tableQueryExecutor = TableQueryExecutor::makeSelect($this->schema, $this->context, $this->softDeleteLess, $this->selectFields, $this->conditions);
+        }
+
+        if (isset($tableQueryExecutor)) {
+            return $tableQueryExecutor->execute();
+        }
+        return null;
     }
 
     public function select()
@@ -206,7 +212,7 @@ class TableQuery implements QueryStringBuilder
 
     public function softDeleteLess()
     {
-        $this->softDeleteLess = false;
+        $this->softDeleteLess = true;
 
         return $this;
     }
