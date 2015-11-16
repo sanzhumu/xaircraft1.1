@@ -20,15 +20,22 @@ class home_controller extends Controller
     {
         $query = \Xaircraft\DB::table('project')->select(array(
             'id', 'title',
-            'user' => function () {
-
+            'user' => function (\Xaircraft\Database\WhereQuery $whereQuery) {
+                $whereQuery->select()->from('user')->where('id', 1);
+                //$whereQuery->where('id', 0);
             },
             '创建时间' => 'create_at'
-        ))->where(function () {
-
+        ))->where(function (\Xaircraft\Database\WhereQuery $whereQuery) {
+            $whereQuery->where("id", 2)->orWhere('title', 3);
         })->orWhere('id', 'test')
             ->where('title', '>', \Xaircraft\DB::raw('hello world!'))
-            ->whereIn('id', function () {})->whereIn('title', array('asdf', 'sfsdfsfd', 234))->execute();
+            ->whereIn('id', function (\Xaircraft\Database\WhereQuery $whereQuery) {
+                $whereQuery->select('id')->from('user')->where('id', 4);
+                //$whereQuery->where('id', 0);
+            })
+            ->whereBetween('id', array(5, 6))
+            ->whereNotBetween('id', array(7, 8))
+            ->whereIn('title', array('9', '10', 11))->execute();
 
         return $this->text('test');
     }

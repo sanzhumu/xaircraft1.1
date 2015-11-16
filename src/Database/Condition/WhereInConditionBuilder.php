@@ -10,8 +10,10 @@ namespace Xaircraft\Database\Condition;
 
 
 use Xaircraft\Database\QueryContext;
+use Xaircraft\Database\WhereQuery;
+use Xaircraft\Exception\QueryException;
 
-class WhereInConditionBuilder implements ConditionBuilder
+class WhereInConditionBuilder extends ConditionBuilder
 {
     public $field;
 
@@ -20,16 +22,6 @@ class WhereInConditionBuilder implements ConditionBuilder
     public $range;
 
     public $notIn = false;
-
-    /**
-     * @var QueryContext
-     */
-    private $context;
-
-    public function __construct(QueryContext $context)
-    {
-        $this->context = $context;
-    }
 
     public function getQueryString()
     {
@@ -46,6 +38,16 @@ class WhereInConditionBuilder implements ConditionBuilder
                 } else {
                     $statements[] = 'NULL';
                 }
+            $statements[] = ")";
+        } else {
+            $whereQuery = new WhereQuery($this->context, true);
+            call_user_func($this->clause, $whereQuery);
+            $statements[] = "$this->field IN (";
+            $item = $whereQuery->getQueryString();
+            if (!isset($item)) {
+                throw new QueryException("WhereIn Condition build error.");
+            }
+            $statements[] = $item;
             $statements[] = ")";
         }
 

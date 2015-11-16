@@ -11,7 +11,7 @@ namespace Xaircraft\Database\Condition;
 
 use Xaircraft\Database\QueryContext;
 
-class WhereBetweenConditionBuilder implements ConditionBuilder
+class WhereBetweenConditionBuilder extends ConditionBuilder
 {
     public $field;
 
@@ -19,19 +19,18 @@ class WhereBetweenConditionBuilder implements ConditionBuilder
 
     public $notBetween = false;
 
-    /**
-     * @var QueryContext
-     */
-    private $context;
-
-    public function __construct(QueryContext $context)
-    {
-        $this->context = $context;
-    }
-
     public function getQueryString()
     {
-        // TODO: Implement getQueryString() method.
+        $statements = array();
+        if (!$this->notBetween) {
+            $statements[] = "$this->field BETWEEN ? AND ?";
+        } else {
+            $statements[] = "$this->field < ? OR $this->field > ?";
+        }
+        $this->context->param($this->range[0]);
+        $this->context->param($this->range[1]);
+
+        return !empty($statements) ? '(' . implode(' ', $statements) . ')' : null;
     }
 
     public static function makeBetween(QueryContext $context, $field, $range)

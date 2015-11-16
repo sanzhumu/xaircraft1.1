@@ -39,6 +39,8 @@ class TableQuery implements QueryStringBuilder
 
     private $selectFields = array();
 
+    private $softDeleteLess = true;
+
     public function __construct($table)
     {
         $this->schema = new TableSchema($table);
@@ -48,14 +50,9 @@ class TableQuery implements QueryStringBuilder
 
     public function execute()
     {
-        foreach ($this->conditions as $item) {
-            /**
-             * @var ConditionInfo $item
-             */
-            var_dump($item->conditionBuilder->getQueryString());
-        }
+        $result = SelectionQueryBuilder::toString($this->context, $this->selectFields) . ' FROM ' . $this->schema->getTableName() . ' WHERE ' . ConditionQueryBuilder::toString($this->conditions);
+        var_dump($result);
         var_dump($this->context);
-
     }
 
     public function select()
@@ -207,14 +204,16 @@ class TableQuery implements QueryStringBuilder
         return $this;
     }
 
+    public function softDeleteLess()
+    {
+        $this->softDeleteLess = false;
+
+        return $this;
+    }
+
     public function getQueryString()
     {
         // TODO: Implement getQueryString() method.
-    }
-
-    public function getParameters()
-    {
-        // TODO: Implement getParameters() method.
     }
 
     private function addCondition($condition)

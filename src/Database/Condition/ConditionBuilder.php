@@ -11,9 +11,17 @@ namespace Xaircraft\Database\Condition;
 
 use Xaircraft\Database\QueryContext;
 
-interface ConditionBuilder
+abstract class ConditionBuilder
 {
-    public function __construct(QueryContext $context);
+    /**
+     * @var QueryContext
+     */
+    protected $context;
 
-    public function getQueryString();
+    public function __construct(QueryContext $context)
+    {
+        $this->context = $context;
+    }
+
+    public abstract function getQueryString();
 }

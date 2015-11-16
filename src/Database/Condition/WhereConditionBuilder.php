@@ -10,9 +10,11 @@ namespace Xaircraft\Database\Condition;
 
 
 use Xaircraft\Database\QueryContext;
+use Xaircraft\Database\Raw;
+use Xaircraft\Database\WhereQuery;
 use Xaircraft\DI;
 
-class WhereConditionBuilder implements ConditionBuilder
+class WhereConditionBuilder extends ConditionBuilder
 {
     public $field;
 
@@ -22,22 +24,20 @@ class WhereConditionBuilder implements ConditionBuilder
 
     public $clause;
 
-    /**
-     * @var QueryContext
-     */
-    private $context;
-
-    public function __construct(QueryContext $context)
-    {
-        $this->context = $context;
-    }
-
     public function getQueryString()
     {
         $statements = array();
         if (!isset($this->clause)) {
-            $statements[] = "$this->field $this->operator ?";
-            $this->context->param($this->value);
+            if ($this->value instanceof Raw) {
+                $statements[] = "$this->field $this->operator " . $this->value->getValue();
+            } else {
+                $statements[] = "$this->field $this->operator ?";
+                $this->context->param($this->value);
+            }
+        } else {
+            $whereQuery = new WhereQuery($this->context);
+            call_user_func($this->clause, $whereQuery);
+            $statements[] = $whereQuery->getQueryString();
         }
 
         return !empty($statements) ? '(' . implode(' ', $statements) . ')' : null;

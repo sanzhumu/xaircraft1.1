@@ -13,8 +13,8 @@ use Xaircraft\Database\Condition\ConditionBuilder;
 
 class ConditionInfo
 {
-    const CONDITION_OR = 'CONDITION_OR';
-    const CONDITION_AND = 'CONDITION_AND';
+    const CONDITION_OR = 'OR';
+    const CONDITION_AND = 'AND';
 
     public $orAnd;
 

@@ -43,6 +43,16 @@ class TableSchema
         $this->initialize();
     }
 
+    public function getTableName()
+    {
+        return $this->table;
+    }
+
+    public function getSoftDelete()
+    {
+        return $this->softDelete;
+    }
+
     private function initialize()
     {
         if (!$this->loadFromCache()) {

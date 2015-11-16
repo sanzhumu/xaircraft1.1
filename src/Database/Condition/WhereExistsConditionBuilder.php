@@ -11,19 +11,9 @@ namespace Xaircraft\Database\Condition;
 
 use Xaircraft\Database\QueryContext;
 
-class WhereExistsConditionBuilder implements ConditionBuilder
+class WhereExistsConditionBuilder extends  ConditionBuilder
 {
     public $clause;
-
-    /**
-     * @var QueryContext
-     */
-    private $context;
-
-    public function __construct(QueryContext $context)
-    {
-        $this->context = $context;
-    }
 
     public function getQueryString()
     {
