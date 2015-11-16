@@ -41,18 +41,25 @@ class TableQuery implements QueryStringBuilder
 
     private $softDeleteLess = false;
 
-    public function __construct($table)
+    public function __construct($table, QueryContext $context = null)
     {
         $this->schema = new TableSchema($table);
 
-        $this->context = DI::get(QueryContext::class);
+        $this->context = isset($context) ? $context : DI::get(QueryContext::class);
     }
 
     public function execute()
     {
         switch ($this->queryType) {
             case self::QUERY_SELECT:
-                $tableQueryExecutor = TableQueryExecutor::makeSelect($this->schema, $this->context, $this->softDeleteLess, $this->selectFields, $this->conditions);
+                $tableQueryExecutor = TableQueryExecutor::makeSelect(
+                    $this->schema,
+                    $this->context,
+                    $this->softDeleteLess,
+                    $this->selectFields,
+                    $this->conditions
+                );
+                break;
         }
 
         if (isset($tableQueryExecutor)) {
