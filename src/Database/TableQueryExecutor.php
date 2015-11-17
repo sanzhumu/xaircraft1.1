@@ -11,9 +11,28 @@ namespace Xaircraft\Database;
 
 abstract class TableQueryExecutor
 {
-    public static function makeSelect(TableSchema $schema, QueryContext $context, $softDeleteLess, array $selectFields, array $conditions, array $joins)
+    public static function makeSelect(
+        TableSchema $schema,
+        QueryContext $context,
+        $softDeleteLess,
+        array $selectFields,
+        array $conditions,
+        array $joins,
+        array $orders,
+        array $groups,
+        array $havings)
     {
-        return new SelectTableQueryExecutor($schema, $context, $softDeleteLess, $selectFields, $conditions, $joins);
+        return new SelectTableQueryExecutor(
+            $schema,
+            $context,
+            $softDeleteLess,
+            $selectFields,
+            $conditions,
+            $joins,
+            $orders,
+            $groups,
+            $havings
+        );
     }
 
     public abstract function execute();

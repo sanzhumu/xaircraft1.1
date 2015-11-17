@@ -29,7 +29,22 @@ class SelectTableQueryExecutor extends TableQueryExecutor
 
     private $joins;
 
-    public function __construct(TableSchema $schema, QueryContext $context, $softDeleteLess, array $selectFields, array $conditions, array $joins)
+    private $orders;
+
+    private $groups;
+
+    private $havings;
+
+    public function __construct(
+        TableSchema $schema,
+        QueryContext $context,
+        $softDeleteLess,
+        array $selectFields,
+        array $conditions,
+        array $joins,
+        array $orders,
+        array $groups,
+        array $havings)
     {
         $this->schema = $schema;
         $this->selectFields = $selectFields;
@@ -37,6 +52,9 @@ class SelectTableQueryExecutor extends TableQueryExecutor
         $this->softDeleteLess = $softDeleteLess;
         $this->context = $context;
         $this->joins = $joins;
+        $this->orders = $orders;
+        $this->groups = $groups;
+        $this->havings = $havings;
     }
 
     public function execute()
@@ -58,6 +76,9 @@ class SelectTableQueryExecutor extends TableQueryExecutor
         $selection = SelectionQueryBuilder::toString($this->context, $this->selectFields) . ' FROM ' . $this->schema->getTableName();
         $join = JoinQueryBuilder::toString($this->context, $this->joins);
         $condition = ConditionQueryBuilder::toString($this->conditions);
+        $orders = OrderQueryBuilder::toString($this->orders);
+        $groups = GroupQueryBuilder::toString($this->groups);
+        $havings = HavingQueryBuilder::toString($this->havings);
 
         $statements = array($selection);
 
@@ -67,6 +88,18 @@ class SelectTableQueryExecutor extends TableQueryExecutor
 
         if (isset($condition)) {
             $statements[] = "WHERE $condition";
+        }
+
+        if (isset($orders)) {
+            $statements[] = "ORDER BY $orders";
+        }
+
+        if (isset($groups)) {
+            $statements[] = "GROUP BY $groups";
+        }
+
+        if (isset($havings)) {
+            $statements[] = "HAVING ($havings)";
         }
 
         return implode(' ', $statements);

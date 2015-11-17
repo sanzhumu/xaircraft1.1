@@ -45,7 +45,13 @@ class TableQuery implements QueryStringBuilder
 
     private $joins = array();
 
+    private $orders = array();
+
     private $contextLock = false;
+
+    private $groups = array();
+
+    private $havings = array();
 
     public function __construct($table, QueryContext $context = null)
     {
@@ -85,7 +91,10 @@ class TableQuery implements QueryStringBuilder
                     $this->softDeleteLess,
                     $this->selectFields,
                     $this->conditions,
-                    $this->joins
+                    $this->joins,
+                    $this->orders,
+                    $this->groups,
+                    $this->havings
                 );
         }
 
@@ -120,6 +129,37 @@ class TableQuery implements QueryStringBuilder
             }
         }
         $this->selectFields = $fields;
+
+        return $this;
+    }
+
+    public function orderBy($field, $sort = OrderInfo::SORT_ASC)
+    {
+        $this->orders[] = OrderInfo::make($field, $sort);
+
+        return $this;
+    }
+
+    public function groupBy()
+    {
+        $fields = func_get_args();
+        $this->groups[] = GroupInfo::make($fields);
+
+        return $this;
+    }
+
+    public function having($field)
+    {
+        $args = func_get_args();
+        $argsLen = func_num_args();
+
+        if (2 === $argsLen) {
+            $this->havings[] = HavingInfo::make($field, '=', $args[1]);
+        }
+
+        if (3 === $argsLen) {
+            $this->havings[] = HavingInfo::make($field, $args[1], $args[2]);
+        }
 
         return $this;
     }

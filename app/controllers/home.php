@@ -27,11 +27,11 @@ class home_controller extends Controller
             '创建时间' => '用户.create_at'
         ))->join('user', 'user.id', 'project.create_by')->leftJoin('user AS 用户', function (\Xaircraft\Database\JoinQuery $joinQuery) {
             $joinQuery->on('用户.id', 'project.create_by')->on('用户.id', '>', 'project.create_by')->where('用户.id', 9)->orWhere('用户.id', '=', 'asdf');
-        });
+        })->orderBy('user.id');
 
-        //$queryString = $query->getQueryString();
+        $queryString = $query->getQueryString();
 
-        var_dump($query->execute());
+        var_dump($queryString);
 
         return $this->text('test');
     }
