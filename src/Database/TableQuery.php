@@ -14,6 +14,8 @@ use Xaircraft\Database\Condition\WhereConditionBuilder;
 use Xaircraft\Database\Condition\WhereExistsConditionBuilder;
 use Xaircraft\Database\Condition\WhereInConditionBuilder;
 use Xaircraft\DI;
+use Xaircraft\Exception\DataTableException;
+use Xaircraft\Exception\QueryException;
 
 class TableQuery implements QueryStringBuilder
 {
@@ -41,6 +43,10 @@ class TableQuery implements QueryStringBuilder
 
     private $softDeleteLess = false;
 
+    private $joins = array();
+
+    private $contextLock = false;
+
     public function __construct($table, QueryContext $context = null)
     {
         $this->schema = new TableSchema($table);
@@ -50,21 +56,39 @@ class TableQuery implements QueryStringBuilder
 
     public function execute()
     {
+        if ($this->contextLock) {
+            throw new DataTableException(
+                $this->schema->getTableName(),
+                "Can't execute the TableQuery when the query has been run [getQueryString()] method.
+                You should try [DB::getQueryString()]
+                "
+            );
+        }
+
+        $tableQueryExecutor = $this->parseTableQuery();
+
+        $result = null;
+        if (isset($tableQueryExecutor)) {
+            $result = $tableQueryExecutor->execute();
+        }
+        unset($this->context);
+        return $result;
+    }
+
+    private function parseTableQuery()
+    {
         switch ($this->queryType) {
             case self::QUERY_SELECT:
-                $tableQueryExecutor = TableQueryExecutor::makeSelect(
+                return TableQueryExecutor::makeSelect(
                     $this->schema,
                     $this->context,
                     $this->softDeleteLess,
                     $this->selectFields,
-                    $this->conditions
+                    $this->conditions,
+                    $this->joins
                 );
-                break;
         }
 
-        if (isset($tableQueryExecutor)) {
-            return $tableQueryExecutor->execute();
-        }
         return null;
     }
 
@@ -98,6 +122,52 @@ class TableQuery implements QueryStringBuilder
         $this->selectFields = $fields;
 
         return $this;
+    }
+
+    public function join($table)
+    {
+        $args = func_get_args();
+        $argsLen = func_num_args();
+
+        $this->parseJoin($table, $args, $argsLen, false);
+
+        return $this;
+    }
+
+    public function leftJoin($table)
+    {
+        $args = func_get_args();
+        $argsLen = func_num_args();
+
+        $this->parseJoin($table, $args, $argsLen, true);
+
+        return $this;
+    }
+
+    private function parseJoin($table, $args, $argsLen, $leftJoin = false)
+    {
+        if (2 === $argsLen) {
+            $clause = $args[1];
+            if (isset($clause) && is_callable($clause)) {
+                $this->joins[] = JoinInfo::makeClause($table, $clause, $leftJoin);
+            } else {
+                throw new QueryException("Join query error - it should be a sub-query clause here. [$table]");
+            }
+        }
+        if (3 === $argsLen) {
+            $this->joins[] = JoinInfo::makeNormal(
+                $table,
+                JoinConditionInfo::make(ConditionInfo::CONDITION_AND, $args[1], '=', $args[2], false),
+                $leftJoin
+            );
+        }
+        if (4 === $argsLen) {
+            $this->joins[] = JoinInfo::makeNormal(
+                $table,
+                JoinConditionInfo::make(ConditionInfo::CONDITION_AND, $args[1], $args[2], $args[3], false),
+                $leftJoin
+            );
+        }
     }
 
     private function parseWhere($args, $argsLen, $orAnd)
@@ -226,7 +296,14 @@ class TableQuery implements QueryStringBuilder
 
     public function getQueryString()
     {
-        // TODO: Implement getQueryString() method.
+        $tableQueryExecutor = $this->parseTableQuery();
+
+        $this->contextLock = true;
+
+        if (isset($tableQueryExecutor)) {
+            return $tableQueryExecutor->toQueryString();
+        }
+        return null;
     }
 
     private function addCondition($condition)

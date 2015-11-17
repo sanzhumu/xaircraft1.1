@@ -27,13 +27,16 @@ class SelectTableQueryExecutor extends TableQueryExecutor
      */
     private $context;
 
-    public function __construct(TableSchema $schema, QueryContext $context, $softDeleteLess, array $selectFields, array $conditions)
+    private $joins;
+
+    public function __construct(TableSchema $schema, QueryContext $context, $softDeleteLess, array $selectFields, array $conditions, array $joins)
     {
         $this->schema = $schema;
         $this->selectFields = $selectFields;
         $this->conditions = $conditions;
         $this->softDeleteLess = $softDeleteLess;
         $this->context = $context;
+        $this->joins = $joins;
     }
 
     public function execute()
@@ -53,12 +56,19 @@ class SelectTableQueryExecutor extends TableQueryExecutor
         }
 
         $selection = SelectionQueryBuilder::toString($this->context, $this->selectFields) . ' FROM ' . $this->schema->getTableName();
+        $join = JoinQueryBuilder::toString($this->context, $this->joins);
         $condition = ConditionQueryBuilder::toString($this->conditions);
 
-        if (isset($condition)) {
-            $condition = " WHERE $condition";
+        $statements = array($selection);
+
+        if (isset($join)) {
+            $statements[] = $join;
         }
 
-        return $selection . $condition;
+        if (isset($condition)) {
+            $statements[] = "WHERE $condition";
+        }
+
+        return implode(' ', $statements);
     }
 }

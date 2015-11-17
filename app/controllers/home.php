@@ -15,30 +15,23 @@ class home_controller extends Controller
      * @param $id
      * @param $title
      * @return \Xaircraft\Web\Mvc\Action\TextResult
-     * @output_status_exception
      */
     public function index($id, $title)
     {
         $query = \Xaircraft\DB::table('project')->select(array(
-            'id', 'title',
+            '用户.id', 'title',
             'user' => function (\Xaircraft\Database\WhereQuery $whereQuery) {
                 $whereQuery->select('title')->from('user')->whereIn('id', array(1));
                 //$whereQuery->where('id', 0);
             },
-            '创建时间' => 'create_at'
-        ))->where(function (\Xaircraft\Database\WhereQuery $whereQuery) {
-            $whereQuery->where("id", 4)->orWhere('title', 5);
-        })->orWhere('id', 'test')
-            ->where('title', '>', 2)
-            ->whereIn('id', function (\Xaircraft\Database\WhereQuery $whereQuery) {
-                $whereQuery->select('id')->from('user')->where('id', 6);
-                //$whereQuery->where('id', 0);
-            })
-            ->whereBetween('id', array(7, 8))
-            ->whereNotBetween('id', array(9, 10))
-            ->whereIn('title', array('11', '12', 13))->execute();
+            '创建时间' => '用户.create_at'
+        ))->join('user', 'user.id', 'project.create_by')->leftJoin('user AS 用户', function (\Xaircraft\Database\JoinQuery $joinQuery) {
+            $joinQuery->on('用户.id', 'project.create_by')->on('用户.id', '>', 'project.create_by')->where('用户.id', 9)->orWhere('用户.id', '=', 'asdf');
+        });
 
-        var_dump($query);
+        //$queryString = $query->getQueryString();
+
+        var_dump($query->execute());
 
         return $this->text('test');
     }
