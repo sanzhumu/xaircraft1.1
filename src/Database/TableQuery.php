@@ -53,6 +53,10 @@ class TableQuery implements QueryStringBuilder
 
     private $havings = array();
 
+    private $selectQuerySettings = array();
+
+    private $updates;
+
     public function __construct($table, QueryContext $context = null)
     {
         $this->schema = new TableSchema($table);
@@ -94,11 +98,28 @@ class TableQuery implements QueryStringBuilder
                     $this->joins,
                     $this->orders,
                     $this->groups,
-                    $this->havings
+                    $this->havings,
+                    $this->selectQuerySettings
+                );
+            case self::QUERY_UPDATE:
+                return TableQueryExecutor::makeUpdate(
+                    $this->schema,
+                    $this->context,
+                    $this->updates,
+                    $this->conditions
                 );
         }
 
         return null;
+    }
+
+    public function update(array $updates)
+    {
+        $this->queryType = self::QUERY_UPDATE;
+
+        $this->updates = $updates;
+
+        return $this;
     }
 
     public function select()
@@ -129,6 +150,43 @@ class TableQuery implements QueryStringBuilder
             }
         }
         $this->selectFields = $fields;
+
+        return $this;
+    }
+
+    public function take($count)
+    {
+        $this->queryType = self::QUERY_SELECT;
+
+        if ($count <= 0) {
+            throw new QueryException("Selection query error. take $count.");
+        }
+
+        $this->selectQuerySettings['take_count'] = $count;
+
+        return $this;
+    }
+
+    public function skip($offset)
+    {
+        $this->queryType = self::QUERY_SELECT;
+
+        if ($offset <= 0) {
+            throw new QueryException("Selection query error. skip $offset.");
+        }
+
+        $this->selectQuerySettings['skip_offset'] = $offset;
+
+        return $this;
+    }
+
+    public function pluck($field)
+    {
+        $this->queryType = self::QUERY_SELECT;
+
+        $this->selectQuerySettings['pluck'] = true;
+
+        $this->select($field)->take(1);
 
         return $this;
     }

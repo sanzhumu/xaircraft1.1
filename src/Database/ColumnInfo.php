@@ -46,4 +46,8 @@ class ColumnInfo
     public $charSetName;
 
     public $collationName;
+
+    public $validationPattern;
+
+    public $enums;
 }

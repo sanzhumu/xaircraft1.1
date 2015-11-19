@@ -18,20 +18,21 @@ class home_controller extends Controller
      */
     public function index($id, $title)
     {
-        $query = \Xaircraft\DB::table('project')->select(array(
-            '用户.id', 'title',
-            'user' => function (\Xaircraft\Database\WhereQuery $whereQuery) {
-                $whereQuery->select('title')->from('user')->whereIn('id', array(1));
-                //$whereQuery->where('id', 0);
-            },
-            '创建时间' => '用户.create_at'
-        ))->join('user', 'user.id', 'project.create_by')->leftJoin('user AS 用户', function (\Xaircraft\Database\JoinQuery $joinQuery) {
-            $joinQuery->on('用户.id', 'project.create_by')->on('用户.id', '>', 'project.create_by')->where('用户.id', 9)->orWhere('用户.id', '=', 'asdf');
-        })->orderBy('user.id');
+        $query = \Xaircraft\DB::table('user')->update(array(
+            'name' => 'test'
+        ))->where('id', 'test');
 
         $queryString = $query->getQueryString();
+        //$queryString = $query->execute();
 
         var_dump($queryString);
+
+        $query = \Xaircraft\DB::query('SHOW FULL COLUMNS FROM user');
+
+        foreach ($query as $row) {
+            var_dump($row);
+        }
+
 
         return $this->text('test');
     }

@@ -35,6 +35,16 @@ class SelectTableQueryExecutor extends TableQueryExecutor
 
     private $havings;
 
+    private $selectQuerySettings;
+
+    private $takeCount;
+
+    private $skipOffset;
+
+    private $pluck;
+
+    private $limit;
+
     public function __construct(
         TableSchema $schema,
         QueryContext $context,
@@ -44,7 +54,8 @@ class SelectTableQueryExecutor extends TableQueryExecutor
         array $joins,
         array $orders,
         array $groups,
-        array $havings)
+        array $havings,
+        array $selectQuerySettings)
     {
         $this->schema = $schema;
         $this->selectFields = $selectFields;
@@ -55,13 +66,29 @@ class SelectTableQueryExecutor extends TableQueryExecutor
         $this->orders = $orders;
         $this->groups = $groups;
         $this->havings = $havings;
+        $this->selectQuerySettings = $selectQuerySettings;
+
+        $this->parseSettings();
     }
 
     public function execute()
     {
         $query = $this->toQueryString();
 
-        return DB::select($query, $this->context->getParams());
+        return $this->getQueryResult($query);
+    }
+
+    private function getQueryResult($query)
+    {
+        $result = DB::select($query, $this->context->getParams());
+
+        if (!empty($result)) {
+            if ($this->pluck) {
+                return $result[0][$this->selectFields[0]->name];
+            }
+        }
+
+        return $result;
     }
 
     public function toQueryString()
@@ -102,6 +129,28 @@ class SelectTableQueryExecutor extends TableQueryExecutor
             $statements[] = "HAVING ($havings)";
         }
 
+        if (isset($this->limit)) {
+            if ($this->skipOffset > 0 && $this->takeCount > 0) {
+                $statements[] = "LIMIT $this->skipOffset,$this->takeCount";
+            } else if ($this->takeCount > 0) {
+                $statements[] = "LIMIT $this->takeCount";
+            }
+        }
+
         return implode(' ', $statements);
+    }
+
+    private function parseSettings()
+    {
+        if (isset($this->selectQuerySettings)) {
+            $settings = $this->selectQuerySettings;
+            $this->takeCount = array_key_exists('take_count', $settings) ? $settings['take_count'] : null;
+            $this->skipOffset = array_key_exists('skip_offset', $settings) ? $settings['skip_offset'] : null;
+            $this->pluck = array_key_exists('pluck', $settings) ? $settings['pluck'] : null;
+
+            if (isset($this->takeCount) || isset($this->skipOffset)) {
+                $this->limit = true;
+            }
+        }
     }
 }

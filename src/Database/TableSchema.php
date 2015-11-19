@@ -10,14 +10,17 @@ namespace Xaircraft\Database;
 
 
 use Xaircraft\App;
+use Xaircraft\Core\Container;
 use Xaircraft\Core\IO\File;
 use Xaircraft\DB;
 use Xaircraft\Exception\DatabaseException;
 use Xaircraft\Exception\DataTableException;
 
-class TableSchema
+class TableSchema extends Container
 {
     const SOFT_DELETE_FIELD = 'delete_at';
+    const RESERVED_FIELD_UPDATE_AT = 'update_at';
+    const RESERVED_FIELD_CREATE_AT = 'create_at';
 
     private $table;
 
@@ -26,6 +29,8 @@ class TableSchema
     private $source;
 
     private $canSoftDelete = false;
+
+    private $autoIncrementField;
 
     public function __construct($table)
     {
@@ -55,6 +60,29 @@ class TableSchema
         return $this->canSoftDelete;
     }
 
+    public function fields()
+    {
+        return $this->columns;
+    }
+
+    /**
+     * @param $field
+     * @return ColumnInfo
+     */
+    public function field($field)
+    {
+        return array_key_exists($field, $this->columns) ? $this->columns[$field] : null;
+    }
+
+    public function existsField($field)
+    {
+        if (isset($field)) {
+            return array_key_exists($field, $this->columns);
+        }
+
+        return false;
+    }
+
     private function initialize()
     {
         if (!$this->loadFromCache()) {
@@ -64,7 +92,7 @@ class TableSchema
 
     private function initializeColumns()
     {
-        $result = DB::query("SHOW COLUMNS FROM $this->table");
+        $result = DB::query("SHOW FULL COLUMNS FROM $this->table");
         if (false === $result) {
             throw new DataTableException($this->table, "Table not exists - [$this->table]");
         }
@@ -88,9 +116,15 @@ class TableSchema
         $column->primary = 'PRI' === $source['Key'] ? true : false;
         $column->default = $source['Default'];
         $column->autoIncrement = !(false === strpos($source['Extra'], 'auto_increment'));
+        $column->comment = $source['Comment'];
+        $column->collationName = $source['Collation'];
 
         if (self::SOFT_DELETE_FIELD === $column->name) {
             $this->canSoftDelete = true;
+        }
+
+        if ($column->autoIncrement) {
+            $this->autoIncrementField = $column->name;
         }
 
         return $column;
@@ -104,6 +138,14 @@ class TableSchema
             $column->numericPrecision = array_key_exists('precision', $matches) ? $matches['precision'] : null;
             $column->numericUnsigned = !(false === strpos($source, 'unsigned'));
             $column->numericPrecision = array_key_exists('precision', $matches) ? $matches['precision'] : null;
+
+            if ('enum' === strtolower($column->type)) {
+                if (preg_match('#enum\((?<enums>(\'([a-zA-Z0-9\_]+)\',?)+)\)#i', $source, $matches)) {
+                    $enums = str_replace("'", "", $matches['enums']);
+                    $column->enums = explode(',', $enums);
+                }
+            }
+            var_dump($column);
         }
     }
 

@@ -20,7 +20,8 @@ abstract class TableQueryExecutor
         array $joins,
         array $orders,
         array $groups,
-        array $havings)
+        array $havings,
+        array $selectQuerySettings)
     {
         return new SelectTableQueryExecutor(
             $schema,
@@ -31,8 +32,14 @@ abstract class TableQueryExecutor
             $joins,
             $orders,
             $groups,
-            $havings
+            $havings,
+            $selectQuerySettings
         );
+    }
+
+    public static function makeUpdate($schema, $context, $updates, $conditions)
+    {
+        return new UpdateTableQueryExecutor($schema, $context, $updates, $conditions);
     }
 
     public abstract function execute();
