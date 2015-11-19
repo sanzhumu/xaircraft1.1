@@ -154,7 +154,6 @@ class TableSchema extends Container
                     $column->enums = explode(',', $enums);
                 }
             }
-            var_dump($column);
         }
     }
 
@@ -168,6 +167,8 @@ class TableSchema extends Container
                 $this->table = $result->table;
                 $this->columns = $result->columns;
                 $this->source = $result->source;
+                $this->autoIncrementField = $result->autoIncrementField;
+                $this->canSoftDelete = $result->canSoftDelete;
 
                 return true;
             }

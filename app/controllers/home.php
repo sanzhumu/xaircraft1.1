@@ -19,11 +19,7 @@ class home_controller extends Controller
      */
     public function index($id, $title)
     {
-        $query = \Xaircraft\DB::table('user')->insert(array(
-            'name' => 'test',
-            'password' => 'test',
-            'level' => 'admina'
-        ));
+        $query = \Xaircraft\DB::table('user')->forceDelete()->where('id', 1);
 
         //$queryString = $query->getQueryString();
         $queryString = $query->execute();

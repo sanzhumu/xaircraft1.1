@@ -35,6 +35,14 @@ class DeleteTableQueryExecutor extends TableQueryExecutor
 
     public function execute()
     {
+        if (!$this->forceDelete && $this->schema->getSoftDelete()) {
+            $executor = TableQueryExecutor::makeUpdate($this->schema, $this->context, array(
+                TableSchema::SOFT_DELETE_FIELD => time()
+            ), $this->conditions);
+
+            return $executor->execute();
+        }
+
         $query = $this->toQueryString();
 
         return DB::delete($query, $this->context->getParams());
