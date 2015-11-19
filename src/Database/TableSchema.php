@@ -65,6 +65,15 @@ class TableSchema extends Container
         return $this->columns;
     }
 
+    public function columns()
+    {
+        $columns = array();
+        foreach ($this->columns as $key => $value) {
+            $columns[] = $key;
+        }
+        return $columns;
+    }
+
     /**
      * @param $field
      * @return ColumnInfo

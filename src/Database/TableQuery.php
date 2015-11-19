@@ -57,6 +57,8 @@ class TableQuery implements QueryStringBuilder
 
     private $updates;
 
+    private $inserts;
+
     public function __construct($table, QueryContext $context = null)
     {
         $this->schema = new TableSchema($table);
@@ -108,6 +110,18 @@ class TableQuery implements QueryStringBuilder
                     $this->updates,
                     $this->conditions
                 );
+            case self::QUERY_DELETE:
+                return TableQueryExecutor::makeDelete(
+                    $this->schema,
+                    $this->context,
+                    $this->conditions
+                );
+            case self::QUERY_INSERT:
+                return TableQueryExecutor::makeInsert(
+                    $this->schema,
+                    $this->context,
+                    $this->inserts
+                );
         }
 
         return null;
@@ -118,6 +132,22 @@ class TableQuery implements QueryStringBuilder
         $this->queryType = self::QUERY_UPDATE;
 
         $this->updates = $updates;
+
+        return $this;
+    }
+
+    public function insert(array $inserts)
+    {
+        $this->queryType = self::QUERY_INSERT;
+
+        $this->inserts = $inserts;
+
+        return $this;
+    }
+
+    public function delete()
+    {
+        $this->queryType = self::QUERY_DELETE;
 
         return $this;
     }

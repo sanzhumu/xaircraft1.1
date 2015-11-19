@@ -18,9 +18,9 @@ class home_controller extends Controller
      */
     public function index($id, $title)
     {
-        $query = \Xaircraft\DB::table('user')->update(array(
+        $query = \Xaircraft\DB::table('user')->insert(array(
             'name' => 'test'
-        ))->where('id', 'test');
+        ));
 
         $queryString = $query->getQueryString();
         //$queryString = $query->execute();
