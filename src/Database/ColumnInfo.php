@@ -11,6 +11,8 @@ namespace Xaircraft\Database;
 
 class ColumnInfo
 {
+    const FIELD_TYPE_ENUM = 'enum';
+
     public $name;
 
     public $type;

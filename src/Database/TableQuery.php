@@ -59,6 +59,8 @@ class TableQuery implements QueryStringBuilder
 
     private $inserts;
 
+    private $forceDelete = false;
+
     public function __construct($table, QueryContext $context = null)
     {
         $this->schema = new TableSchema($table);
@@ -114,7 +116,8 @@ class TableQuery implements QueryStringBuilder
                 return TableQueryExecutor::makeDelete(
                     $this->schema,
                     $this->context,
-                    $this->conditions
+                    $this->conditions,
+                    $this->forceDelete
                 );
             case self::QUERY_INSERT:
                 return TableQueryExecutor::makeInsert(
@@ -148,6 +151,15 @@ class TableQuery implements QueryStringBuilder
     public function delete()
     {
         $this->queryType = self::QUERY_DELETE;
+
+        return $this;
+    }
+
+    public function forceDelete()
+    {
+        $this->queryType = self::QUERY_DELETE;
+
+        $this->forceDelete = true;
 
         return $this;
     }

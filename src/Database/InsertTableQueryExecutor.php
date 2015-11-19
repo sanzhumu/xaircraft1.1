@@ -10,7 +10,6 @@ namespace Xaircraft\Database;
 
 
 use Xaircraft\DB;
-use Xaircraft\Exception\DatabaseException;
 use Xaircraft\Exception\DataTableException;
 
 class InsertTableQueryExecutor extends TableQueryExecutor
@@ -51,6 +50,11 @@ class InsertTableQueryExecutor extends TableQueryExecutor
             throw new DataTableException($this->schema->getTableName(), "Can't execute INSERT without inserts.");
         }
 
+        if ($this->schema->existsField(TableSchema::RESERVED_FIELD_CREATE_AT) &&
+            !array_key_exists(TableSchema::RESERVED_FIELD_CREATE_AT, $this->inserts)) {
+            $this->inserts[TableSchema::RESERVED_FIELD_CREATE_AT] = time();
+        }
+
         $columns = $this->schema->columns();
         foreach ($columns as $item) {
             if (!array_key_exists($item, $this->inserts) &&
@@ -70,11 +74,21 @@ class InsertTableQueryExecutor extends TableQueryExecutor
                     "Not exists field [$key] in table [" . $this->schema->getTableName() . "]."
                 );
             }
-            if ($this->schema->field($key)->autoIncrement) {
+            $field = $this->schema->field($key);
+            if ($field->autoIncrement) {
                 throw new DataTableException(
                     $this->schema->getTableName(),
                     "Can't set auto-increment field [$key] in insert query."
                 );
+            }
+            if (ColumnInfo::FIELD_TYPE_ENUM === $field->type) {
+                if (false === array_search($value, $field->enums)) {
+                    throw new DataTableException(
+                        $this->schema->getTableName(),
+                        "Not exists enum value [$value] in insert query. " .
+                        "The value must be one of (" . implode(',', $field->enums) . ")."
+                    );
+                }
             }
 
             $fields[] = $key;

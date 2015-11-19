@@ -15,24 +15,28 @@ class home_controller extends Controller
      * @param $id
      * @param $title
      * @return \Xaircraft\Web\Mvc\Action\TextResult
+     * @output_status_exception
      */
     public function index($id, $title)
     {
         $query = \Xaircraft\DB::table('user')->insert(array(
-            'name' => 'test'
+            'name' => 'test',
+            'password' => 'test',
+            'level' => 'admina'
         ));
 
-        $queryString = $query->getQueryString();
-        //$queryString = $query->execute();
+        //$queryString = $query->getQueryString();
+        $queryString = $query->execute();
 
         var_dump($queryString);
+
+        var_dump(\Xaircraft\DB::getQueryLog());
 
         $query = \Xaircraft\DB::query('SHOW FULL COLUMNS FROM user');
 
         foreach ($query as $row) {
             var_dump($row);
         }
-
 
         return $this->text('test');
     }

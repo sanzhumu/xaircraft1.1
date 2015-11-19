@@ -23,12 +23,14 @@ class DeleteTableQueryExecutor extends TableQueryExecutor
      */
     private $context;
     private $conditions;
+    private $forceDelete = false;
 
-    public function __construct(TableSchema $schema, QueryContext $context, $conditions)
+    public function __construct(TableSchema $schema, QueryContext $context, $conditions, $forceDelete)
     {
         $this->schema = $schema;
         $this->context = $context;
         $this->conditions = $conditions;
+        $this->forceDelete = $forceDelete;
     }
 
     public function execute()

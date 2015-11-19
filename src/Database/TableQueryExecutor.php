@@ -42,9 +42,9 @@ abstract class TableQueryExecutor
         return new UpdateTableQueryExecutor($schema, $context, $updates, $conditions);
     }
 
-    public static function makeDelete($schema, $context, $conditions)
+    public static function makeDelete($schema, $context, $conditions, $forceDelete)
     {
-        return new DeleteTableQueryExecutor($schema, $context, $conditions);
+        return new DeleteTableQueryExecutor($schema, $context, $conditions, $forceDelete);
     }
 
     public static function makeInsert($schema, $context, $inserts)
