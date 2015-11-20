@@ -12,6 +12,8 @@ namespace Xaircraft\Database;
 use Xaircraft\App;
 use Xaircraft\Core\Container;
 use Xaircraft\Core\IO\File;
+use Xaircraft\Database\Validation\ValidateFactory;
+use Xaircraft\Database\Validation\ValidationCollection;
 use Xaircraft\DB;
 use Xaircraft\Exception\DatabaseException;
 use Xaircraft\Exception\DataTableException;
@@ -127,6 +129,7 @@ class TableSchema extends Container
         $column->autoIncrement = !(false === strpos($source['Extra'], 'auto_increment'));
         $column->comment = $source['Comment'];
         $column->collationName = $source['Collation'];
+        $column->validation = ValidateFactory::makeCollections($column->comment);
 
         if (self::SOFT_DELETE_FIELD === $column->name) {
             $this->canSoftDelete = true;

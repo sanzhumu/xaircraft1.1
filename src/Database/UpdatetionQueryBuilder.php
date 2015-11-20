@@ -10,6 +10,7 @@ namespace Xaircraft\Database;
 
 
 use Xaircraft\Exception\DataTableException;
+use Xaircraft\Exception\FieldValidateException;
 use Xaircraft\Exception\QueryException;
 
 class UpdatetionQueryBuilder
@@ -29,12 +30,39 @@ class UpdatetionQueryBuilder
 
         foreach ($updates as $key => $value) {
             if (!$schema->existsField($key)) {
-                throw new QueryException("Not exists field [$key] in table [" . $schema->getTableName() . "].");
+                throw new FieldValidateException(
+                    $schema->getTableName(),
+                    $key,
+                    "Not exists field [$key] in table [" . $schema->getTableName() . "]."
+                );
             }
-            if ($schema->field($key)->autoIncrement) {
-                throw new QueryException("Can't update auto-increment field [$key].");
+            $field = $schema->field($key);
+            if ($field->autoIncrement) {
+                throw new FieldValidateException(
+                    $schema->getTableName(),
+                    $key,
+                    "Can't update auto-increment field [$key]."
+                );
             }
-            //TODO: Here can validate field by TableSchema which can parse comment with validation patterns.
+            if (ColumnInfo::FIELD_TYPE_ENUM === $field->type) {
+                if (false === array_search($value, $field->enums)) {
+                    throw new FieldValidateException(
+                        $schema->getTableName(),
+                        $key,
+                        "Not exists enum value [$value] in insert query. " .
+                        "The value must be one of (" . implode(',', $field->enums) . ")."
+                    );
+                }
+            }
+
+            if (isset($field->validation) && !$field->validation->valid($value)) {
+                throw new FieldValidateException(
+                    $schema->getTableName(),
+                    $key,
+                    "Field value validation error. [$key]"
+                );
+            }
+
             $statements[] = "$key = ?";
             $context->param($value);
         }

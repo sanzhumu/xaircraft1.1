@@ -11,6 +11,7 @@ namespace Xaircraft\Database;
 
 use Xaircraft\DB;
 use Xaircraft\Exception\DataTableException;
+use Xaircraft\Exception\FieldValidateException;
 
 class InsertTableQueryExecutor extends TableQueryExecutor
 {
@@ -60,7 +61,11 @@ class InsertTableQueryExecutor extends TableQueryExecutor
             if (!array_key_exists($item, $this->inserts) &&
                 !$this->schema->field($item)->nullable &&
                 !$this->schema->field($item)->autoIncrement) {
-                throw new DataTableException($this->schema->getTableName(), "Field [$item] can't be null.");
+                throw new FieldValidateException(
+                    $this->schema->getTableName(),
+                    $item,
+                    "Field [$item] can't be null."
+                );
             }
         }
 
@@ -69,26 +74,36 @@ class InsertTableQueryExecutor extends TableQueryExecutor
 
         foreach ($this->inserts as $key => $value) {
             if (!$this->schema->existsField($key)) {
-                throw new DataTableException(
+                throw new FieldValidateException(
                     $this->schema->getTableName(),
+                    $key,
                     "Not exists field [$key] in table [" . $this->schema->getTableName() . "]."
                 );
             }
             $field = $this->schema->field($key);
             if ($field->autoIncrement) {
-                throw new DataTableException(
+                throw new FieldValidateException(
                     $this->schema->getTableName(),
+                    $key,
                     "Can't set auto-increment field [$key] in insert query."
                 );
             }
             if (ColumnInfo::FIELD_TYPE_ENUM === $field->type) {
                 if (false === array_search($value, $field->enums)) {
-                    throw new DataTableException(
+                    throw new FieldValidateException(
                         $this->schema->getTableName(),
+                        $key,
                         "Not exists enum value [$value] in insert query. " .
                         "The value must be one of (" . implode(',', $field->enums) . ")."
                     );
                 }
+            }
+            if (isset($field->validation) && !$field->validation->valid($value)) {
+                throw new FieldValidateException(
+                    $this->schema->getTableName(),
+                    $key,
+                    "Field value validation error. [$key]"
+                );
             }
 
             $fields[] = $key;

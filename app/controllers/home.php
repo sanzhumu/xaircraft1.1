@@ -15,11 +15,13 @@ class home_controller extends Controller
      * @param $id
      * @param $title
      * @return \Xaircraft\Web\Mvc\Action\TextResult
-     * @output_status_exception
      */
     public function index($id, $title)
     {
-        $query = \Xaircraft\DB::table('user')->forceDelete()->where('id', 1);
+        $query = \Xaircraft\DB::table('user')->update(array(
+            'name' => '6',
+            'level' => 'admin'
+        ))->where('id', 1);
 
         //$queryString = $query->getQueryString();
         $queryString = $query->execute();

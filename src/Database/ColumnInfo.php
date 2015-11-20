@@ -9,6 +9,8 @@
 namespace Xaircraft\Database;
 
 
+use Xaircraft\Database\Validation\ValidationCollection;
+
 class ColumnInfo
 {
     const FIELD_TYPE_ENUM = 'enum';
@@ -49,7 +51,10 @@ class ColumnInfo
 
     public $collationName;
 
-    public $validationPattern;
+    /**
+     * @var ValidationCollection
+     */
+    public $validation;
 
     public $enums;
 }
