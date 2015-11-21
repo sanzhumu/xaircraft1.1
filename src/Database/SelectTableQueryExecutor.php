@@ -84,7 +84,11 @@ class SelectTableQueryExecutor extends TableQueryExecutor
 
         if (!empty($result)) {
             if ($this->pluck) {
-                return $result[0][$this->selectFields[0]->name];
+                $field = $this->selectFields[0];
+                if (isset($field->alias)) {
+                    return $result[0][$field->alias];
+                }
+                return $result[0][$field->name];
             }
         }
 

@@ -18,7 +18,7 @@ class UpdatetionQueryBuilder
     public static function toString(TableSchema $schema, QueryContext $context, array $updates)
     {
         if (empty($updates)) {
-            throw new DataTableException("What do you want to update?");
+            throw new DataTableException($schema->getTableName(), "What do you want to update?");
         }
 
         if ($schema->existsField(TableSchema::RESERVED_FIELD_UPDATE_AT) &&

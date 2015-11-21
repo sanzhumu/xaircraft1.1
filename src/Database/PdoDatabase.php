@@ -8,6 +8,7 @@
 
 namespace Xaircraft\Database;
 use Xaircraft\Exception\DatabaseException;
+use Xaircraft\Nebula\Entity;
 
 
 /**
@@ -356,7 +357,7 @@ class PdoDatabase implements Database {
      */
     public function entity($query)
     {
-        // TODO: Implement entity() method.
+        return new Entity($query);
     }
 
     /**

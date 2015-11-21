@@ -13,15 +13,15 @@ class FieldInfo
 {
     public $name;
 
-    public $alasName;
+    public $alias;
 
     public $queryHandler;
 
-    public static function make($name, $alasName = null, $queryHandler = null)
+    public static function make($name, $alias = null, $queryHandler = null)
     {
         $field = new FieldInfo();
         $field->name = $name;
-        $field->alasName = $alasName;
+        $field->alias = $alias;
         $field->queryHandler = $queryHandler;
 
         return $field;

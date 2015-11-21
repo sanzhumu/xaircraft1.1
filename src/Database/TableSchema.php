@@ -62,6 +62,11 @@ class TableSchema extends Container
         return $this->canSoftDelete;
     }
 
+    public function getAutoIncrementField()
+    {
+        return $this->autoIncrementField;
+    }
+
     public function fields()
     {
         return $this->columns;

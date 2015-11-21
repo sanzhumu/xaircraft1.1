@@ -18,10 +18,7 @@ class home_controller extends Controller
      */
     public function index($id, $title)
     {
-        $query = \Xaircraft\DB::table('user')->update(array(
-            'name' => '6',
-            'level' => 'admin'
-        ))->where('id', 1);
+        $query = \Xaircraft\DB::table('user')->count();
 
         //$queryString = $query->getQueryString();
         $queryString = $query->execute();
@@ -37,5 +34,13 @@ class home_controller extends Controller
         }
 
         return $this->text('test');
+    }
+
+    public function test_entity()
+    {
+        $entity = \Xaircraft\DB::entity('user');
+
+        $entity->name = '2342sdf';
+        $entity->save();
     }
 }

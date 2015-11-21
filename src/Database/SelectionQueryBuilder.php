@@ -35,8 +35,8 @@ class SelectionQueryBuilder
                     $item = $field->name;
                 }
 
-                if (isset($field->alasName)) {
-                    $item = "$item AS $field->alasName";
+                if (isset($field->alias)) {
+                    $item = "$item AS $field->alias";
                 }
 
                 $statements[] = $item;

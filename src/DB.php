@@ -288,7 +288,7 @@ class DB {
 
     /**
      * @param $query
-     * @return \Xaircraft\ERM\Entity
+     * @return \Xaircraft\Nebula\Entity
      */
     public static function entity($query)
     {

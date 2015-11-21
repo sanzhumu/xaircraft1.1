@@ -68,6 +68,21 @@ class TableQuery implements QueryStringBuilder
         $this->context = isset($context) ? $context : DI::get(QueryContext::class);
     }
 
+    public function getTableName()
+    {
+        return $this->schema->getTableName();
+    }
+
+    public function getTableSchema()
+    {
+        return $this->schema;
+    }
+
+    public function getQueryType()
+    {
+        return $this->queryType;
+    }
+
     public function execute()
     {
         if ($this->contextLock) {
@@ -158,8 +173,16 @@ class TableQuery implements QueryStringBuilder
     public function forceDelete()
     {
         $this->queryType = self::QUERY_DELETE;
-
         $this->forceDelete = true;
+
+        return $this;
+    }
+
+    public function count()
+    {
+        $this->queryType = self::QUERY_SELECT;
+        $this->selectFields = array(FieldInfo::make('COUNT(*)', 'total_count'));
+        $this->selectQuerySettings['pluck'] = true;
 
         return $this;
     }
