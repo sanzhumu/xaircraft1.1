@@ -49,4 +49,15 @@ class home_controller extends Controller
 
         var_dump(\Xaircraft\DB::getQueryLog());
     }
+
+    public function test_model()
+    {
+        $user = User::find(43);
+        $user->password = 'asdf';
+        $user->name = '3';
+        $user->level = 'admin';
+        $user->save();
+
+        var_dump(\Xaircraft\DB::getQueryLog());
+    }
 }

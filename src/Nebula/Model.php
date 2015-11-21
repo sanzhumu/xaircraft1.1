@@ -1,0 +1,113 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: lbob
+ * Date: 2015/11/21
+ * Time: 22:08
+ */
+
+namespace Xaircraft\Nebula;
+
+
+use Xaircraft\Core\Container;
+use Xaircraft\Database\TableQuery;
+use Xaircraft\Database\TableSchema;
+use Xaircraft\DB;
+use Xaircraft\DI;
+use Xaircraft\Exception\ModelException;
+
+abstract class Model extends Container
+{
+    /**
+     * @var TableSchema
+     */
+    private $schema;
+
+    /**
+     * @var Entity
+     */
+    private $entity;
+
+    public function beforeSave()
+    {
+
+    }
+
+    public function afterSave()
+    {
+
+    }
+
+    public function beforeDelete()
+    {
+
+    }
+
+    public function afterDelete()
+    {
+
+    }
+
+    public function save()
+    {
+        $this->beforeSave();
+        $result = $this->entity->save();
+        $this->afterSave();
+
+        return $result;
+    }
+
+    private function initializeModel($table)
+    {
+        $this->schema = DB::table($table)->getTableSchema();
+        $this->entity = DB::entity($table);
+    }
+
+    private function loadData(TableQuery $query)
+    {
+        $this->entity = DB::entity($query);
+    }
+
+    /**
+     * @return Model
+     */
+    private static function model()
+    {
+        $table = get_called_class();
+        /**
+         * @var Model $model
+         */
+        $model = DI::get($table);
+        $model->initializeModel(strtolower($table));
+        return $model;
+    }
+
+    public static function find($arg)
+    {
+        $model = self::model();
+
+        if ($arg instanceof TableQuery) {
+            $query = $arg;
+        } else if (is_numeric($arg)) {
+            $query = DB::table($model->schema->getTableName())
+                ->where($model->schema->getAutoIncrementField(), $arg)
+                ->select();
+        } else {
+            throw new ModelException("What do you want to find? ");
+        }
+
+        $model->loadData($query);
+
+        return $model;
+    }
+
+    public function __get($field)
+    {
+        return $this->entity->$field;
+    }
+
+    public function __set($field, $value)
+    {
+        $this->entity->$field = $value;
+    }
+}

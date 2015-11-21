@@ -34,7 +34,7 @@ class AutoLoader extends AppModule
         $paths[] = '/job';
         $paths[] = '/command';
         $paths[] = '/module';
-        $paths[] = '/model';
+        $paths[] = '/models';
         $paths[] = '/test';
 
         foreach ($paths as $item) {
