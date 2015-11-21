@@ -12,6 +12,7 @@ namespace Xaircraft\Database;
 use Xaircraft\App;
 use Xaircraft\Core\Container;
 use Xaircraft\Core\IO\File;
+use Xaircraft\Database\Data\FieldType;
 use Xaircraft\Database\Validation\ValidateFactory;
 use Xaircraft\Database\Validation\ValidationCollection;
 use Xaircraft\DB;
@@ -135,6 +136,7 @@ class TableSchema extends Container
         $column->comment = $source['Comment'];
         $column->collationName = $source['Collation'];
         $column->validation = ValidateFactory::makeCollections($column->comment);
+        $column->fieldType = FieldType::make($column->type, $column->name);
 
         if (self::SOFT_DELETE_FIELD === $column->name) {
             $this->canSoftDelete = true;

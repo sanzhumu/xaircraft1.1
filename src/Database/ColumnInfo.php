@@ -9,6 +9,7 @@
 namespace Xaircraft\Database;
 
 
+use Xaircraft\Database\Data\FieldType;
 use Xaircraft\Database\Validation\ValidationCollection;
 
 class ColumnInfo
@@ -57,4 +58,9 @@ class ColumnInfo
     public $validation;
 
     public $enums;
+
+    /**
+     * @var FieldType
+     */
+    public $fieldType;
 }

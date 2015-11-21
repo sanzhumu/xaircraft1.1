@@ -13,6 +13,7 @@ use Xaircraft\Database\Condition\WhereBetweenConditionBuilder;
 use Xaircraft\Database\Condition\WhereConditionBuilder;
 use Xaircraft\Database\Condition\WhereExistsConditionBuilder;
 use Xaircraft\Database\Condition\WhereInConditionBuilder;
+use Xaircraft\Database\Data\FieldFormatInfo;
 use Xaircraft\DI;
 use Xaircraft\Exception\DataTableException;
 use Xaircraft\Exception\QueryException;
@@ -229,6 +230,15 @@ class TableQuery implements QueryStringBuilder
             }
         }
         $this->selectFields = $fields;
+
+        return $this;
+    }
+
+    public function format(array $formats)
+    {
+        $this->queryType = self::QUERY_SELECT;
+
+        $this->selectQuerySettings['formats'] = $formats;
 
         return $this;
     }

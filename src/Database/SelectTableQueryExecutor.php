@@ -10,6 +10,11 @@ namespace Xaircraft\Database;
 
 
 use Xaircraft\Database\Condition\WhereConditionBuilder;
+use Xaircraft\Database\Data\FieldFormatInfo;
+use Xaircraft\Database\Data\FieldType;
+use Xaircraft\Database\Data\NumberFieldType;
+use Xaircraft\Database\Data\TextFieldType;
+use Xaircraft\Database\Data\TimestampFieldType;
 use Xaircraft\DB;
 
 class SelectTableQueryExecutor extends TableQueryExecutor
@@ -44,6 +49,8 @@ class SelectTableQueryExecutor extends TableQueryExecutor
     private $pluck;
 
     private $limit;
+
+    private $formats;
 
     public function __construct(
         TableSchema $schema,
@@ -82,17 +89,65 @@ class SelectTableQueryExecutor extends TableQueryExecutor
     {
         $result = DB::select($query, $this->context->getParams());
 
-        if (!empty($result)) {
+        if (!empty($this->formats)) {
+            $formatResult = array();
+            foreach ($result as $row) {
+                $item = array();
+                foreach ($row as $key => $value) {
+                    $item[$key] = array_key_exists($key, $this->formats) ?
+                        $this->formatConvert($row, $value, $this->formats[$key]) : $value;
+                }
+                $formatResult[] = $item;
+            }
+        } else {
+            $formatResult = $result;
+        }
+
+        if (!empty($formatResult)) {
             if ($this->pluck) {
                 $field = $this->selectFields[0];
                 if (isset($field->alias)) {
-                    return $result[0][$field->alias];
+                    return $formatResult[0][$field->alias];
                 }
-                return $result[0][$field->name];
+                return $formatResult[0][$field->name];
             }
         }
 
-        return $result;
+        return $formatResult;
+    }
+
+    private function getFieldValue($name, $value)
+    {
+        if (isset($name)) {
+            $field = $this->schema->field($name);
+            if (isset($field) && isset($field->fieldType)) {
+                return $field->fieldType->convert($value);
+            }
+        }
+
+        return $value;
+    }
+
+    private function formatConvert($row, $value, $format)
+    {
+        if (is_callable($format)) {
+            $result = call_user_func($format, $value, $row);
+            return $result;
+        } else {
+            switch ($format) {
+                case FieldType::TEXT:
+                    $convert = new TextFieldType();
+                    return $convert->convert($value);
+                case FieldType::NUMBER:
+                    $convert = new NumberFieldType();
+                    return $convert->convert($value);
+                case FieldType::DATE:
+                    $convert = new TimestampFieldType();
+                    return $convert->convert($value);
+                default:
+                    return $value;
+            }
+        }
     }
 
     public function toQueryString()
@@ -151,6 +206,7 @@ class SelectTableQueryExecutor extends TableQueryExecutor
             $this->takeCount = array_key_exists('take_count', $settings) ? $settings['take_count'] : null;
             $this->skipOffset = array_key_exists('skip_offset', $settings) ? $settings['skip_offset'] : null;
             $this->pluck = array_key_exists('pluck', $settings) ? $settings['pluck'] : null;
+            $this->formats = array_key_exists('formats', $settings) ? $settings['formats'] : null;
 
             if (isset($this->takeCount) || isset($this->skipOffset)) {
                 $this->limit = true;

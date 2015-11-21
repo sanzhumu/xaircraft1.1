@@ -89,6 +89,11 @@ class Entity
         return $this->fields;
     }
 
+    public function isExists()
+    {
+        return $this->exists;
+    }
+
     private function parseUpdateFields($fields)
     {
         if (!empty($fields)) {

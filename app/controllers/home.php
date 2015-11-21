@@ -18,7 +18,10 @@ class home_controller extends Controller
      */
     public function index($id, $title)
     {
-        $query = \Xaircraft\DB::table('user')->count();
+        $query = \Xaircraft\DB::table('user')->select()->format(array(
+            'create_at' => \Xaircraft\Database\Data\FieldType::DATE,
+            'id' => \Xaircraft\Database\Data\FieldType::NUMBER
+        ));
 
         //$queryString = $query->getQueryString();
         $queryString = $query->execute();
@@ -26,12 +29,6 @@ class home_controller extends Controller
         var_dump($queryString);
 
         var_dump(\Xaircraft\DB::getQueryLog());
-
-        $query = \Xaircraft\DB::query('SHOW FULL COLUMNS FROM user');
-
-        foreach ($query as $row) {
-            var_dump($row);
-        }
 
         return $this->text('test');
     }
