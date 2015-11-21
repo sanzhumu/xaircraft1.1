@@ -61,6 +61,8 @@ class TableQuery implements QueryStringBuilder
 
     private $forceDelete = false;
 
+    private $insertGetId = false;
+
     public function __construct($table, QueryContext $context = null)
     {
         $this->schema = new TableSchema($table);
@@ -100,7 +102,8 @@ class TableQuery implements QueryStringBuilder
         if (isset($tableQueryExecutor)) {
             $result = $tableQueryExecutor->execute();
         }
-        unset($this->context);
+
+        $this->context = DI::get(QueryContext::class);
         return $result;
     }
 
@@ -138,7 +141,8 @@ class TableQuery implements QueryStringBuilder
                 return TableQueryExecutor::makeInsert(
                     $this->schema,
                     $this->context,
-                    $this->inserts
+                    $this->inserts,
+                    $this->insertGetId
                 );
         }
 
@@ -159,6 +163,16 @@ class TableQuery implements QueryStringBuilder
         $this->queryType = self::QUERY_INSERT;
 
         $this->inserts = $inserts;
+
+        return $this;
+    }
+
+    public function insertGetId(array $inserts)
+    {
+        $this->queryType = self::QUERY_INSERT;
+
+        $this->inserts = $inserts;
+        $this->insertGetId = true;
 
         return $this;
     }

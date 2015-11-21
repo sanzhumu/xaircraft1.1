@@ -38,9 +38,18 @@ class home_controller extends Controller
 
     public function test_entity()
     {
-        $entity = \Xaircraft\DB::entity('user');
+        $entity = \Xaircraft\DB::entity(\Xaircraft\DB::table('user')->select()->where('id', 43));
 
-        $entity->name = '2342sdf';
+        $entity->name = '3';
+        $entity->password = 'asdf';
+        $entity->level = 'admin';
         $entity->save();
+
+        $entity->password = 'asdf';
+        $entity->save();
+
+        var_dump($entity->fields());
+
+        var_dump(\Xaircraft\DB::getQueryLog());
     }
 }

@@ -24,6 +24,7 @@ class InsertTableQueryExecutor extends TableQueryExecutor
      */
     private $context;
     private $inserts;
+    private $insertGetId;
 
     /**
      * InsertTableQueryExecutor constructor.
@@ -31,17 +32,26 @@ class InsertTableQueryExecutor extends TableQueryExecutor
      * @param $context
      * @param $inserts
      */
-    public function __construct(TableSchema $schema, QueryContext $context, array $inserts)
+    public function __construct(TableSchema $schema, QueryContext $context, array $inserts, $insertGetId)
     {
         $this->schema = $schema;
         $this->context = $context;
         $this->inserts = $inserts;
+        $this->insertGetId = $insertGetId;
     }
 
     public function execute()
     {
         $query = $this->toQueryString();
 
+        if (true === $this->insertGetId) {
+            if (true === DB::insert($query, $this->context->getParams())) {
+                return DB::table($this->schema->getTableName())
+                    ->orderBy($this->schema->getAutoIncrementField(), 'DESC')
+                    ->pluck($this->schema->getAutoIncrementField())
+                    ->execute();
+            }
+        }
         return DB::insert($query, $this->context->getParams());
     }
 

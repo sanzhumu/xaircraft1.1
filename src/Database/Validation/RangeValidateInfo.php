@@ -10,6 +10,7 @@ namespace Xaircraft\Database\Validation;
 
 
 use Xaircraft\Exception\DataTableException;
+use Xaircraft\Exception\FieldValidateException;
 use Xaircraft\Exception\QueryException;
 
 class RangeValidateInfo implements Validate
@@ -40,6 +41,10 @@ class RangeValidateInfo implements Validate
 
     public function valid($value)
     {
+        if (!is_numeric($value)) {
+            return false;
+        }
+
         $expression = $value;
         $expression .= $this->includeMin ? ">=" : ">";
         $expression .= $this->min;

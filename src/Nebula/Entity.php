@@ -9,7 +9,6 @@
 namespace Xaircraft\Nebula;
 
 
-use Xaircraft\Core\Container;
 use Xaircraft\Database\TableQuery;
 use Xaircraft\DB;
 use Xaircraft\Exception\EntityException;
@@ -46,27 +45,48 @@ class Entity
         }
 
         if ($arg instanceof TableQuery) {
-            if (TableQuery::QUERY_SELECT !== $this->query->getQueryType()) {
+            if (TableQuery::QUERY_SELECT !== $arg->getQueryType()) {
                 throw new EntityException("Must be selection table query.");
             }
 
             $this->query = $arg;
-            $this->load();
         }
 
         $this->schema = $this->query->getTableSchema();
         $this->autoIncrementField = $this->schema->getAutoIncrementField();
+
+        $this->load();
     }
 
     public function save(array $fields = null)
     {
         $this->parseUpdateFields($fields);
 
-        if ($this->exists) {
-
-        } else {
-
+        if (empty($this->updates)) {
+            return true;
         }
+
+        if ($this->exists) {
+            $result = DB::table($this->schema->getTableName())
+                ->where(
+                    $this->schema->getAutoIncrementField(),
+                    $this->fields[$this->schema->getAutoIncrementField()]
+                )->update($this->updates)->execute();
+            $this->updates = array();
+            return $result;
+        } else {
+            $id = DB::table($this->schema->getTableName())->insertGetId($this->updates)->execute();
+            if ($id > 0) {
+                $this->setField($this->schema->getAutoIncrementField(), $id);
+                $this->updates = array();
+            }
+            return $id;
+        }
+    }
+
+    public function fields()
+    {
+        return $this->fields;
     }
 
     private function parseUpdateFields($fields)
@@ -87,11 +107,17 @@ class Entity
         if ($value != $this->shadows[$field]) {
             if ($this->autoIncrementField === $field) {
                 if (!$this->exists) {
+                    if (DB::table($this->schema->getTableName())->where($field, $value)->count()->execute() > 0) {
+                        $this->exists = true;
+                    }
                     $this->query = DB::table($this->schema->getTableName())->where($field, $value);
                 }
             }
             $this->fields[$field] = $value;
-            $this->updates[$field] = $value;
+            if ($this->autoIncrementField !== $field) {
+                $this->updates[$field] = $value;
+            }
+            $this->shadows[$field] = $value;
         }
     }
 
@@ -100,7 +126,7 @@ class Entity
         if (isset($this->query)) {
             $result = $this->query->execute();
             if (!empty($result)) {
-                if (count($result) > 0) {
+                if (count($result) > 1) {
                     throw new EntityException("More than one row in table query.");
                 }
                 $row = $result[0];
@@ -112,6 +138,9 @@ class Entity
                 $this->exists = true;
             } else {
                 $this->exists = false;
+                foreach ($this->schema->columns() as $field) {
+                    $this->shadows[$field] = null;
+                }
             }
         }
     }

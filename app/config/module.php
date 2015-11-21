@@ -6,5 +6,5 @@
  * Time: 9:49
  */
 
-\Xaircraft\App::module(WhoopsModule::class);
+//\Xaircraft\App::module(WhoopsModule::class);
 \Xaircraft\App::module(UbenchModule::class);
