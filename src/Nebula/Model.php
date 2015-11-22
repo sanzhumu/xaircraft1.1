@@ -29,17 +29,29 @@ abstract class Model extends Container
      */
     private $entity;
 
-    public function beforeSave() {}
+    public function beforeSave()
+    {
+    }
 
-    public function afterSave() {}
+    public function afterSave()
+    {
+    }
 
-    public function beforeDelete() {}
+    public function beforeDelete()
+    {
+    }
 
-    public function afterDelete($fields) {}
+    public function afterDelete($fields)
+    {
+    }
 
-    public function beforeForceDelete() {}
+    public function beforeForceDelete()
+    {
+    }
 
-    public function afterForceDelete($fields) {}
+    public function afterForceDelete($fields)
+    {
+    }
 
     public function isExists()
     {
@@ -53,33 +65,39 @@ abstract class Model extends Container
 
     public function save()
     {
-        $this->beforeSave();
-        $result = $this->entity->save();
-        $this->afterSave();
+        return DB::transaction(function () {
+            $this->beforeSave();
+            $result = $this->entity->save();
+            $this->afterSave();
 
-        return $result;
+            return $result;
+        });
     }
 
     public function delete()
     {
-        $this->beforeDelete();
-        $key = $this->schema->getAutoIncrementField();
-        $result = DB::table($this->schema->getTableName())
-            ->where($key, $this->entity->$key)
-            ->delete()->execute();
-        $this->afterDelete($this->fields());
-        return $result;
+        return DB::transaction(function () {
+            $this->beforeDelete();
+            $key = $this->schema->getAutoIncrementField();
+            $result = DB::table($this->schema->getTableName())
+                ->where($key, $this->entity->$key)
+                ->delete()->execute();
+            $this->afterDelete($this->fields());
+            return $result;
+        });
     }
 
     public function forceDelete()
     {
-        $this->beforeForceDelete();
-        $key = $this->schema->getAutoIncrementField();
-        $result = DB::table($this->schema->getTableName())
-            ->where($key, $this->entity->$key)
-            ->forceDelete()->execute();
-        $this->afterForceDelete($this->fields());
-        return $result;
+        return DB::transaction(function () {
+            $this->beforeForceDelete();
+            $key = $this->schema->getAutoIncrementField();
+            $result = DB::table($this->schema->getTableName())
+                ->where($key, $this->entity->$key)
+                ->forceDelete()->execute();
+            $this->afterForceDelete($this->fields());
+            return $result;
+        });
     }
 
     private function initializeModel($table)
