@@ -11,11 +11,26 @@ class User extends Model
 {
     public function beforeSave()
     {
-        var_dump($this->id);
+
     }
 
     public function afterSave()
     {
-        var_dump($this->id);
+
+    }
+
+    public function beforeDelete()
+    {
+
+    }
+
+    public function afterDelete($fields)
+    {
+
+    }
+
+    public function afterForceDelete($fields)
+    {
+        var_dump($fields);
     }
 }

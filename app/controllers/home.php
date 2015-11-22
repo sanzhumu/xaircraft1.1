@@ -1,4 +1,5 @@
 <?php
+use Xaircraft\Core\Strings;
 use Xaircraft\Database\TableSchema;
 use Xaircraft\Web\Mvc\Controller;
 use Xaircraft\Web\Mvc\OutputStatusException;
@@ -52,6 +53,7 @@ class home_controller extends Controller
 
     public function test_model()
     {
+        var_dump(Strings::camelToSnake("UserProjectUserNameJake"));
         $user = User::find(43);
         $user->password = 'asdf';
         $user->name = '3';
