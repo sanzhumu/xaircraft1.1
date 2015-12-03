@@ -1,8 +1,8 @@
 <?php
 use Xaircraft\Core\Strings;
-use Xaircraft\Database\TableSchema;
+use Xaircraft\Database\Data\FieldType;
+use Xaircraft\DB;
 use Xaircraft\Web\Mvc\Controller;
-use Xaircraft\Web\Mvc\OutputStatusException;
 
 /**
  * Created by PhpStorm.
@@ -20,8 +20,8 @@ class home_controller extends Controller
     public function index($id, $title)
     {
         $query = \Xaircraft\DB::table('user')->select()->format(array(
-            'create_at' => \Xaircraft\Database\Data\FieldType::DATE,
-            'id' => \Xaircraft\Database\Data\FieldType::NUMBER
+            'create_at' => FieldType::DATE,
+            'id' => FieldType::NUMBER
         ));
 
         //$queryString = $query->getQueryString();
@@ -29,7 +29,7 @@ class home_controller extends Controller
 
         var_dump($queryString);
 
-        var_dump(\Xaircraft\DB::getQueryLog());
+        var_dump(DB::getQueryLog());
 
         return $this->text('test');
     }
@@ -40,7 +40,6 @@ class home_controller extends Controller
 
         $entity->name = '3';
         $entity->password = 'asdf';
-        $entity->level = 'admin';
         $entity->save();
 
         $entity->password = 'asdf';
@@ -54,7 +53,7 @@ class home_controller extends Controller
     public function test_model()
     {
         var_dump(Strings::camelToSnake("UserProjectUserNameJake"));
-        $user = User::find(43);
+        $user = Account\User::find(43);
         $user->password = 'asdf';
         $user->name = '3';
         $user->level = 'admin';

@@ -29,6 +29,8 @@ abstract class Model extends Container
      */
     private $entity;
 
+    protected $table;
+
     public function beforeSave()
     {
     }
@@ -121,7 +123,16 @@ abstract class Model extends Container
          * @var Model $model
          */
         $model = DI::get($table);
-        $model->initializeModel(Strings::camelToSnake($table));
+
+        if (isset($model->table)) {
+            $table = $model->table;
+        } else {
+            $statements = explode('\\', $table);
+            $table = $statements[count($statements) - 1];
+            $table = Strings::camelToSnake($table);
+        }
+
+        $model->initializeModel($table);
         return $model;
     }
 
