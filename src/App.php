@@ -9,6 +9,7 @@
 
 namespace Xaircraft;
 
+use Xaircraft\Console\ConsoleLoader;
 use Xaircraft\Core\Container;
 use Xaircraft\Inject\InjectModule;
 use Xaircraft\Module\AppModuleLoader;
@@ -161,6 +162,7 @@ class App extends Container
         self::module(InjectModule::class);
         self::module(AppModuleLoader::class);
         self::module(WebAppModule::class);
+        self::module(ConsoleLoader::class);
     }
 
     private function getEnvironment($key)
