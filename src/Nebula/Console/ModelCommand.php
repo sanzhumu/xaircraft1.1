@@ -19,9 +19,9 @@ class ModelCommand extends Command
     {
         Console::line('Command [model] start:');
 
-        $command = ModelCommandExecutor::make($this, $this->args);
+        $command = ModelCommandExecutor::make($this->args);
         if (!isset($command)) {
-            Console::error('Please input first argument: [--create] or [--update]');
+            Console::error('Invalid arguments.');
             return;
         }
         $command->handle();

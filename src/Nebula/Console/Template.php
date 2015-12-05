@@ -15,14 +15,13 @@ class Template
 {
     public static function generateModel($table, $class, array $properties, $namespace = null)
     {
-        $content = str_replace('{{property}}', self::generateProperties($properties), self::getModelTemplate());
+        $content = str_replace('{{header}}', self::generateHeader($properties), self::getModelTemplate());
         $namespace = isset($namespace) ? "namespace $namespace;" : "";
         $content = str_replace('{{namespace}}', $namespace, $content);
         $content = str_replace('{{model}}', $class, $content);
-        $content = str_replace('{{create_at}}', date("Y-m-d H:i:s", time()), $content);
         $content = str_replace('{{table_name}}',
             ($table === Strings::camelToSnake($class) ? "" : '
-private $table = ' . $table . ';
+    protected $table = "' . $table . '";
 '),
             $content);
         return $content;
@@ -41,15 +40,27 @@ private $table = ' . $table . ';
 ', $statements);
     }
 
+    public static function generateHeader(array $properties)
+    {
+        $content = str_replace('{{property}}', self::generateProperties($properties), self::getModelHeaderTemplate());
+        $content = str_replace('{{create_at}}', date("Y-m-d H:i:s", time()), $content);
+        return $content;
+    }
+
+    private static function getModelHeaderTemplate()
+    {
+        return '/**
+ * Date: {{create_at}}
+{{property}}
+ */';
+    }
+
     private static function getModelTemplate()
     {
         return '<?php {{namespace}}
 use Xaircraft\Nebula\Model;
 
-/**
- * Date: {{create_at}}
-{{property}}
- */
+{{header}}
 class {{model}} extends Model
 {{{table_name}}
     public function beforeSave()

@@ -10,42 +10,33 @@ namespace Xaircraft\Nebula\Console;
 
 
 use Xaircraft\App;
-use Xaircraft\Console\Console;
-use Xaircraft\Core\IO\Directory;
 use Xaircraft\Exception\ConsoleException;
 
 abstract class ModelCommandExecutor
 {
     protected $args;
-    /**
-     * @var ModelCommand
-     */
-    protected $command;
 
     private $path;
 
-    public function __construct(ModelCommand $command, array $args)
+    public function __construct(array $args)
     {
         $this->args = $args;
-        $this->command = $command;
         $this->path = $this->getModelPath();
     }
 
     public abstract function handle();
 
-    public static function make(ModelCommand $command, array $args)
+    public static function make(array $args)
     {
-        if (!isset($args[0])) {
-            return null;
+        if (isset($args[0])) {
+            switch (strtolower($args[0])) {
+                case '--all':
+                    return null;
+                default:
+                    return null;
+            }
         }
-        switch (strtolower($args[0])) {
-            case '--create':
-                return new CreateModel($command, $args);
-            case '--update':
-                return new UpdateModel($command, $args);
-            default:
-                return null;
-        }
+        return new SingleModelGenerator($args);
     }
 
     public function path($class, $namespace = null)
@@ -72,7 +63,7 @@ abstract class ModelCommandExecutor
 
         if (!isset($path)) {
             $path = App::path('app');
-            if (!isset($path)) {
+            if (isset($path)) {
                 $path = "$path/models";
             } else {
                 throw new ConsoleException("Can't find app path.");
