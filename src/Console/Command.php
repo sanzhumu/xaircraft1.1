@@ -9,7 +9,6 @@
 namespace Xaircraft\Console;
 
 
-use Xaircraft\Core\Strings;
 use Xaircraft\DI;
 use Xaircraft\Exception\ConsoleException;
 
@@ -45,7 +44,7 @@ abstract class Command
     public static function make($argc, array $argv)
     {
         if ($argc > 1) {
-            $name = $argv[1];
+            $cmd = $name = $argv[1];
             if (array_key_exists($name, self::$commands)) {
                 $name = self::$commands[$name];
             } else {
@@ -53,9 +52,13 @@ abstract class Command
             }
             unset($argv[0]);
             unset($argv[1]);
-            $command = DI::get($name, array('args' => self::parseArgs($argv)));
-            if ($command instanceof Command) {
-                return $command;
+            try {
+                $command = DI::get($name, array('args' => self::parseArgs($argv)));
+                if ($command instanceof Command) {
+                    return $command;
+                }
+            } catch (\Exception $ex) {
+                throw new ConsoleException("Command [$cmd] undefined.");
             }
             throw new ConsoleException("Class [$name] is not a Command.");
         }

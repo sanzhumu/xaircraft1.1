@@ -10,6 +10,7 @@ namespace Xaircraft\Configuration;
 
 
 use Xaircraft\App;
+use Xaircraft\Core\IO\File;
 
 class Settings
 {
@@ -19,6 +20,21 @@ class Settings
 
         if (isset($path) && is_readable($path)) {
             return require_once $path;
+        }
+        return null;
+    }
+
+    public static function save($path, $content)
+    {
+        if (isset($path)) {
+            File::writeText($path, $content);
+        }
+    }
+
+    public static function get($path)
+    {
+        if (isset($path) && is_readable($path)) {
+            return File::readText($path);
         }
         return null;
     }

@@ -19,6 +19,7 @@ use Xaircraft\Module\AppModuleState;
 use Xaircraft\Core\Runtime;
 use Xaircraft\Exception\AppModuleException;
 use Xaircraft\Module\AutoLoader;
+use Xaircraft\Module\EnvironmentPathModule;
 use Xaircraft\Web\WebAppModule;
 
 class App extends Container
@@ -100,9 +101,14 @@ class App extends Container
         return self::$app;
     }
 
-    public static function path($key)
+    public static function path($key, $value = null)
     {
-        return self::instance()->getPath($key);
+        $path = self::instance()->getPath($key);
+        if (!isset($path) && isset($value)) {
+            $path = $value;
+            self::instance()->paths[$key] = $value;
+        }
+        return $path;
     }
 
     public static function environment($key, $value = null)
@@ -166,6 +172,7 @@ class App extends Container
         self::module(AutoLoader::class);
         self::module(InjectModule::class);
         self::module(AppModuleLoader::class);
+        self::module(EnvironmentPathModule::class);
         self::module(WebAppModule::class);
         self::module(ConsoleLoader::class);
     }
@@ -206,7 +213,6 @@ class App extends Container
             Console::error($ex->getMessage());
             return;
         }
-        var_dump($ex);
         throw $ex;
     }
 }

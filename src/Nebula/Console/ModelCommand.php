@@ -17,14 +17,11 @@ class ModelCommand extends Command
 
     public function handle()
     {
-        Console::line('Command [model] start:');
-
         $command = ModelCommandExecutor::make($this->args);
         if (!isset($command)) {
             Console::error('Invalid arguments.');
             return;
         }
         $command->handle();
-        Console::line('Command [model] finished.');
     }
 }

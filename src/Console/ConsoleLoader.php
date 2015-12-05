@@ -10,6 +10,9 @@ namespace Xaircraft\Console;
 
 
 use Xaircraft\App;
+use Xaircraft\Configuration\Settings;
+use Xaircraft\Database\Migration\MigrateCommand;
+use Xaircraft\Database\Migration\MigrationCommand;
 use Xaircraft\Exception\ConsoleException;
 use Xaircraft\Globals;
 use Xaircraft\Module\AppModule;
@@ -28,6 +31,10 @@ class ConsoleLoader extends AppModule
     public function appStart()
     {
         Command::bind('model', ModelCommand::class);
+        Command::bind('migrate', MigrateCommand::class);
+        Command::bind('migration', MigrationCommand::class);
+
+        Settings::load('commands');
     }
 
     public function handle()
@@ -39,7 +46,11 @@ class ConsoleLoader extends AppModule
              * @var $command Command
              */
             if (isset($command)) {
+                Console::line("Start:");
+                Console::line("----------------------------------------");
                 $command->handle();
+                Console::line("----------------------------------------");
+                Console::line("End.");
             }
         } catch (\Exception $ex) {
             throw new ConsoleException($ex->getMessage(), $ex->getCode(), $ex);

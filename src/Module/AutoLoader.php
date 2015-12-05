@@ -36,6 +36,7 @@ class AutoLoader extends AppModule
         $paths[] = '/module';
         $paths[] = '/models';
         $paths[] = '/test';
+        $paths[] = '/database/migration';
 
         foreach ($paths as $item) {
             $this->classLoader->addPath(App::path('app').$item);
