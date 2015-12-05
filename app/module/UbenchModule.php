@@ -1,4 +1,6 @@
 <?php
+use Xaircraft\App;
+use Xaircraft\Globals;
 
 /**
  * Created by PhpStorm.
@@ -8,6 +10,14 @@
  */
 class UbenchModule extends \Xaircraft\Module\AppModule
 {
+    public function enable()
+    {
+        if (Globals::RUNTIME_MODE_APACHE2HANDLER !== App::environment(Globals::ENV_RUNTIME_MODE)) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * @var Ubench
      */

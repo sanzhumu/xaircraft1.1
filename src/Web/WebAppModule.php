@@ -21,6 +21,14 @@ use Xaircraft\Web\Mvc\Controller;
 
 class WebAppModule extends AppModule
 {
+    public function enable()
+    {
+        if (Globals::RUNTIME_MODE_APACHE2HANDLER !== App::environment(Globals::ENV_RUNTIME_MODE)) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * @var \Xaircraft\Router\Router
      */
@@ -28,10 +36,6 @@ class WebAppModule extends AppModule
 
     public function handle()
     {
-        if (Globals::RUNTIME_MODE_APACHE2HANDLER !== App::environment(Globals::ENV_RUNTIME_MODE)) {
-            return;
-        }
-
         $this->router = Router::getInstance(App::path('routes'), App::path('filter'));
 
         $defaultRouterToken = App::environment(Globals::ROUTER_DEFAULT_TOKENS);

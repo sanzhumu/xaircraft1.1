@@ -9,8 +9,10 @@
 
 namespace Xaircraft;
 
+use Xaircraft\Console\Console;
 use Xaircraft\Console\ConsoleLoader;
 use Xaircraft\Core\Container;
+use Xaircraft\Exception\ConsoleException;
 use Xaircraft\Inject\InjectModule;
 use Xaircraft\Module\AppModuleLoader;
 use Xaircraft\Module\AppModuleState;
@@ -67,7 +69,10 @@ class App extends Container
              * @var $module \Xaircraft\Module\AppModule
              */
             $module = DI::get($this->currentModule);
-            call_user_func(array($module, $action));
+            if (true === $module->enable()) {
+                call_user_func(array($module, $action));
+            }
+
             $state = $module->state();
             if ($state->stop) {
                 break;
@@ -197,6 +202,10 @@ class App extends Container
 
     private function onError(AppModuleException $ex)
     {
+        if ($ex->getPrevious() instanceof ConsoleException) {
+            Console::error($ex->getMessage());
+            return;
+        }
         var_dump($ex);
         throw $ex;
     }

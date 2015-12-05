@@ -32,6 +32,11 @@ abstract class AppModule
 
     public abstract function appEnd();
 
+    public function enable()
+    {
+        return true;
+    }
+
     public function state()
     {
         return $this->state;

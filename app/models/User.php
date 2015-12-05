@@ -6,12 +6,13 @@ use Xaircraft\Nebula\Model;
  * User: lbob
  * Date: 2015/11/21
  * Time: 22:12
+ * @property int id
  */
 class User extends Model
 {
     public function beforeSave()
     {
-
+        $this->id = 0;
     }
 
     public function afterSave()

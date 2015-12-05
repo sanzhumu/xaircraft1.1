@@ -17,4 +17,5 @@ return array(
     'config'    => __DIR__ . '/../app/config',
     'cache'     => __DIR__ . '/../app/cache',
     'schema'    => __DIR__ . '/../app/cache/schema',
+    'models'    => __DIR__ . '/../app/models'
 );

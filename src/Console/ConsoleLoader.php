@@ -10,25 +10,40 @@ namespace Xaircraft\Console;
 
 
 use Xaircraft\App;
+use Xaircraft\Exception\ConsoleException;
 use Xaircraft\Globals;
 use Xaircraft\Module\AppModule;
+use Xaircraft\Nebula\Console\ModelCommand;
 
 class ConsoleLoader extends AppModule
 {
+    public function enable()
+    {
+        if (Globals::RUNTIME_MODE_CLI !== App::environment(Globals::ENV_RUNTIME_MODE)) {
+            return false;
+        }
+        return true;
+    }
 
     public function appStart()
     {
-        // TODO: Implement appStart() method.
+        Command::bind('model', ModelCommand::class);
     }
 
     public function handle()
     {
-        if (Globals::RUNTIME_MODE_CLI !== App::environment(Globals::ENV_RUNTIME_MODE)) {
-            return;
-        }
+        $command = Command::make($_SERVER['argc'], $_SERVER['argv']);
 
-        var_dump($_SERVER['argc']);
-        var_dump($_SERVER['argv']);
+        try {
+            /**
+             * @var $command Command
+             */
+            if (isset($command)) {
+                $command->handle();
+            }
+        } catch (\Exception $ex) {
+            throw new ConsoleException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 
     public function appEnd()
