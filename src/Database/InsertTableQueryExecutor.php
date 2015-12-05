@@ -65,6 +65,10 @@ class InsertTableQueryExecutor extends TableQueryExecutor
             !array_key_exists(TableSchema::RESERVED_FIELD_CREATE_AT, $this->inserts)) {
             $this->inserts[TableSchema::RESERVED_FIELD_CREATE_AT] = time();
         }
+        if ($this->schema->existsField(TableSchema::RESERVED_FIELD_UPDATE_AT) &&
+            !array_key_exists(TableSchema::RESERVED_FIELD_UPDATE_AT, $this->inserts)) {
+            $this->inserts[TableSchema::RESERVED_FIELD_UPDATE_AT] = time();
+        }
 
         $columns = $this->schema->columns();
         foreach ($columns as $item) {

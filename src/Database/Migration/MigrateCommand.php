@@ -68,9 +68,12 @@ class MigrateCommand extends Command
             return;
         }
 
-        $migration->up();
-        $this->recordHistory($name);
-        Console::line("migrate $name finished.");
+        if ($migration->up()) {
+            $this->recordHistory($name);
+            Console::line("migrate $name finished.");
+        } else {
+            Console::line("migrate $name failure.");
+        }
     }
 
     private function recordHistory($name)
