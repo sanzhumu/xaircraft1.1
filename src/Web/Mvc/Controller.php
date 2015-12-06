@@ -19,6 +19,10 @@ use Xaircraft\Web\Mvc\Action\StatusResult;
 use Xaircraft\Web\Mvc\Action\TextResult;
 use Xaircraft\Web\Mvc\Action\ViewResult;
 
+/**
+ * Class Controller
+ * @package Xaircraft\Web\Mvc
+ */
 abstract class Controller
 {
     /**
@@ -73,7 +77,6 @@ abstract class Controller
         }
         if (!$controller->isEnded) {
             $actionInfo = new ActionInfo($controller, $action);
-
             try {
                 $actionResult = $actionInfo->invoke($controller->req->params());
                 return $actionResult;

@@ -1,4 +1,5 @@
 <?php
+use Xaircraft\Authentication\Contract\CurrentUser;
 use Xaircraft\Core\Strings;
 use Xaircraft\Database\Data\FieldType;
 use Xaircraft\DB;
@@ -9,6 +10,7 @@ use Xaircraft\Web\Mvc\Controller;
  * User: lbob
  * Date: 2015/11/12
  * Time: 16:55
+ * @auth LoginAuthorize
  */
 class home_controller extends Controller
 {
@@ -54,11 +56,28 @@ class home_controller extends Controller
     {
         var_dump(Strings::camelToSnake("UserProjectUserNameJake"));
         $user = Account\User::find(43);
+        /** @var Account\User $user */
         $user->password = 'asdf';
         $user->name = '3';
         $user->level = 'admin';
         $user->save();
 
         var_dump(\Xaircraft\DB::getQueryLog());
+    }
+
+    public function test_auth()
+    {
+        $user = CurrentUser::create(1, 'test', 'test2', 'a@a.xn', array());
+        \Xaircraft\Web\Session::put('test', $user);
+
+        var_dump(\Xaircraft\Web\Session::get('test'));
+    }
+
+    /**
+     * @output_status_exception
+     */
+    public function test_ref()
+    {
+        var_dump('hello');
     }
 }

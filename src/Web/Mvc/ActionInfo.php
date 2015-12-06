@@ -9,6 +9,9 @@
 namespace Xaircraft\Web\Mvc;
 
 
+use Xaircraft\DI;
+use Xaircraft\Exception\HttpAuthenticationException;
+
 class ActionInfo
 {
     /**
@@ -42,6 +45,7 @@ class ActionInfo
 
     public function invoke($params)
     {
+        AuthorizeHelper::authorizeController($this->controller);
         $args = array();
         foreach ($this->parameters as $parameter) {
             if (array_key_exists($parameter->name, $params)) {
@@ -63,5 +67,6 @@ class ActionInfo
         if (preg_match('#@output_status_exception#i', $this->docComment) > 0) {
             $this->outputStatusException = true;
         }
+        AuthorizeHelper::authorize($this->docComment);
     }
 }

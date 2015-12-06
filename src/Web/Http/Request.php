@@ -43,4 +43,31 @@ class Request
         }
         return $params;
     }
+
+    public function post($key, $htmlFilter = true)
+    {
+        if (isset($key) && isset($_POST[$key])) {
+            if (!$htmlFilter) {
+                return $_POST[$key];
+            }
+            return Strings::htmlFilter($_POST[$key]);
+        }
+        return null;
+    }
+
+    public function isPost()
+    {
+        return isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) === 'post';
+    }
+
+    public function isXMLHttpRequest()
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+    public function isPJAX()
+    {
+        $pjax = $this->param('_pjax');
+        return ((isset($_SERVER['HTTP_X_PJAX']) && strtolower($_SERVER['HTTP_X_PJAX']) === 'true') || isset($pjax));
+    }
 }
