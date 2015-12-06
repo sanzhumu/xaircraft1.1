@@ -32,13 +32,19 @@ class ActionInfo
      */
     private $reflector;
 
-    public function __construct(Controller $controller, $action)
+    /**
+     * @var ActionContext
+     */
+    private $context;
+
+    public function __construct(Controller $controller, $action, ActionContext &$context)
     {
         $this->controller = $controller;
         $this->name = $action;
         $this->reflector = new \ReflectionMethod($controller, $action);
         $this->docComment = $this->reflector->getDocComment();
         $this->parameters = $this->reflector->getParameters();
+        $this->context = $context;
 
         $this->initializeDocComment();
     }
@@ -66,6 +72,7 @@ class ActionInfo
     {
         if (preg_match('#@output_status_exception#i', $this->docComment) > 0) {
             $this->outputStatusException = true;
+            $this->context->outputStatusException = true;
         }
         AuthorizeHelper::authorize($this->docComment);
     }
