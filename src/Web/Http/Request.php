@@ -9,6 +9,7 @@
 namespace Xaircraft\Web\Http;
 
 
+use Xaircraft\Core\Collections\Generic;
 use Xaircraft\Core\Strings;
 
 class Request
@@ -53,6 +54,34 @@ class Request
             return Strings::htmlFilter($_POST[$key]);
         }
         return null;
+    }
+
+    public function posts($prefix = null, $htmlFilter = true)
+    {
+        if (isset($prefix) && is_string($prefix)) {
+            $posts = array();
+            $items = Generic::fast_array_key_filter($_POST, $prefix . '_');
+            foreach ($items as $key => $value) {
+                $key         = str_replace($prefix . '_', '', $key);
+                if (!$htmlFilter) {
+                    $posts[$key] = $value;
+                } else {
+                    $posts[$key] = Strings::htmlFilter($value);
+                }
+            }
+            return $posts;
+        } else {
+            $posts = array();
+            foreach ($_POST as $key => $value) {
+                if (!$htmlFilter) {
+                    $posts[$key] = $value;
+                } else {
+                    $posts[$key] = Strings::htmlFilter($value);
+                }
+            }
+
+            return $posts;
+        }
     }
 
     public function isPost()

@@ -65,11 +65,17 @@ abstract class Model extends Container
         return $this->entity->fields();
     }
 
-    public function save()
+    public function save(array $fields = null)
     {
-        return DB::transaction(function () {
+        if (!empty($fields)) {
+            foreach ($fields as $key => $value) {
+                $this->$key = $value;
+            }
+        }
+
+        return DB::transaction(function () use ($fields) {
             $this->beforeSave();
-            $result = $this->entity->save();
+            $result = $this->entity->save($fields);
             $this->afterSave();
 
             return $result;
