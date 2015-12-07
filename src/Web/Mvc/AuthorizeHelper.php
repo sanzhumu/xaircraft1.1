@@ -18,22 +18,28 @@ class AuthorizeHelper
 
     public static function authorize($comment)
     {
-        if (preg_match('#@auth[ ]+(?<authorize>[a-zA-Z][a-zA-Z0-9\_\\\]+)#i', $comment, $matches)) {
-            $key = $matches['authorize'];
-            if (array_key_exists($key, self::$authorized)) {
-                return true;
+        if (preg_match_all('#@auth[ ]+(?<authorize>[a-zA-Z][a-zA-Z0-9\_\\\]+)#i', $comment, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                self::authorizeItem($match['authorize']);
             }
-            try {
-                /** @var \Xaircraft\Authentication\Contract\Authorize $authorize */
-                $authorize = DI::get($key);
-                if (!$authorize->authorize(DI::get(HttpAuthCredential::class))) {
-                    throw new HttpAuthenticationException("Http authorize failure.");
-                }
-            } catch (\Exception $ex) {
-                throw new HttpAuthenticationException($ex->getMessage(), $ex->getCode(), $ex);
-            }
-            self::$authorized[$key] = true;
         }
+    }
+
+    private static function authorizeItem($key)
+    {
+        if (array_key_exists($key, self::$authorized)) {
+            return true;
+        }
+        try {
+            /** @var \Xaircraft\Authentication\Contract\Authorize $authorize */
+            $authorize = DI::get($key);
+            if (!$authorize->authorize(DI::get(HttpAuthCredential::class))) {
+                throw new HttpAuthenticationException("Http authorize failure.");
+            }
+        } catch (\Exception $ex) {
+            throw new HttpAuthenticationException($ex->getMessage(), $ex->getCode(), $ex);
+        }
+        self::$authorized[$key] = true;
     }
 
     public static function authorizeController($controller)
