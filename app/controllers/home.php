@@ -11,7 +11,7 @@ use Xaircraft\Web\Mvc\Controller;
  * Date: 2015/11/12
  * Time: 16:55
  * @auth LoginAuthorize
- * @auth LoginAuthorize2
+ * @auth LoginAuthorize2(permission='admin')
  */
 class home_controller extends Controller
 {

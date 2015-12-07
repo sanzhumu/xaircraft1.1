@@ -18,21 +18,30 @@ class AuthorizeHelper
 
     public static function authorize($comment)
     {
-        if (preg_match_all('#@auth[ ]+(?<authorize>[a-zA-Z][a-zA-Z0-9\_\\\]+)#i', $comment, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all('#@auth[ ]+(?<authorize>[a-zA-Z][a-zA-Z0-9\_\\\]+)(\((?<arguments>[^\)]+)\))?#i', $comment, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
-                self::authorizeItem($match['authorize']);
+                $arguments = array();
+                if (array_key_exists('arguments', $match)) {
+                    $argument = $match['arguments'];
+                    if (preg_match_all('#(?<key>[a-zA-Z][a-zA-Z0-9\_]+)\=[\"\']?(?<value>[^\"\'\,]+)[\"\']?#i', $argument, $argMatches, PREG_SET_ORDER)) {
+                        foreach ($argMatches as $argMatch) {
+                            $arguments[$argMatch['key']] = $argMatch['value'];
+                        }
+                    }
+                }
+                self::authorizeItem($match['authorize'], $arguments);
             }
         }
     }
 
-    private static function authorizeItem($key)
+    private static function authorizeItem($key, array $arguments)
     {
         if (array_key_exists($key, self::$authorized)) {
             return true;
         }
         try {
             /** @var \Xaircraft\Authentication\Contract\Authorize $authorize */
-            $authorize = DI::get($key);
+            $authorize = DI::get($key, $arguments);
             if (!$authorize->authorize(DI::get(HttpAuthCredential::class))) {
                 throw new HttpAuthenticationException("Http authorize failure.");
             }

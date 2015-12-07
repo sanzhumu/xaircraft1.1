@@ -8,6 +8,10 @@
  */
 class LoginAuthorize2 implements \Xaircraft\Authentication\Contract\Authorize
 {
+    public function __construct($permission)
+    {
+        var_dump($permission);
+    }
 
     /**
      * @param \Xaircraft\Authentication\Contract\Credential $credential
@@ -15,6 +19,6 @@ class LoginAuthorize2 implements \Xaircraft\Authentication\Contract\Authorize
      */
     public function authorize(\Xaircraft\Authentication\Contract\Credential $credential)
     {
-        return false;
+        return true;
     }
 }
