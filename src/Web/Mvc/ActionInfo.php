@@ -11,6 +11,8 @@ namespace Xaircraft\Web\Mvc;
 
 use Xaircraft\DI;
 use Xaircraft\Exception\HttpAuthenticationException;
+use Xaircraft\Web\Mvc\Attribute\AttributeCollection;
+use Xaircraft\Web\Mvc\Attribute\OutputStatusExceptionAttribute;
 
 class ActionInfo
 {
@@ -25,32 +27,30 @@ class ActionInfo
 
     private $docComment;
 
-    private $outputStatusException = false;
-
     /**
      * @var \ReflectionMethod
      */
     private $reflector;
 
     /**
-     * @var ActionContext
+     * @var AttributeCollection
      */
-    private $context;
+    private $attributes;
 
-    public function __construct(Controller $controller, $action, ActionContext &$context)
+    public function __construct(Controller $controller, $action)
     {
         $this->controller = $controller;
         $this->name = $action;
         $this->reflector = new \ReflectionMethod($controller, $action);
         $this->docComment = $this->reflector->getDocComment();
         $this->parameters = $this->reflector->getParameters();
-        $this->context = $context;
 
-        $this->initializeDocComment();
+        $this->initializeAttributes();
     }
 
     public function invoke($params)
     {
+        $this->attributes->invoke();
         AuthorizeHelper::authorizeController($this->controller);
         $args = array();
         foreach ($this->parameters as $parameter) {
@@ -65,15 +65,11 @@ class ActionInfo
 
     public function getIfOutputStatusException()
     {
-        return $this->outputStatusException;
+        return $this->attributes->exists(OutputStatusExceptionAttribute::class);
     }
 
-    private function initializeDocComment()
+    private function initializeAttributes()
     {
-        if (preg_match('#@output_status_exception#i', $this->docComment) > 0) {
-            $this->outputStatusException = true;
-            $this->context->outputStatusException = true;
-        }
-        AuthorizeHelper::authorize($this->docComment);
+        $this->attributes = AttributeCollection::create($this->docComment);
     }
 }

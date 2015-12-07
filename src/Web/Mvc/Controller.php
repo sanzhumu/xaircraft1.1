@@ -76,14 +76,12 @@ abstract class Controller
             return $pageLoadResult;
         }
         if (!$controller->isEnded) {
-            $actionContext = new ActionContext($controller);
-            $actionContext->action = $action;
+            $actionInfo = new ActionInfo($controller, $action);
             try {
-                $actionInfo = new ActionInfo($controller, $action, $actionContext);
                 $actionResult = $actionInfo->invoke($controller->req->params());
                 return $actionResult;
             } catch (\Exception $ex) {
-                if ($controller instanceof OutputStatusException || $actionContext->outputStatusException) {
+                if ($controller instanceof OutputStatusException || $actionInfo->getIfOutputStatusException()) {
                     $status = $controller->status($ex->getMessage(), $ex->getCode());
                     return $status;
                 }

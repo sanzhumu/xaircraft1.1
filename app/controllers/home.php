@@ -11,7 +11,7 @@ use Xaircraft\Web\Mvc\Controller;
  * Date: 2015/11/12
  * Time: 16:55
  * @auth LoginAuthorize
- * @auth LoginAuthorize2(permission='admin')
+ * @auth LoginAuthorize2(userID=123, permission='admin')
  */
 class home_controller extends Controller
 {
@@ -19,6 +19,7 @@ class home_controller extends Controller
      * @param $id
      * @param $title
      * @return \Xaircraft\Web\Mvc\Action\TextResult
+     * @output_status_exception
      */
     public function index($id, $title)
     {
