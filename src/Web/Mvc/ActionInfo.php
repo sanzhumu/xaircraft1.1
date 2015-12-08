@@ -51,7 +51,7 @@ class ActionInfo
     public function invoke($params)
     {
         $this->attributes->invoke();
-        AuthorizeHelper::authorizeController($this->controller);
+        $this->controller->attributes->invoke();
         $args = array();
         foreach ($this->parameters as $parameter) {
             if (array_key_exists($parameter->name, $params)) {

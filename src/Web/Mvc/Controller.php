@@ -18,6 +18,8 @@ use Xaircraft\Web\Mvc\Action\ObjectResult;
 use Xaircraft\Web\Mvc\Action\StatusResult;
 use Xaircraft\Web\Mvc\Action\TextResult;
 use Xaircraft\Web\Mvc\Action\ViewResult;
+use Xaircraft\Web\Mvc\Attribute\AttributeCollection;
+use Xaircraft\Web\Mvc\Attribute\OutputStatusExceptionAttribute;
 
 /**
  * Class Controller
@@ -34,6 +36,11 @@ abstract class Controller
      * @var array
      */
     protected $data = array();
+
+    /**
+     * @var AttributeCollection
+     */
+    public $attributes;
 
     /**
      * @var bool 结束action执行并返回结果
@@ -70,6 +77,8 @@ abstract class Controller
          * @var Controller $controller
          */
         $controller = DI::get($controller);
+        $ref = new \ReflectionClass($controller);
+        $controller->attributes = AttributeCollection::create($ref->getDocComment());
         $controller->req = DI::get(Request::class);
         $pageLoadResult = $controller->onPageLoad();
         if (isset($pageLoadResult)) {
@@ -81,7 +90,9 @@ abstract class Controller
                 $actionResult = $actionInfo->invoke($controller->req->params());
                 return $actionResult;
             } catch (\Exception $ex) {
-                if ($controller instanceof OutputStatusException || $actionInfo->getIfOutputStatusException()) {
+                if ($controller instanceof OutputStatusException ||
+                    $actionInfo->getIfOutputStatusException() ||
+                    $controller->attributes->exists(OutputStatusExceptionAttribute::class)) {
                     $status = $controller->status($ex->getMessage(), $ex->getCode());
                     return $status;
                 }
