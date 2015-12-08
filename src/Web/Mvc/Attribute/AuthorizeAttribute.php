@@ -57,7 +57,7 @@ class AuthorizeAttribute extends Attribute
      */
     public function invoke()
     {
-        $authorize = DI::get($this->authorize, array('userID' => 123, 'permission' => 'asdf'));
+        $authorize = DI::get($this->authorize, $this->arguments);
         if (isset($authorize) && $authorize instanceof Authorize) {
             try {
                 if (!$authorize->authorize(DI::get(HttpAuthCredential::class))) {

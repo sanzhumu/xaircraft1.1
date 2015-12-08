@@ -36,17 +36,21 @@ class AttributeCollection
 
     public function invoke()
     {
-        foreach ($this->attributes as $attribute) {
-            /** @var Attribute $attribute */
-            $attribute->invoke();
+        if (!empty($this->attributes)) {
+            foreach ($this->attributes as $attribute) {
+                /** @var Attribute $attribute */
+                $attribute->invoke();
+            }
         }
     }
 
     public function exists($class)
     {
-        foreach ($this->attributes as $attribute) {
-            if ($class === get_class($attribute)) {
-                return true;
+        if (!empty($this->attributes)) {
+            foreach ($this->attributes as $attribute) {
+                if ($class === get_class($attribute)) {
+                    return true;
+                }
             }
         }
         return false;

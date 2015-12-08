@@ -20,6 +20,6 @@ class LoginAuthorize2 implements \Xaircraft\Authentication\Contract\Authorize
      */
     public function authorize(\Xaircraft\Authentication\Contract\Credential $credential)
     {
-        return false;
+        return true;
     }
 }
