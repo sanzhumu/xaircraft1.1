@@ -37,10 +37,15 @@ class AuthorizeAttribute extends Attribute
         $items = explode(',', $source);
         if (!empty($items)) {
             foreach ($items as $item) {
-                if (preg_match('#(?<key>[a-zA-Z][a-zA-Z0-9\_]+)\=[\'\"]?(?<value>[^\'\"\,]+)[\'\"]?#i', $item, $matches)) {
-                    $arguments[$matches['key']] = $matches['value'];
-                } else {
-                    throw new AttributeException("Invalid attribute arguments.");
+                $pairs = explode(',', $item);
+                if (!empty($pairs)) {
+                    foreach ($pairs as $pair) {
+                        if (preg_match('#(?<key>[a-zA-Z][a-zA-Z0-9\_]+)\=[\'\"]?(?<value>[^\'\"]+)[\'\"]?#i', $pair, $matches)) {
+                            $arguments[$matches['key']] = trim($matches['value']);
+                        } else {
+                            throw new AttributeException("Invalid attribute arguments.");
+                        }
+                    }
                 }
             }
         }
