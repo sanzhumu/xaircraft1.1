@@ -11,6 +11,9 @@ namespace Xaircraft;
 
 class Globals
 {
+    const STATUS_SUCCESS = 200;
+    const STATUS_FAILURE = 4000;
+
     const ENV_FRAMEWORK = 1001;
     const ENV_VERSION = 1002;
     const ENV_MODE = 1003;
