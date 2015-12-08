@@ -9,10 +9,12 @@
 
 namespace Xaircraft;
 
+use Xaircraft\Configuration\Settings;
 use Xaircraft\Console\Console;
 use Xaircraft\Console\ConsoleLoader;
 use Xaircraft\Core\Container;
 use Xaircraft\Exception\ConsoleException;
+use Xaircraft\Exception\ExceptionManager;
 use Xaircraft\Inject\InjectModule;
 use Xaircraft\Module\AppModuleLoader;
 use Xaircraft\Module\AppModuleState;
@@ -209,10 +211,6 @@ class App extends Container
 
     private function onError(AppModuleException $ex)
     {
-        if ($ex->getPrevious() instanceof ConsoleException) {
-            Console::error($ex->getMessage());
-            return;
-        }
-        throw $ex;
+        ExceptionManager::handle($ex);
     }
 }

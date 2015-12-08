@@ -96,7 +96,7 @@ abstract class Controller
                     $status = $controller->status($ex->getMessage(), $ex->getCode());
                     return $status;
                 }
-                throw new WebException($controller, $action, $ex->getMessage(), $ex->getCode(), $ex);
+                throw new WebException($controller, $action, $ex->getMessage(), $ex);
             }
         }
         return null;
