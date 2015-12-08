@@ -20,18 +20,17 @@ class AttributeCollection
     public static function create($comment)
     {
         $attributes = AttributeInfo::create($comment);
+        $collection = new AttributeCollection();
 
         if (isset($attributes)) {
-            $collection = new AttributeCollection();
             foreach ($attributes as $info) {
                 $attribute = Attribute::createFromAttributeInfo($info);
                 if (isset($attribute)) {
                     $collection->attributes[] = $attribute;
                 }
             }
-            return $collection;
         }
-        return null;
+        return $collection;
     }
 
     public function invoke()
