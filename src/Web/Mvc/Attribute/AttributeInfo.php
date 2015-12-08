@@ -23,6 +23,7 @@ class AttributeInfo
 
     public static function create($comment)
     {
+        //TODO: Value parser still have some bug, must improve on it.20151208
         if (preg_match_all('#@(?<type>[a-zA-Z][a-zA-Z0-9\_]+)([ ]+(?<value>.*))?#i', $comment, $matches, PREG_SET_ORDER)) {
             $attributes = array();
             foreach ($matches as $match) {

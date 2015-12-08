@@ -1,4 +1,5 @@
 <?php
+use Xaircraft\Authentication\Auth;
 use Xaircraft\Authentication\Contract\CurrentUser;
 use Xaircraft\Core\Strings;
 use Xaircraft\Database\Data\FieldType;
@@ -22,6 +23,8 @@ class home_controller extends Controller
      */
     public function index($id, $title)
     {
+        var_dump(Auth::check());
+
         $query = \Xaircraft\DB::table('user')->select()->format(array(
             'create_at' => FieldType::DATE,
             'id' => FieldType::NUMBER

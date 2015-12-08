@@ -25,4 +25,9 @@ class AuthStorage
     {
         return Session::get(self::$currentUserSessionID);
     }
+
+    public static function clear()
+    {
+        Session::forget(self::$currentUserSessionID);
+    }
 }
