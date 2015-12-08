@@ -59,7 +59,7 @@ class AuthorizeAttribute extends Attribute
                     throw new HttpAuthenticationException("Http authorize failure [$this->authorize].");
                 }
             } catch (\Exception $ex) {
-                throw new HttpAuthenticationException($ex->getMessage(), $ex->getCode(), $ex);
+                throw new HttpAuthenticationException($ex->getMessage(), $ex);
             }
         }
     }

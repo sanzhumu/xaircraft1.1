@@ -14,6 +14,11 @@ use Xaircraft\Globals;
 
 class DatabaseException extends BaseException
 {
+    public function __construct($message, \Exception $previous = null)
+    {
+        parent::__construct($message, Globals::EXCEPTION_ERROR_DATABASE, $previous);
+    }
+
     public function getDatabase()
     {
         return DB::getDatabaseName();

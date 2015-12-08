@@ -11,5 +11,8 @@ namespace Xaircraft\Exception;
 
 class HttpAuthenticationException extends AuthenticationException
 {
-
+    public function __construct($message, \Exception $previous = null)
+    {
+        parent::__construct($message, $previous);
+    }
 }

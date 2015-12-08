@@ -15,9 +15,9 @@ class DataTableException extends DatabaseException
 {
     private $table;
 
-    public function __construct($table, $message = "", $code = Globals::EXCEPTION_ERROR_DATABASE, \Exception $previous = null)
+    public function __construct($table, $message = "", \Exception $previous = null)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $previous);
 
         $this->table = $table;
     }

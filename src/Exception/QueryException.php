@@ -9,7 +9,7 @@
 namespace Xaircraft\Exception;
 
 
-class QueryException extends BaseException
+class QueryException extends DatabaseException
 {
 
 }

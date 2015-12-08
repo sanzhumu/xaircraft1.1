@@ -15,9 +15,9 @@ class FieldValidateException extends DataTableException
 {
     private $field;
 
-    public function __construct($table, $field, $message = "", $code = Globals::EXCEPTION_ERROR_DATABASE_INVALID_FIELD, \Exception $previous = null)
+    public function __construct($table, $field, $message = "", \Exception $previous = null)
     {
-        parent::__construct($table, $message, $code, $previous);
+        parent::__construct($table, $message, $previous);
 
         $this->field = $field;
     }

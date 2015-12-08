@@ -9,7 +9,12 @@
 namespace Xaircraft\Exception;
 
 
-class EntityException extends DatabaseException
-{
+use Xaircraft\Globals;
 
+class EntityException extends BaseException
+{
+    public function __construct($message, \Exception $previous = null)
+    {
+        parent::__construct($message, Globals::EXCEPTION_ERROR_ENTITY, $previous);
+    }
 }

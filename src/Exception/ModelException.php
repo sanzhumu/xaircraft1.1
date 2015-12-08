@@ -9,7 +9,12 @@
 namespace Xaircraft\Exception;
 
 
+use Xaircraft\Globals;
+
 class ModelException extends BaseException
 {
-
+    public function __construct($message, \Exception $previous = null)
+    {
+        parent::__construct($message, Globals::EXCEPTION_ERROR_MODEL, $previous);
+    }
 }
