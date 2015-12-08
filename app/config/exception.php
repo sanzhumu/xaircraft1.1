@@ -10,6 +10,6 @@ use Xaircraft\Exception\HttpAuthenticationException;
 
 return array(
     HttpAuthenticationException::class => function ($ex) {
-
+        var_dump("aa");
     }
 );
