@@ -13,18 +13,18 @@ use Xaircraft\Core\Container;
 
 class CurrentUser extends Container
 {
-    private function __construct($id, $username, $name, $email, array $permissions)
+    private function __construct($id, $username, $name, $email, $extra)
     {
         $this['id'] = $id;
         $this['username'] = $username;
         $this['name'] = $name;
         $this['email'] = $email;
-        $this['permissions'] = $permissions;
+        $this['extra'] = $extra;
     }
 
-    public static function create($id, $username, $name, $email, array $permissions)
+    public static function create($id, $username, $name, $email, $extra)
     {
-        return new CurrentUser($id, $username, $name, $email, $permissions);
+        return new CurrentUser($id, $username, $name, $email, $extra);
     }
 
     public function getID()
@@ -47,8 +47,8 @@ class CurrentUser extends Container
         return $this['email'];
     }
 
-    public function getPermissions()
+    public function getExtra()
     {
-        return $this['permissions'];
+        return $this['extra'];
     }
 }
