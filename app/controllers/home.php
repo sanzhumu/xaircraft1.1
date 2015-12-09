@@ -82,6 +82,7 @@ class home_controller extends Controller
      */
     public function test_ref()
     {
-        var_dump('hello');
+        \Xaircraft\Web\Session::put('test', 'tesaaaat');
+        var_dump(\Xaircraft\Web\Session::get('test'));
     }
 }

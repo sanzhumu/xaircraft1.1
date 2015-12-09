@@ -10,9 +10,12 @@ namespace Xaircraft\Console;
 
 
 use Xaircraft\App;
+use Xaircraft\Authentication\AuthStorage;
+use Xaircraft\Authentication\CacheAuthStorage;
 use Xaircraft\Configuration\Settings;
 use Xaircraft\Database\Migration\MigrateCommand;
 use Xaircraft\Database\Migration\MigrationCommand;
+use Xaircraft\DI;
 use Xaircraft\Exception\ConsoleException;
 use Xaircraft\Globals;
 use Xaircraft\Module\AppModule;
@@ -35,6 +38,8 @@ class ConsoleLoader extends AppModule
         Command::bind('migration', MigrationCommand::class);
 
         Settings::load('commands');
+
+        DI::bindSingleton(AuthStorage::class, CacheAuthStorage::class);
     }
 
     public function handle()

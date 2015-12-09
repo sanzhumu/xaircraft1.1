@@ -12,22 +12,11 @@ namespace Xaircraft\Authentication;
 use Xaircraft\Authentication\Contract\CurrentUser;
 use Xaircraft\Web\Session;
 
-class AuthStorage
+interface AuthStorage
 {
-    private static $currentUserSessionID = '__current_user__';
+    public function set(CurrentUser $user);
 
-    public static function set(CurrentUser $user)
-    {
-        Session::put(self::$currentUserSessionID, $user);
-    }
+    public function get();
 
-    public static function get()
-    {
-        return Session::get(self::$currentUserSessionID);
-    }
-
-    public static function clear()
-    {
-        Session::forget(self::$currentUserSessionID);
-    }
+    public function clear();
 }

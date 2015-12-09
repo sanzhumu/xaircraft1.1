@@ -10,6 +10,8 @@ namespace Xaircraft\Web;
 
 
 use Xaircraft\App;
+use Xaircraft\Authentication\AuthStorage;
+use Xaircraft\Authentication\SessionAuthStorage;
 use Xaircraft\DI;
 use Xaircraft\Exception\URLRouterException;
 use Xaircraft\Globals;
@@ -79,7 +81,7 @@ class WebAppModule extends AppModule
 
     public function appStart()
     {
-        // TODO: Implement appStart() method.
+        DI::bindSingleton(AuthStorage::class, SessionAuthStorage::class);
     }
 
     public function appEnd()
