@@ -53,7 +53,7 @@ class ConsoleLoader extends AppModule
                 Console::line("End.");
             }
         } catch (\Exception $ex) {
-            throw new ConsoleException($ex->getMessage(), $ex->getCode(), $ex);
+            throw new ConsoleException($ex->getMessage(), $ex);
         }
     }
 

@@ -38,7 +38,7 @@ class MigrationCommand extends Command
         }
         $migration = $this->args[1];
         $author = isset($this->args[2]) ? $this->args[2] : "Unknow";
-        $class = Strings::snakeToCamel($migration) . time();
+        $class = 'm' . time() . Strings::snakeToCamel($migration);
         $path = App::path('migration') . "/$class.php";
         File::writeText($path, Template::generate($class, $author));
 

@@ -49,8 +49,14 @@ class MigrateCommand extends Command
         $path = App::path('migration');
 
         if ($dh = opendir($path)) {
+            $migrations = array();
             while (false !== ($file = readdir($dh))) {
-                $name = str_replace(".php", "", $file);
+                $migrations[] = str_replace(".php", "", $file);
+            }
+            closedir($dh);
+
+            sort($migrations);
+            foreach ($migrations as $name) {
                 if (false === array_search($name, $this->history)) {
                     $this->migrate($name);
                 }
@@ -87,7 +93,7 @@ class MigrateCommand extends Command
 
     private function clearTableSchema($name)
     {
-        if (preg_match('#(Create|Alter)(?<table>[a-zA-Z][a-zA-Z0-9\_]+)Table[\d]+#i', $name, $matches)) {
+        if (preg_match('#m[\d]+(Create|Alter)(?<table>[a-zA-Z][a-zA-Z0-9\_]+)Table#i', $name, $matches)) {
             $table = strtolower($matches['table']);
             $path = App::path('cache') . "/schema/" . DB::getDatabaseName() . "/$table.dat";
             if (file_exists($path)) {
