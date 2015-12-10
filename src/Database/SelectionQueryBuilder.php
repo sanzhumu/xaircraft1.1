@@ -32,11 +32,11 @@ class SelectionQueryBuilder
                         throw new QueryException("Sub-query error in Selection [" . implode(' ', $statements) . "]");
                     }
                 } else {
-                    $item = $field->name;
+                    $item = "`$field->name`";
                 }
 
                 if (isset($field->alias)) {
-                    $item = "$item AS $field->alias";
+                    $item = "`$item` AS `$field->alias";
                 }
 
                 $statements[] = $item;

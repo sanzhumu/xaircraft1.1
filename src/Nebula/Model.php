@@ -74,9 +74,9 @@ abstract class Model extends Container
         }
 
         return DB::transaction(function () use ($fields) {
-            $this->beforeSave();
+            if (!$this->beforeSave()) return false;
             $result = $this->entity->save($fields);
-            $this->afterSave();
+            if ($result) $this->afterSave();
 
             return $result;
         });
@@ -85,12 +85,12 @@ abstract class Model extends Container
     public function delete()
     {
         return DB::transaction(function () {
-            $this->beforeDelete();
+            if (!$this->beforeDelete()) return false;
             $key = $this->schema->getAutoIncrementField();
             $result = DB::table($this->schema->getTableName())
                 ->where($key, $this->entity->$key)
                 ->delete()->execute();
-            $this->afterDelete($this->fields());
+            if ($result) $this->afterDelete($this->fields());
             return $result;
         });
     }
@@ -98,12 +98,12 @@ abstract class Model extends Container
     public function forceDelete()
     {
         return DB::transaction(function () {
-            $this->beforeForceDelete();
+            if (!$this->beforeForceDelete()) return false;
             $key = $this->schema->getAutoIncrementField();
             $result = DB::table($this->schema->getTableName())
                 ->where($key, $this->entity->$key)
                 ->forceDelete()->execute();
-            $this->afterForceDelete($this->fields());
+            if ($result) $this->afterForceDelete($this->fields());
             return $result;
         });
     }
