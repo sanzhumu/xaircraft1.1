@@ -25,7 +25,9 @@ class home_controller extends Controller
     {
         var_dump(Auth::check());
 
-        $query = \Xaircraft\DB::table('user AS u')->select('COUNT(u.id)')->join('project AS p', 'p.id', 'u.id')->where('id', '>', 0);
+        $query = \Xaircraft\DB::table('user AS u')->select('u.id')->join('project AS p', 'p.id', 'u.id')->where('p.id', '>', 0);
+        //$query = \Xaircraft\DB::table('user AS u')->select('u.id')->join('project AS p', 'p.id', 'u.id')->where('u.id', '>', 0);
+        //$query = \Xaircraft\DB::table('user')->select('id', 'name')->where('id', '>', 0);
 //        $query = DB::table('user')->update(array(
 //            'name' => '5',
 //            'password' => 'adf',

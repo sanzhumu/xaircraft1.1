@@ -21,11 +21,12 @@ class WhereBetweenConditionBuilder extends ConditionBuilder
 
     public function getQueryString()
     {
+        $field = $this->context->getField($this->field);
         $statements = array();
         if (!$this->notBetween) {
-            $statements[] = "$this->field BETWEEN ? AND ?";
+            $statements[] = "$field BETWEEN ? AND ?";
         } else {
-            $statements[] = "$this->field < ? OR $this->field > ?";
+            $statements[] = "$field < ? OR $field > ?";
         }
         $this->context->param($this->range[0]);
         $this->context->param($this->range[1]);

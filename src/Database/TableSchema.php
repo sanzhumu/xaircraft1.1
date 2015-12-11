@@ -69,17 +69,21 @@ class TableSchema extends Container
     {
         $table = $this->table;
         if (!$withoutAlias && isset($this->alias)) {
-            return "`$table` AS $this->alias";
+            return "`$table` AS `$this->alias`";
         }
         return "`$table`";
     }
 
-    public function getFieldPrefix()
+    public function getFieldPrefix($withoutUnquote = false)
     {
+        $prefix = '';
         if (isset($this->alias)) {
-            return $this->alias;
+            $prefix = $this->alias;
+        } else {
+            $prefix = $this->table;
         }
-        return $this->table;
+
+        return $withoutUnquote ? $prefix : "`$prefix`";
     }
 
     public function getAliasName()

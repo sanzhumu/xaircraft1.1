@@ -9,6 +9,7 @@
 namespace Xaircraft\Database\Condition;
 
 
+use Xaircraft\Database\FieldInfo;
 use Xaircraft\Database\QueryContext;
 use Xaircraft\Database\Raw;
 use Xaircraft\Database\WhereQuery;
@@ -16,6 +17,9 @@ use Xaircraft\DI;
 
 class WhereConditionBuilder extends ConditionBuilder
 {
+    /**
+     * @var FieldInfo
+     */
     public $field;
 
     public $operator;
@@ -27,15 +31,13 @@ class WhereConditionBuilder extends ConditionBuilder
     public function getQueryString()
     {
         $statements = array();
-        $field = $this->field;
-        if (!($field instanceof Raw)) {
-            $field = "`$field`";
-        }
+        var_dump($this->field);
+        $field = $this->field->getName($this->context);
         if (!isset($this->clause)) {
             if ($this->value instanceof Raw) {
-                $statements[] = "$this->field $this->operator " . $this->value->getValue();
+                $statements[] = "$field $this->operator " . $this->value->getValue();
             } else {
-                $statements[] = "$this->field $this->operator ?";
+                $statements[] = "$field $this->operator ?";
                 $this->context->param($this->value);
             }
         } else {
@@ -50,7 +52,7 @@ class WhereConditionBuilder extends ConditionBuilder
     public static function makeNormal(QueryContext $context, $field, $operator, $value)
     {
         $builder = new WhereConditionBuilder($context);
-        $builder->field = $field;
+        $builder->field = FieldInfo::make($field);
         $builder->operator = $operator;
         $builder->value = $value;
 

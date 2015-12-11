@@ -110,6 +110,8 @@ class TableQuery implements QueryStringBuilder
 
     private function parseTableQuery()
     {
+        $this->context->schema($this->schema);
+
         switch ($this->queryType) {
             case self::QUERY_SELECT:
                 return TableQueryExecutor::makeSelect(
@@ -336,13 +338,14 @@ class TableQuery implements QueryStringBuilder
         if (2 === $argsLen) {
             $clause = $args[1];
             if (isset($clause) && is_callable($clause)) {
-                $this->joins[] = JoinInfo::makeClause($table, $clause, $leftJoin);
+                $this->joins[] = JoinInfo::makeClause($this->context, $table, $clause, $leftJoin);
             } else {
                 throw new QueryException("Join query error - it should be a sub-query clause here. [$table]");
             }
         }
         if (3 === $argsLen) {
             $this->joins[] = JoinInfo::makeNormal(
+                $this->context,
                 $table,
                 JoinConditionInfo::make(ConditionInfo::CONDITION_AND, $args[1], '=', $args[2], false),
                 $leftJoin
@@ -350,6 +353,7 @@ class TableQuery implements QueryStringBuilder
         }
         if (4 === $argsLen) {
             $this->joins[] = JoinInfo::makeNormal(
+                $this->context,
                 $table,
                 JoinConditionInfo::make(ConditionInfo::CONDITION_AND, $args[1], $args[2], $args[3], false),
                 $leftJoin

@@ -25,9 +25,10 @@ class WhereInConditionBuilder extends ConditionBuilder
 
     public function getQueryString()
     {
+        $field = $this->context->getField($this->field);
         $statements = array();
         if (!isset($this->clause)) {
-            $statements[] = "$this->field IN (";
+            $statements[] = "$field IN (";
                 if (!empty($this->range)) {
                     $values = array();
                     foreach ($this->range as $item) {
@@ -42,7 +43,7 @@ class WhereInConditionBuilder extends ConditionBuilder
         } else {
             $whereQuery = new WhereQuery($this->context, true);
             call_user_func($this->clause, $whereQuery);
-            $statements[] = "$this->field IN (";
+            $statements[] = "$field IN (";
             $item = $whereQuery->getQueryString();
             if (!isset($item)) {
                 throw new QueryException("WhereIn Condition build error.");
