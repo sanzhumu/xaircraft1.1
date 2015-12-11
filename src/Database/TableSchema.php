@@ -27,6 +27,8 @@ class TableSchema extends Container
 
     private $table;
 
+    private $alias;
+
     private $columns;
 
     private $source;
@@ -37,8 +39,18 @@ class TableSchema extends Container
 
     public function __construct($table)
     {
-        if (!isset($table) || !(preg_match('#[a-zA-Z][0-9a-zA-Z\_]#i', $table) > 0)) {
+        if (!isset($table)) {
             throw new DataTableException($table, "Table name invalid - [$table]");
+        }
+        $table = trim($table);
+        if (!(preg_match('#^[a-zA-Z][0-9a-zA-Z\_]+$#i', $table) > 0)) {
+            if (preg_match('#^(?<table>[a-zA-Z][0-9a-zA-Z\_]+)[ ]+[aA][sS][ ]+(?<alias>[a-zA-Z][0-9a-zA-Z\_]*)$#i', $table, $match)) {
+                $table = array_key_exists('table', $match) ? $match['table'] : null;
+                $this->alias = array_key_exists('alias', $match) ? $match['alias'] : null;
+            }
+            if (!isset($table)) {
+                throw new DataTableException($table, "Table name invalid - [$table]");
+            }
         }
 
         $this->table = $table;
@@ -53,9 +65,26 @@ class TableSchema extends Container
         $this->initialize();
     }
 
-    public function getTableName()
+    public function getTableName($withoutAlias = false)
     {
+        $table = $this->table;
+        if (!$withoutAlias && isset($this->alias)) {
+            return "`$table` AS $this->alias";
+        }
+        return "`$table`";
+    }
+
+    public function getFieldPrefix()
+    {
+        if (isset($this->alias)) {
+            return $this->alias;
+        }
         return $this->table;
+    }
+
+    public function getAliasName()
+    {
+        return $this->alias;
     }
 
     public function getSoftDelete()

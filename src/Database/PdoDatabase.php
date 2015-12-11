@@ -329,7 +329,7 @@ class PdoDatabase implements Database {
             $this->errorCode = $errorCode;
             $this->errorInfo = $stmt->errorInfo();
 
-            throw new DatabaseException($this->errorInfo[2], $this->errorCode);
+            throw new DatabaseException($this->errorInfo[2]);
         }
     }
 

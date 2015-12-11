@@ -49,6 +49,10 @@ class ExceptionManager
         if ($key === get_class($ex)) {
             return true;
         }
-        return self::recursive($ex->getPrevious(), $key);
+        $previous = $ex->getPrevious();
+        if (isset($previous)) {
+            return self::recursive($ex->getPrevious(), $key);
+        }
+        return false;
     }
 }

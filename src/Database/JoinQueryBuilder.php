@@ -23,13 +23,12 @@ class JoinQueryBuilder
 
     private static function parseJoinInfo(QueryContext $context, JoinInfo $join)
     {
-        $schema = new TableSchema($join->name);
         $conditions = array();
         if (isset($join->clause)) {
             $joinQuery = new JoinQuery();
             call_user_func($join->clause, $joinQuery);
             $conditions = $joinQuery->getConditions();
-            if (!$joinQuery->getSoftDeleteLess() && $schema->getSoftDelete()) {
+            if (!$joinQuery->getSoftDeleteLess() && $join->schema->getSoftDelete()) {
                 $conditions[] = JoinConditionInfo::make(ConditionInfo::CONDITION_AND, TableSchema::SOFT_DELETE_FIELD, '=', 0, false);
             }
         } else {
@@ -39,7 +38,7 @@ class JoinQueryBuilder
         $statements = array();
 
         $statements[] = $join->leftJoin ? "LEFT JOIN" : "JOIN";
-        $statements[] = $join->table;
+        $statements[] = $join->schema->getTableName();
 
         if (count($conditions) > 0) {
             $statements[] = "ON (";

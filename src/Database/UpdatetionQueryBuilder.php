@@ -63,7 +63,7 @@ class UpdatetionQueryBuilder
                 );
             }
 
-            $statements[] = "$key = ?";
+            $statements[] = "`$key` = ?";
             $context->param($value);
         }
 

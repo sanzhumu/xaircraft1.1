@@ -25,64 +25,18 @@ class home_controller extends Controller
     {
         var_dump(Auth::check());
 
-        $query = \Xaircraft\DB::table('user')->select()->format(array(
-            'create_at' => FieldType::DATE,
-            'id' => FieldType::NUMBER
-        ));
+        $query = \Xaircraft\DB::table('user AS u')->select('COUNT(u.id)')->join('project AS p', 'p.id', 'u.id')->where('id', '>', 0);
+//        $query = DB::table('user')->update(array(
+//            'name' => '5',
+//            'password' => 'adf',
+//            'level' => 'admin'
+//        ))->where('id', 9);
 
-        //$queryString = $query->getQueryString();
-        $queryString = $query->execute();
+        //$queryString = $query->execute();
+        $queryString = $query->getQueryString();
 
         var_dump($queryString);
 
-        var_dump(DB::getQueryLog());
-
-        return $this->text('test');
-    }
-
-    public function test_entity()
-    {
-        $entity = \Xaircraft\DB::entity(\Xaircraft\DB::table('user')->select()->where('id', 43));
-
-        $entity->name = '3';
-        $entity->password = 'asdf';
-        $entity->save();
-
-        $entity->password = 'asdf';
-        $entity->save();
-
-        var_dump($entity->fields());
-
-        var_dump(\Xaircraft\DB::getQueryLog());
-    }
-
-    public function test_model()
-    {
-        var_dump(Strings::camelToSnake("UserProjectUserNameJake"));
-        $user = Account\User::find(43);
-        /** @var Account\User $user */
-        $user->password = 'asdf';
-        $user->name = '3';
-        $user->level = 'admin';
-        $user->save();
-
-        var_dump(\Xaircraft\DB::getQueryLog());
-    }
-
-    public function test_auth()
-    {
-        $user = CurrentUser::create(1, 'test', 'test2', 'a@a.xn', array());
-        \Xaircraft\Web\Session::put('test', $user);
-
-        var_dump(\Xaircraft\Web\Session::get('test'));
-    }
-
-    /**
-     * @output_status_exception
-     */
-    public function test_ref()
-    {
-        \Xaircraft\Web\Session::put('test', 'tesaaaat');
-        var_dump(\Xaircraft\Web\Session::get('test'));
+        //var_dump(DB::getQueryLog());
     }
 }

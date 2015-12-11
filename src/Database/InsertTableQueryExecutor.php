@@ -120,7 +120,7 @@ class InsertTableQueryExecutor extends TableQueryExecutor
                 );
             }
 
-            $fields[] = $key;
+            $fields[] = "`$key`";
             $values[] = "?";
             $this->context->param($value);
         }

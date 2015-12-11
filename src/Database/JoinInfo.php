@@ -17,13 +17,18 @@ class JoinInfo
 
     public $name;
 
-    public $alisa;
+    public $alias;
 
     public $condition;
 
     public $clause;
 
     public $leftJoin = false;
+
+    /**
+     * @var TableSchema
+     */
+    public $schema;
 
     public static function makeNormal($table, JoinConditionInfo $condition, $leftJoin = false)
     {
@@ -51,14 +56,8 @@ class JoinInfo
 
     private function parseTable()
     {
-        if (preg_match('#(?<name>[a-zA-Z][a-zA-Z0-9\_]*)([ ]+AS[ ]+(?<alias>[a-zA-Z][a-zA-Z0-9\_]*))?#i', $this->table, $matches)) {
-            $this->name = array_key_exists('name', $matches) ? $matches['name'] : null;
-            $this->alias = array_key_exists('alias', $matches) ? $matches['alias'] : null;
-        } else {
-            throw new QueryException("Join table name error. [$this->table]");
-        }
-        if (!isset($this->name)) {
-            throw new QueryException("Join table name error. [$this->table]");
-        }
+        $this->schema = new TableSchema($this->table);
+        $this->name = $this->schema->getTableName(true);
+        $this->alias = $this->schema->getAliasName();
     }
 }

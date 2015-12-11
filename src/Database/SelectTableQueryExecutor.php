@@ -155,7 +155,7 @@ class SelectTableQueryExecutor extends TableQueryExecutor
         if ($this->schema->getSoftDelete() && !$this->softDeleteLess) {
             $this->conditions[] = ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereConditionBuilder::makeNormal($this->context, TableSchema::SOFT_DELETE_FIELD, '=', 0)
+                WhereConditionBuilder::makeNormal($this->context, $this->schema->getFieldPrefix() . ".`" . TableSchema::SOFT_DELETE_FIELD . '`', '=', 0)
             );
         }
 

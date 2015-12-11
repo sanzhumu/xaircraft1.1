@@ -11,6 +11,8 @@ namespace Xaircraft\Database;
 
 class QueryContext
 {
+
+
     private $parameters = array();
 
     public function param($value)

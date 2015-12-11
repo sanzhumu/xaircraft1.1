@@ -27,6 +27,10 @@ class WhereConditionBuilder extends ConditionBuilder
     public function getQueryString()
     {
         $statements = array();
+        $field = $this->field;
+        if (!($field instanceof Raw)) {
+            $field = "`$field`";
+        }
         if (!isset($this->clause)) {
             if ($this->value instanceof Raw) {
                 $statements[] = "$this->field $this->operator " . $this->value->getValue();
