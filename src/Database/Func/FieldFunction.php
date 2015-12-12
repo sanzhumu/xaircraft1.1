@@ -17,7 +17,7 @@ abstract class FieldFunction
 
     public function __construct($field)
     {
-        $this->field = $field;
+        $this->field = trim($field);
     }
 
     public abstract function getString(QueryContext $context);

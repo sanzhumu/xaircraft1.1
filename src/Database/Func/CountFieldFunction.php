@@ -9,6 +9,7 @@
 namespace Xaircraft\Database\Func;
 
 
+use Xaircraft\Database\FieldInfo;
 use Xaircraft\Database\QueryContext;
 
 class CountFieldFunction extends FieldFunction
@@ -16,6 +17,10 @@ class CountFieldFunction extends FieldFunction
 
     public function getString(QueryContext $context)
     {
-        // TODO: Implement getString() method.
+        if ("*" !== $this->field) {
+            $field = FieldInfo::make($this->field);
+            return "COUNT(" . $field->getName($context) . ")";
+        }
+        return "COUNT(*)";
     }
 }
