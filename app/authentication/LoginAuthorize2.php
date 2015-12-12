@@ -10,8 +10,6 @@ class LoginAuthorize2 implements \Xaircraft\Authentication\Contract\Authorize
 {
     public function __construct($permission, $userID)
     {
-        var_dump($userID);
-        var_dump($permission);
     }
 
     /**

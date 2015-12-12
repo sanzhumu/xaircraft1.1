@@ -33,7 +33,7 @@ class UpdateTableQueryExecutor extends TableQueryExecutor
         $this->conditions = $conditions;
 
         if (empty($conditions)) {
-            throw new DataTableException($schema->getTableName(), "Can't execute UPDATE query without conditions.");
+            throw new DataTableException($schema->getSymbol(), "Can't execute UPDATE query without conditions.");
         }
     }
 
@@ -51,7 +51,7 @@ class UpdateTableQueryExecutor extends TableQueryExecutor
 
         $statements = array();
 
-        $statements[] = "UPDATE " . $this->schema->getTableName();
+        $statements[] = "UPDATE " . $this->schema->getSymbol();
         $statements[] = $updatetion;
         $statements[] = "WHERE " . $condition;
 

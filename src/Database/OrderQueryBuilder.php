@@ -11,7 +11,7 @@ namespace Xaircraft\Database;
 
 class OrderQueryBuilder
 {
-    public static function toString(array $orders)
+    public static function toString(QueryContext $context, array $orders)
     {
         if (empty($orders)) {
             return null;
@@ -20,10 +20,11 @@ class OrderQueryBuilder
         $statements = array();
 
         foreach ($orders as $item) {
+            $field = FieldInfo::make($item->field)->getName($context);
             /**
              * @var OrderInfo $item
              */
-            $statements[] = "$item->field $item->sort";
+            $statements[] = "$field $item->sort";
         }
 
         return implode(',', $statements);

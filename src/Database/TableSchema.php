@@ -13,11 +13,13 @@ use Xaircraft\App;
 use Xaircraft\Core\Container;
 use Xaircraft\Core\IO\File;
 use Xaircraft\Database\Data\FieldType;
+use Xaircraft\Database\Symbol\TableSymbol;
 use Xaircraft\Database\Validation\ValidateFactory;
 use Xaircraft\Database\Validation\ValidationCollection;
 use Xaircraft\DB;
 use Xaircraft\Exception\DatabaseException;
 use Xaircraft\Exception\DataTableException;
+use Xaircraft\Exception\QueryException;
 
 class TableSchema extends Container
 {
@@ -25,9 +27,10 @@ class TableSchema extends Container
     const RESERVED_FIELD_UPDATE_AT = 'update_at';
     const RESERVED_FIELD_CREATE_AT = 'create_at';
 
-    private $table;
-
-    private $alias;
+    /**
+     * @var TableSymbol
+     */
+    private $tableSymbol;
 
     private $columns;
 
@@ -37,23 +40,16 @@ class TableSchema extends Container
 
     private $autoIncrementField;
 
+    private $table;
+
     public function __construct($table)
     {
         if (!isset($table)) {
             throw new DataTableException($table, "Table name invalid - [$table]");
         }
-        $table = trim($table);
-        if (!(preg_match('#^[a-zA-Z][0-9a-zA-Z\_]+$#i', $table) > 0)) {
-            if (preg_match('#^(?<table>[a-zA-Z][0-9a-zA-Z\_]+)[ ]+[aA][sS][ ]+(?<alias>[a-zA-Z][0-9a-zA-Z\_]*)$#i', $table, $match)) {
-                $table = array_key_exists('table', $match) ? $match['table'] : null;
-                $this->alias = array_key_exists('alias', $match) ? $match['alias'] : null;
-            }
-            if (!isset($table)) {
-                throw new DataTableException($table, "Table name invalid - [$table]");
-            }
-        }
 
-        $this->table = $table;
+        $this->tableSymbol = TableSymbol::create($table);
+        $this->table = $this->tableSymbol->getName();
 
         $schema = App::path('schema');
         if (!isset($schema)) {
@@ -65,30 +61,32 @@ class TableSchema extends Container
         $this->initialize();
     }
 
-    public function getTableName($withoutAlias = false)
+    public function getName()
     {
-        $table = $this->table;
-        if (!$withoutAlias && isset($this->alias)) {
-            return "`$table` AS `$this->alias`";
-        }
-        return "`$table`";
+        return $this->table;
     }
 
-    public function getFieldPrefix($withoutUnquote = false)
+    public function getSymbol()
     {
-        $prefix = '';
-        if (isset($this->alias)) {
-            $prefix = $this->alias;
-        } else {
-            $prefix = $this->table;
-        }
-
-        return $withoutUnquote ? $prefix : "`$prefix`";
+        return $this->tableSymbol->getSymbol();
     }
 
-    public function getAliasName()
+    public function getPrefix($withUnquote = true)
     {
-        return $this->alias;
+        return $this->tableSymbol->getPrefix($withUnquote);
+    }
+
+    public function getFieldSymbol($field, $withUnquote = true)
+    {
+        if (false !== array_search($field, $this->columns())) {
+            return $this->tableSymbol->getPrefix($withUnquote) . "." . ($withUnquote ? "`$field`" : $field);
+        }
+        throw new QueryException("Field [$field] not exists in table [$this->table].");
+    }
+
+    public function getAlias()
+    {
+        return $this->tableSymbol->getAlias();
     }
 
     public function getSoftDelete()

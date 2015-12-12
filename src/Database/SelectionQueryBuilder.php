@@ -35,10 +35,6 @@ class SelectionQueryBuilder
                     $item = $field->getName($context);
                 }
 
-//                if (isset($field->alias)) {
-//                    $item = "$item AS $field->alias";
-//                }
-
                 $statements[] = $item;
             }
         }

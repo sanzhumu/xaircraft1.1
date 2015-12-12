@@ -9,12 +9,16 @@
 namespace Xaircraft\Database\Condition;
 
 
+use Xaircraft\Database\FieldInfo;
 use Xaircraft\Database\QueryContext;
 use Xaircraft\Database\WhereQuery;
 use Xaircraft\Exception\QueryException;
 
 class WhereInConditionBuilder extends ConditionBuilder
 {
+    /**
+     * @var FieldInfo
+     */
     public $field;
 
     public $clause;
@@ -25,7 +29,7 @@ class WhereInConditionBuilder extends ConditionBuilder
 
     public function getQueryString()
     {
-        $field = $this->context->getField($this->field);
+        $field = $this->field->getName($this->context);
         $statements = array();
         if (!isset($this->clause)) {
             $statements[] = "$field IN (";

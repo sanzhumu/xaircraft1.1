@@ -9,10 +9,14 @@
 namespace Xaircraft\Database\Condition;
 
 
+use Xaircraft\Database\FieldInfo;
 use Xaircraft\Database\QueryContext;
 
 class WhereBetweenConditionBuilder extends ConditionBuilder
 {
+    /**
+     * @var FieldInfo
+     */
     public $field;
 
     public $range;
@@ -21,7 +25,7 @@ class WhereBetweenConditionBuilder extends ConditionBuilder
 
     public function getQueryString()
     {
-        $field = $this->context->getField($this->field);
+        $field = $this->field->getName($this->context);
         $statements = array();
         if (!$this->notBetween) {
             $statements[] = "$field BETWEEN ? AND ?";

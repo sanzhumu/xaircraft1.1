@@ -14,6 +14,7 @@ use Xaircraft\Database\Condition\WhereConditionBuilder;
 use Xaircraft\Database\Condition\WhereExistsConditionBuilder;
 use Xaircraft\Database\Condition\WhereInConditionBuilder;
 use Xaircraft\Database\Data\FieldFormatInfo;
+use Xaircraft\DB;
 use Xaircraft\DI;
 use Xaircraft\Exception\DataTableException;
 use Xaircraft\Exception\QueryException;
@@ -73,7 +74,7 @@ class TableQuery implements QueryStringBuilder
 
     public function getTableName()
     {
-        return $this->schema->getTableName();
+        return $this->schema->getName();
     }
 
     public function getTableSchema()
@@ -90,7 +91,7 @@ class TableQuery implements QueryStringBuilder
     {
         if ($this->contextLock) {
             throw new DataTableException(
-                $this->schema->getTableName(),
+                $this->schema->getName(),
                 "Can't execute the TableQuery when the query has been run [getQueryString()] method.
                 You should try [DB::getQueryString()]
                 "
@@ -430,12 +431,12 @@ class TableQuery implements QueryStringBuilder
         if (isset($params) && is_array($params)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereInConditionBuilder::makeNormal($this->context, $field, $params, $notIn)
+                WhereInConditionBuilder::makeNormal($this->context, FieldInfo::make($field), $params, $notIn)
             ));
         } else if (isset($params) && is_callable($params)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereInConditionBuilder::makeClause($this->context, $field, $params, $notIn)
+                WhereInConditionBuilder::makeClause($this->context, FieldInfo::make($field), $params, $notIn)
             ));
         }
     }

@@ -155,16 +155,16 @@ class SelectTableQueryExecutor extends TableQueryExecutor
         if ($this->schema->getSoftDelete() && !$this->softDeleteLess) {
             $this->conditions[] = ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereConditionBuilder::makeNormal($this->context, $this->schema->getFieldPrefix(true) . "." . TableSchema::SOFT_DELETE_FIELD, '=', 0)
+                WhereConditionBuilder::makeNormal($this->context, $this->schema->getFieldSymbol(TableSchema::SOFT_DELETE_FIELD, false), '=', 0)
             );
         }
 
-        $selection = SelectionQueryBuilder::toString($this->context, $this->selectFields) . ' FROM ' . $this->schema->getTableName();
+        $selection = SelectionQueryBuilder::toString($this->context, $this->selectFields) . ' FROM ' . $this->schema->getSymbol();
         $join = JoinQueryBuilder::toString($this->context, $this->joins);
         $condition = ConditionQueryBuilder::toString($this->conditions);
-        $orders = OrderQueryBuilder::toString($this->orders);
-        $groups = GroupQueryBuilder::toString($this->groups);
-        $havings = HavingQueryBuilder::toString($this->havings);
+        $orders = OrderQueryBuilder::toString($this->context, $this->orders);
+        $groups = GroupQueryBuilder::toString($this->context, $this->groups);
+        $havings = HavingQueryBuilder::toString($this->context, $this->havings);
 
         $statements = array($selection);
 

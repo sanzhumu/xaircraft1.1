@@ -29,7 +29,7 @@ class QueryContext
 
     public function schema(TableSchema $schema)
     {
-        $this->schemas[$schema->getTableName()] = $schema;
+        $this->schemas[$schema->getSymbol()] = $schema;
     }
 
     public function getField($field, $prefix = null)
@@ -42,15 +42,12 @@ class QueryContext
         if (0 === $count) {
             throw new QueryException("Field [$field] not exists in any schema.");
         }
-        var_dump($field);
-        var_dump($prefix);
-        var_dump($count);
         if (1 < $count) {
             throw new QueryException("Field [$field] ambiguous.");
         }
         /** @var TableSchema $schema */
         foreach ($this->schemas as $key => $schema) {
-            if (isset($prefix) && $prefix !== $schema->getFieldPrefix(true)) {
+            if (isset($prefix) && $prefix !== $schema->getPrefix(false)) {
                 continue;
             }
             $result = $this->parseField($schema, $field);
@@ -72,7 +69,7 @@ class QueryContext
         /** @var TableSchema $schema */
         foreach ($this->schemas as $key => $schema) {
             if (false !== array_search($field, $schema->columns())) {
-                if (isset($prefix) && $prefix !== $schema->getFieldPrefix(true)) {
+                if (isset($prefix) && $prefix !== $schema->getPrefix(false)) {
                     continue;
                 }
                 $count++;
@@ -86,6 +83,6 @@ class QueryContext
         if (false === array_search($field, $schema->columns())) {
             return false;
         }
-        return $schema->getFieldPrefix() . ".`" . $field . "`";
+        return $schema->getFieldSymbol($field);
     }
 }

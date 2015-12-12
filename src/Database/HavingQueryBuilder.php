@@ -11,7 +11,7 @@ namespace Xaircraft\Database;
 
 class HavingQueryBuilder
 {
-    public static function toString(array $havings)
+    public static function toString(QueryContext $context, array $havings)
     {
         if (empty($havings)) {
             return null;
@@ -24,7 +24,8 @@ class HavingQueryBuilder
                 $statements[] = 'AND';
             }
 
-            $statements[] = $item;
+            /** @var HavingInfo $item */
+            $statements[] = $item->getString($context);
         }
 
         return implode(' ', $statements);

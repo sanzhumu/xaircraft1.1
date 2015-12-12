@@ -26,4 +26,15 @@ class HavingInfo
 
         return $info;
     }
+
+    public function getString(QueryContext $context)
+    {
+        $field = FieldInfo::make($this->field);
+        if ($this->value instanceof Raw) {
+            return $field->getName($context) . " $this->operator $this->value";
+        } else {
+            $context->param($this->value);
+            return $field->getName($context) . " $this->operator ?";
+        }
+    }
 }

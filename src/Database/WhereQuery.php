@@ -158,6 +158,7 @@ class WhereQuery implements QueryStringBuilder
     {
         $this->subQuery = true;
         $this->subQueryTableSchema = new TableSchema($table);
+        $this->context->schema($this->subQueryTableSchema);
 
         return $this;
     }
@@ -180,13 +181,13 @@ class WhereQuery implements QueryStringBuilder
             if (!$this->softDeleteLess) {
                 $this->addCondition(ConditionInfo::make(
                     ConditionInfo::CONDITION_AND,
-                    WhereConditionBuilder::makeNormal($this->context, TableSchema::SOFT_DELETE_FIELD, '=', 0)
+                    WhereConditionBuilder::makeNormal($this->context, $this->subQueryTableSchema->getFieldSymbol(TableSchema::SOFT_DELETE_FIELD, false), '=', 0)
                 ));
             }
 
             $statements = array();
             $statements[] = SelectionQueryBuilder::toString($this->context, $this->selectFields);
-            $statements[] = 'FROM ' . $this->subQueryTableSchema->getTableName();
+            $statements[] = 'FROM ' . $this->subQueryTableSchema->getSymbol();
             $condition = ConditionQueryBuilder::toString($this->conditions);
             if (isset($condition)) {
                 $statements[] = "WHERE " . $condition;

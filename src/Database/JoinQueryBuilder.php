@@ -38,7 +38,7 @@ class JoinQueryBuilder
         $statements = array();
 
         $statements[] = $join->leftJoin ? "LEFT JOIN" : "JOIN";
-        $statements[] = $join->schema->getTableName();
+        $statements[] = $join->schema->getSymbol();
 
         if (count($conditions) > 0) {
             $statements[] = "ON (";
@@ -54,7 +54,9 @@ class JoinQueryBuilder
                     $items[] = $item->orAnd;
                 }
                 if (!$item->whereCondition) {
-                    $items[] = "$item->onField $item->onOperator $item->onValue";
+                    $field = FieldInfo::make($item->onField);
+                    $value = FieldInfo::make($item->onValue);
+                    $items[] = $field->getName($context) . " $item->onOperator " . $value->getName($context);
                 } else {
                     if ($item->onValue instanceof Raw) {
                         $items[] = "$item->onField $item->onOperator " . $item->onValue->getValue();

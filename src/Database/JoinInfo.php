@@ -10,13 +10,11 @@ namespace Xaircraft\Database;
 
 
 
+use Xaircraft\Database\Symbol\TableSymbol;
+
 class JoinInfo
 {
     public $table;
-
-    public $name;
-
-    public $alias;
 
     public $condition;
 
@@ -63,9 +61,6 @@ class JoinInfo
     private function parseTable()
     {
         $this->schema = new TableSchema($this->table);
-        $this->name = $this->schema->getTableName(true);
-        $this->alias = $this->schema->getAliasName();
-
         $this->context->schema($this->schema);
     }
 }

@@ -67,12 +67,21 @@ class FieldInfo
         if (isset($this->func)) {
             $field = $this->func->getString($context);
         } else {
-            var_dump($this->field);
             $field = $context->getField($this->field, $this->prefix);
         }
         if (isset($this->alias)) {
             $field = "$field AS $this->alias";
         }
         return $field;
+    }
+
+    public function getField()
+    {
+        return $this->field;
+    }
+
+    public function getPrefix()
+    {
+        return $this->prefix;
     }
 }

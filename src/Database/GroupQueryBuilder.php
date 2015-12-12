@@ -11,12 +11,23 @@ namespace Xaircraft\Database;
 
 class GroupQueryBuilder
 {
-    public static function toString(array $groups)
+    public static function toString(QueryContext $context, $groups)
     {
         if (empty($groups)) {
             return null;
         }
 
-        return implode(',', $groups);
+        $fields = array();
+        /** @var GroupInfo $item */
+        foreach ($groups as $item) {
+            if (!empty($item->groups)) {
+                foreach ($item->groups as $group) {
+                    $fields[] = FieldInfo::make($group)->getName($context);
+                }
+            }
+        }
+
+
+        return implode(',', $fields);
     }
 }
