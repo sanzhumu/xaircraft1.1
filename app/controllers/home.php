@@ -1,4 +1,5 @@
 <?php
+use Account\User;
 use Xaircraft\Authentication\Auth;
 use Xaircraft\Authentication\Contract\CurrentUser;
 use Xaircraft\Core\Strings;
@@ -42,5 +43,15 @@ class home_controller extends Controller
         var_dump($queryString);
 
         var_dump(DB::getQueryLog());
+    }
+
+    public function test_model()
+    {
+        /** @var User $user */
+        $user = \Account\User::model();
+        $user->name = "3";
+        $user->password = "test";
+        $user->level = "admin";
+        $user->save();
     }
 }

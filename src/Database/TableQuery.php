@@ -14,6 +14,7 @@ use Xaircraft\Database\Condition\WhereConditionBuilder;
 use Xaircraft\Database\Condition\WhereExistsConditionBuilder;
 use Xaircraft\Database\Condition\WhereInConditionBuilder;
 use Xaircraft\Database\Data\FieldFormatInfo;
+use Xaircraft\Database\Func\Func;
 use Xaircraft\DB;
 use Xaircraft\DI;
 use Xaircraft\Exception\DataTableException;
@@ -199,7 +200,7 @@ class TableQuery implements QueryStringBuilder
     public function count()
     {
         $this->queryType = self::QUERY_SELECT;
-        $this->selectFields = array(FieldInfo::make('COUNT(*)', 'total_count'));
+        $this->selectFields = array(FieldInfo::make(Func::count("*"), 'total_count'));
         $this->selectQuerySettings['pluck'] = true;
 
         return $this;

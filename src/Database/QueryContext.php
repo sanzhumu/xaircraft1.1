@@ -34,6 +34,10 @@ class QueryContext
 
     public function getField($field, $prefix = null)
     {
+        if (!isset($field)) {
+            throw new QueryException("Invalid field.");
+        }
+
         if (empty($this->schemas)) {
             return $field;
         }

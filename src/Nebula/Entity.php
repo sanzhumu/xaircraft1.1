@@ -67,7 +67,7 @@ class Entity
         }
 
         if ($this->exists) {
-            $result = DB::table($this->schema->getTableName())
+            $result = DB::table($this->schema->getName())
                 ->where(
                     $this->schema->getAutoIncrementField(),
                     $this->fields[$this->schema->getAutoIncrementField()]
@@ -75,7 +75,7 @@ class Entity
             $this->updates = array();
             return $result;
         } else {
-            $id = DB::table($this->schema->getTableName())->insertGetId($this->updates)->execute();
+            $id = DB::table($this->schema->getName())->insertGetId($this->updates)->execute();
             if ($id > 0) {
                 $this->setField($this->schema->getAutoIncrementField(), $id);
                 $this->updates = array();
@@ -94,6 +94,11 @@ class Entity
         return $this->exists;
     }
 
+    public function isModified($field)
+    {
+        return array_key_exists($field, $this->updates);
+    }
+
     private function parseUpdateFields($fields)
     {
         if (!empty($fields)) {
@@ -106,16 +111,16 @@ class Entity
     private function setField($field, $value)
     {
         if (!$this->schema->existsField($field)) {
-            throw new EntityException("Can't find field [$field] in table [" . $this->schema->getTableName());
+            throw new EntityException("Can't find field [$field] in table [" . $this->schema->getName());
         }
 
         if ($value != $this->shadows[$field]) {
             if ($this->autoIncrementField === $field) {
                 if (!$this->exists) {
-                    if (DB::table($this->schema->getTableName())->where($field, $value)->count()->execute() > 0) {
+                    if (DB::table($this->schema->getName())->where($field, $value)->count()->execute() > 0) {
                         $this->exists = true;
                     }
-                    $this->query = DB::table($this->schema->getTableName())->where($field, $value);
+                    $this->query = DB::table($this->schema->getName())->where($field, $value);
                 }
             }
             $this->fields[$field] = $value;

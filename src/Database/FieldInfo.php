@@ -75,6 +75,11 @@ class FieldInfo
         return $field;
     }
 
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
     public function getField()
     {
         return $this->field;
