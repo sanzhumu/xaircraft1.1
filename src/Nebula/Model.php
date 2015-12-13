@@ -94,7 +94,7 @@ abstract class Model extends Container
         return DB::transaction(function () {
             if (false === $this->beforeDelete()) return false;
             $key = $this->schema->getAutoIncrementField();
-            $result = DB::table($this->schema->getTableName())
+            $result = DB::table($this->schema->getName())
                 ->where($key, $this->entity->$key)
                 ->delete()->execute();
             if ($result) $this->afterDelete($this->fields());
@@ -107,7 +107,7 @@ abstract class Model extends Container
         return DB::transaction(function () {
             if (false === $this->beforeForceDelete()) return false;
             $key = $this->schema->getAutoIncrementField();
-            $result = DB::table($this->schema->getTableName())
+            $result = DB::table($this->schema->getName())
                 ->where($key, $this->entity->$key)
                 ->forceDelete()->execute();
             if ($result) $this->afterForceDelete($this->fields());
@@ -155,7 +155,7 @@ abstract class Model extends Container
         if ($arg instanceof TableQuery) {
             $query = $arg;
         } else if (is_numeric($arg)) {
-            $query = DB::table($model->schema->getTableName())
+            $query = DB::table($model->schema->getName())
                 ->where($model->schema->getAutoIncrementField(), $arg)
                 ->select();
         } else {

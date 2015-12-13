@@ -140,7 +140,7 @@ class TableSchema extends Container
 
     private function initializeColumns()
     {
-        $result = DB::query("SHOW FULL COLUMNS FROM $this->table");
+        $result = DB::query("SHOW FULL COLUMNS FROM `$this->table`");
         if (false === $result) {
             throw new DataTableException($this->table, "Table not exists - [$this->table]");
         }
