@@ -25,5 +25,24 @@ trait BaseTree
             ->execute();
     }
 
+    public static function makeTrees($parentID, array $selections)
+    {
+        $children = self::children($parentID, $selections);
+
+        if (!empty($children)) {
+            $nodes = array();
+            foreach ($children as $item) {
+                $node = array();
+                foreach ($selections as $field) {
+                    $node[$field] = $item[$field];
+                }
+                $node['children'] = self::makeTrees($item['id'], $selections);
+                $nodes[] = $node;
+            }
+            return $nodes;
+        }
+        return null;
+    }
+
     public abstract function getParentIDField();
 }

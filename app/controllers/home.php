@@ -28,7 +28,7 @@ class home_controller extends Controller
     {
         //$query = \Xaircraft\DB::table('user AS u')->select('u.id')->join('project AS p', 'p.id', 'u.id')->where('p.id', '>', 0);
         //$query = \Xaircraft\DB::table('user AS u')->select('u.id')->join('project AS p', 'p.id', 'u.id')->where('u.id', '>', 0);
-        $query = \Xaircraft\DB::table('user')->select(array(Func::count('name'), 'name'))->whereIn('id', function (WhereQuery $whereQuery) {
+        $query = \Xaircraft\DB::table('user')->select('name')->whereIn('id', function (WhereQuery $whereQuery) {
             $whereQuery->select('u.id')->from('user AS u')->where('u.id', 9);
         })->groupBy('user.id', 'user.name')->having('user.id', 0);
 //        $query = DB::table('user')->update(array(
