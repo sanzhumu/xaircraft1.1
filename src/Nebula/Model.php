@@ -123,11 +123,13 @@ abstract class Model extends Container
     public function forceDelete()
     {
         return DB::transaction(function () {
+            if (false === $this->beforeDelete()) return false;
             if (false === $this->beforeForceDelete()) return false;
             $key = $this->schema->getAutoIncrementField();
             $result = DB::table($this->schema->getName())
                 ->where($key, $this->entity->$key)
                 ->forceDelete()->execute();
+            if ($result) $this->afterDelete($this->fields());
             if ($result) $this->afterForceDelete($this->fields());
             return $result;
         });
