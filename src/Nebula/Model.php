@@ -67,6 +67,11 @@ abstract class Model extends Container
         return $this->entity->isExists();
     }
 
+    public function isModified($field)
+    {
+        return $this->entity->isModified($field);
+    }
+
     public function fields()
     {
         return $this->entity->fields();

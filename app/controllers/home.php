@@ -53,5 +53,17 @@ class home_controller extends Controller
         $user->password = "test";
         $user->level = "admin";
         $user->save();
+
+        var_dump($user->isModified("name"));
+
+        $user->name = "4";
+        $user->level = "normal";
+
+        var_dump($user->isModified("name"));
+        var_dump($user->isModified("level"));
+
+        $user->save();
+
+        var_dump(DB::getQueryLog());
     }
 }
