@@ -159,10 +159,14 @@ abstract class Model extends Container
                 ->where($model->schema->getAutoIncrementField(), $arg)
                 ->select();
         } else {
-            throw new ModelException("What do you want to find? ");
+            throw new ModelException("What do you want to find?");
         }
 
         $model->loadData($query);
+
+        if (is_numeric($arg) && !$model->isExists()) {
+            throw new ModelException("Record not exists.");
+        }
 
         return $model;
     }
