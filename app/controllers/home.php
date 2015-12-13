@@ -66,4 +66,9 @@ class home_controller extends Controller
 
         var_dump(DB::getQueryLog());
     }
+
+    public function test_trait()
+    {
+        User::children(0, array());
+    }
 }

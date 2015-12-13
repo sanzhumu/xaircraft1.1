@@ -31,6 +31,19 @@ abstract class Model extends Container
 
     protected $table;
 
+    public function __construct()
+    {
+        if (isset($this->table)) {
+            $table = $this->table;
+        } else {
+            $statements = explode('\\', get_called_class());
+            $table = $statements[count($statements) - 1];
+            $table = Strings::camelToSnake($table);
+        }
+
+        $this->initializeModel($table);
+    }
+
     /**
      * @return bool|mixed
      */
@@ -124,6 +137,7 @@ abstract class Model extends Container
     {
         $this->schema = DB::table($table)->getTableSchema();
         $this->entity = DB::entity($table);
+        $this->table = $table;
     }
 
     private function loadData(TableQuery $query)
@@ -141,16 +155,6 @@ abstract class Model extends Container
          * @var Model $model
          */
         $model = DI::get($table);
-
-        if (isset($model->table)) {
-            $table = $model->table;
-        } else {
-            $statements = explode('\\', $table);
-            $table = $statements[count($statements) - 1];
-            $table = Strings::camelToSnake($table);
-        }
-
-        $model->initializeModel($table);
         return $model;
     }
 
