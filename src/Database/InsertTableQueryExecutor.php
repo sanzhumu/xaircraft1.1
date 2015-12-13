@@ -46,7 +46,7 @@ class InsertTableQueryExecutor extends TableQueryExecutor
 
         if (true === $this->insertGetId) {
             if (true === DB::insert($query, $this->context->getParams())) {
-                return DB::table($this->schema->getTableName())
+                return DB::table($this->schema->getName())
                     ->orderBy($this->schema->getAutoIncrementField(), 'DESC')
                     ->pluck($this->schema->getAutoIncrementField())
                     ->execute();
@@ -58,7 +58,7 @@ class InsertTableQueryExecutor extends TableQueryExecutor
     public function toQueryString()
     {
         if (empty($this->inserts)) {
-            throw new DataTableException($this->schema->getTableName(), "Can't execute INSERT without inserts.");
+            throw new DataTableException($this->schema->getSymbol(), "Can't execute INSERT without inserts.");
         }
 
         if ($this->schema->existsField(TableSchema::RESERVED_FIELD_CREATE_AT) &&
@@ -76,7 +76,7 @@ class InsertTableQueryExecutor extends TableQueryExecutor
                 !$this->schema->field($item)->nullable &&
                 !$this->schema->field($item)->autoIncrement) {
                 throw new FieldValidateException(
-                    $this->schema->getTableName(),
+                    $this->schema->getSymbol(),
                     $item,
                     "Field [$item] can't be null."
                 );
@@ -89,15 +89,15 @@ class InsertTableQueryExecutor extends TableQueryExecutor
         foreach ($this->inserts as $key => $value) {
             if (!$this->schema->existsField($key)) {
                 throw new FieldValidateException(
-                    $this->schema->getTableName(),
+                    $this->schema->getSymbol(),
                     $key,
-                    "Not exists field [$key] in table [" . $this->schema->getTableName() . "]."
+                    "Not exists field [$key] in table [" . $this->schema->getSymbol() . "]."
                 );
             }
             $field = $this->schema->field($key);
             if ($field->autoIncrement) {
                 throw new FieldValidateException(
-                    $this->schema->getTableName(),
+                    $this->schema->getSymbol(),
                     $key,
                     "Can't set auto-increment field [$key] in insert query."
                 );
@@ -105,7 +105,7 @@ class InsertTableQueryExecutor extends TableQueryExecutor
             if (ColumnInfo::FIELD_TYPE_ENUM === $field->type) {
                 if (false === array_search($value, $field->enums)) {
                     throw new FieldValidateException(
-                        $this->schema->getTableName(),
+                        $this->schema->getSymbol(),
                         $key,
                         "Not exists enum value [$value] in insert query. " .
                         "The value must be one of (" . implode(',', $field->enums) . ")."
@@ -114,7 +114,7 @@ class InsertTableQueryExecutor extends TableQueryExecutor
             }
             if (isset($field->validation) && !$field->validation->valid($value)) {
                 throw new FieldValidateException(
-                    $this->schema->getTableName(),
+                    $this->schema->getSymbol(),
                     $key,
                     "Field value validation error. [$key]"
                 );
@@ -127,7 +127,7 @@ class InsertTableQueryExecutor extends TableQueryExecutor
 
         $statements = array(
             "INSERT INTO",
-            $this->schema->getTableName(),
+            $this->schema->getSymbol(),
             "(",
             implode(',', $fields),
             ")VALUES(",

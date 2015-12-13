@@ -51,12 +51,12 @@ class DeleteTableQueryExecutor extends TableQueryExecutor
     public function toQueryString()
     {
         if (empty($this->conditions)) {
-            throw new DataTableException($this->schema->getTableName(), "Can't execute DELETE query without conditions.");
+            throw new DataTableException($this->schema->getSymbol(), "Can't execute DELETE query without conditions.");
         }
 
         $statements = array(
             "DELETE FROM",
-            $this->schema->getTableName(),
+            $this->schema->getSymbol(),
             "WHERE",
             ConditionQueryBuilder::toString($this->conditions)
         );
