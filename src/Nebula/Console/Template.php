@@ -83,6 +83,11 @@ class {{model}} extends Model
         // TODO: Implement afterDelete() method.
     }
 
+    public function beforeForceDelete()
+    {
+        // TODO: Implement beforeForceDelete() method.
+    }
+
     public function afterForceDelete($fields)
     {
         // TODO: Implement afterForceDelete() method.
