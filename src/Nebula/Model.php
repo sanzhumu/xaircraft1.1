@@ -133,6 +133,11 @@ abstract class Model extends Container
         });
     }
 
+    public function getSchema()
+    {
+        return $this->schema;
+    }
+
     private function initializeModel($table)
     {
         $this->schema = DB::table($table)->getTableSchema();

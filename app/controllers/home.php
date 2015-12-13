@@ -48,7 +48,7 @@ class home_controller extends Controller
     public function test_model()
     {
         /** @var User $user */
-        $user = \Account\User::model();
+        $user = \Account\User::find(140);
         $user->name = "3";
         $user->password = "test";
         $user->level = "admin";

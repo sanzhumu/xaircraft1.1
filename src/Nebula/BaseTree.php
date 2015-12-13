@@ -19,6 +19,11 @@ trait BaseTree
     {
         /** @var Model $model */
         $model = DI::get(__CLASS__);
-        var_dump($model);
+        return DB::table($model->getSchema()->getName())
+            ->where($model->getParentIDField(), $parentID)
+            ->select($selections)
+            ->execute();
     }
+
+    public abstract function getParentIDField();
 }

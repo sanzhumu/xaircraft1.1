@@ -211,11 +211,6 @@ class TableQuery implements QueryStringBuilder
         $this->queryType = self::QUERY_SELECT;
 
         $fields = array();
-        if (func_num_args() > 0) {
-            foreach (func_get_args() as $item) {
-                $fields[] = FieldInfo::make($item);
-            }
-        }
         if (1 === func_num_args()) {
             $params = func_get_arg(0);
             if (isset($params) && is_array($params)) {
@@ -231,6 +226,10 @@ class TableQuery implements QueryStringBuilder
                         }
                     }
                 }
+            }
+        } else if (func_num_args() > 0) {
+            foreach (func_get_args() as $item) {
+                $fields[] = FieldInfo::make($item);
             }
         }
         $this->selectFields = $fields;
