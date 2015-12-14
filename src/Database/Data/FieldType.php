@@ -40,9 +40,9 @@ abstract class FieldType
             case "FLOAT":
             case "DOUBLE":
             case "DECIMAL":
-                if (false !== array_search($field, array("create_at", "update_at", "delete_at"))) {
-                    return new TimestampFieldType();
-                }
+//                if (false !== array_search($field, array("create_at", "update_at", "delete_at"))) {
+//                    return new TimestampFieldType();
+//                }
                 return new NumberFieldType();
             case "DATE":
             case "DATETIME":

@@ -56,7 +56,7 @@ class TableSchema extends Container
             throw new DatabaseException("Can't find schema cache directory.");
         }
 
-        $this->source = $schema . '/' . DB::getDatabaseName() . '/' . $table . '.dat';
+        $this->source = $schema . '/' . DB::getDatabaseName() . '/' . $this->table . '.dat';
 
         $this->initialize();
     }

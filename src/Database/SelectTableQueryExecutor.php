@@ -97,12 +97,19 @@ class SelectTableQueryExecutor extends TableQueryExecutor
                 $item = array();
                 foreach ($row as $key => $value) {
                     $item[$key] = array_key_exists($key, $this->formats) ?
-                        $this->formatConvert($row, $value, $this->formats[$key]) : $value;
+                        $this->formatConvert($row, $this->getFieldValue($key, $value), $this->formats[$key]) : $this->getFieldValue($key, $value);
                 }
                 $formatResult[] = $item;
             }
         } else {
-            $formatResult = $result;
+            $formatResult = array();
+            foreach ($result as $row) {
+                $item = array();
+                foreach ($row as $key => $value) {
+                    $item[$key] = $this->getFieldValue($key, $value);
+                }
+                $formatResult[] = $item;
+            }
         }
 
         if (!empty($formatResult)) {

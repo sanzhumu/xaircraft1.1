@@ -74,7 +74,9 @@ class home_controller extends Controller
 
     public function test_single()
     {
-        $list = DB::table('user')->select("name")->single()->execute();
+        $list = DB::table('user')->select()->format(array(
+            'create_at' => FieldType::DATE
+        ))->execute();
         var_dump($list);
     }
 }
