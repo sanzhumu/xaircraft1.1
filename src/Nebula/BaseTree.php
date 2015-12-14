@@ -49,10 +49,11 @@ trait BaseTree
 
     public static function makeTrace($id, TableQuery $query = null)
     {
-
+        $traces = array();
+        self::getParent($id, $traces, $query);
     }
 
-    private static function getParent($id, array $traces, TableQuery $query = null)
+    private static function getParent($id, array &$traces, TableQuery $query = null)
     {
         /** @var Model $model */
         $model = DI::get(__CLASS__);
@@ -61,7 +62,15 @@ trait BaseTree
             $query = DB::table($model->getSchema()->getName());
         }
 
-        //$current = $query->where('id', $id)
+        $current = $query->where('id', $id)->select()->detail()->execute();
+        if (!isset($traces)) {
+            $traces = array();
+        }
+        $traces[] = $current['name'];
+        $parentID = $current[$model->getParentIDField()];
+        if ($parentID > 0) {
+            self::getParent($parentID, $traces, $query);
+        }
     }
 
     public abstract function getParentIDField();

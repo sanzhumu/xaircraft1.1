@@ -79,4 +79,10 @@ class home_controller extends Controller
         ))->execute();
         var_dump($list);
     }
+
+    public function test_detail()
+    {
+        $detail = DB::table('user')->select()->take(1)->detail()->execute();
+        var_dump($detail);
+    }
 }
