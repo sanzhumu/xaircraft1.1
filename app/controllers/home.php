@@ -82,7 +82,12 @@ class home_controller extends Controller
 
     public function test_detail()
     {
-        $detail = DB::table('user')->select()->take(1)->detail()->execute();
+        $query = DB::table('user')->select()->take(1)->detail();
+
+        $detail = $query->execute();
+        var_dump($detail);
+
+        $detail = $query->execute();
         var_dump($detail);
     }
 }

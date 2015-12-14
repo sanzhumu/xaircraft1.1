@@ -51,6 +51,7 @@ trait BaseTree
     {
         $traces = array();
         self::getParent($id, $traces, $query);
+        return implode("/", array_reverse($traces));
     }
 
     private static function getParent($id, array &$traces, TableQuery $query = null)
@@ -59,10 +60,12 @@ trait BaseTree
         $model = DI::get(__CLASS__);
 
         if (!isset($query)) {
-            $query = DB::table($model->getSchema()->getName());
+            $realQuery = DB::table($model->getSchema()->getName());
+        } else {
+            $realQuery = $query;
         }
 
-        $current = $query->where('id', $id)->select()->detail()->execute();
+        $current = $realQuery->where('id', $id)->select()->detail()->execute();
         if (!isset($traces)) {
             $traces = array();
         }
