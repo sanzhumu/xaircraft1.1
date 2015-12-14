@@ -13,6 +13,7 @@ use Xaircraft\App;
 use Xaircraft\Configuration\Settings;
 use Xaircraft\Console\Command;
 use Xaircraft\Console\Console;
+use Xaircraft\Core\Strings;
 use Xaircraft\DB;
 use Xaircraft\DI;
 use Xaircraft\Exception\ConsoleException;
@@ -75,15 +76,15 @@ class MigrateCommand extends Command
             return;
         }
 
-        DB::transaction(function () use ($migration, $name) {
-            if (false !== $migration->up()) {
-                $this->recordHistory($name);
-                $this->clearTableSchema($name);
-                Console::line("migrate $name finished.");
-            } else {
-                Console::line("migrate $name failure.");
-            }
-        });
+        if (DB::transaction(function () use ($migration, $name) {
+            return false !== $migration->up();
+        })) {
+            $this->recordHistory($name);
+            $this->clearTableSchema($name);
+            Console::line("migrate $name finished.");
+        } else {
+            Console::line("migrate $name failure.");
+        }
     }
 
     private function recordHistory($name)
@@ -96,7 +97,7 @@ class MigrateCommand extends Command
     private function clearTableSchema($name)
     {
         if (preg_match('#m[\d]+(Create|Alter)(?<table>[a-zA-Z][a-zA-Z0-9\_]+)Table#i', $name, $matches)) {
-            $table = strtolower($matches['table']);
+            $table = strtolower(Strings::snakeToCamel($matches['table']));
             $path = App::path('cache') . "/schema/" . DB::getDatabaseName() . "/$table.dat";
             if (file_exists($path)) {
                 unlink($path);
