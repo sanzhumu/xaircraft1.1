@@ -153,6 +153,14 @@ abstract class Model extends Container
     }
 
     /**
+     * @return TableQuery
+     */
+    private function createQuery()
+    {
+        return DB::table($this->schema->getName());
+    }
+
+    /**
      * @return Model
      */
     public static function model()
@@ -163,6 +171,14 @@ abstract class Model extends Container
          */
         $model = DI::get($table);
         return $model;
+    }
+
+    /**
+     * @return TableQuery
+     */
+    public static function query()
+    {
+        return self::model()->createQuery();
     }
 
     public static function find($arg)
