@@ -54,6 +54,8 @@ class SelectTableQueryExecutor extends TableQueryExecutor
 
     private $singleField = false;
 
+    private $detail = false;
+
     public function __construct(
         TableSchema $schema,
         QueryContext $context,
@@ -134,6 +136,10 @@ class SelectTableQueryExecutor extends TableQueryExecutor
                     }
                 }
                 return $result;
+            }
+
+            if ($this->detail) {
+                return isset($formatResult[0]) ? $formatResult[0] : null;
             }
         }
 
@@ -232,6 +238,7 @@ class SelectTableQueryExecutor extends TableQueryExecutor
             $this->pluck = array_key_exists('pluck', $settings) ? $settings['pluck'] : null;
             $this->formats = array_key_exists('formats', $settings) ? $settings['formats'] : null;
             $this->singleField = array_key_exists('single_field', $settings) ? $settings['single_field'] : false;
+            $this->detail = array_key_exists('detail', $settings) ? $settings['detail'] : false;
 
             if (isset($this->takeCount) || isset($this->skipOffset)) {
                 $this->limit = true;

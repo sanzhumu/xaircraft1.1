@@ -250,6 +250,15 @@ class TableQuery implements QueryStringBuilder
         return $this;
     }
 
+    public function detail()
+    {
+        $this->queryType = self::QUERY_SELECT;
+
+        $this->selectQuerySettings['detail'] = true;
+
+        return $this;
+    }
+
     public function format(array $formats)
     {
         $this->queryType = self::QUERY_SELECT;

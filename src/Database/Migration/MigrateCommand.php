@@ -75,13 +75,15 @@ class MigrateCommand extends Command
             return;
         }
 
-        if (false !== $migration->up()) {
-            $this->recordHistory($name);
-            $this->clearTableSchema($name);
-            Console::line("migrate $name finished.");
-        } else {
-            Console::line("migrate $name failure.");
-        }
+        DB::transaction(function () use ($migration, $name) {
+            if (false !== $migration->up()) {
+                $this->recordHistory($name);
+                $this->clearTableSchema($name);
+                Console::line("migrate $name finished.");
+            } else {
+                Console::line("migrate $name failure.");
+            }
+        });
     }
 
     private function recordHistory($name)
@@ -93,7 +95,7 @@ class MigrateCommand extends Command
 
     private function clearTableSchema($name)
     {
-        if (preg_match('#m[\d]+(Create|Alter)(?<table>[a-zA-Z][a-zA-Z0-9\_]+)Table#i', $name, $matches)) {
+        if (preg_match('#m[\d]+(Create|Alter|Init)(?<table>[a-zA-Z][a-zA-Z0-9\_]+)Table#i', $name, $matches)) {
             $table = strtolower($matches['table']);
             $path = App::path('cache') . "/schema/" . DB::getDatabaseName() . "/$table.dat";
             if (file_exists($path)) {

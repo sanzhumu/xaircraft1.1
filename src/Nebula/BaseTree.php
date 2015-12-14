@@ -47,5 +47,22 @@ trait BaseTree
         return null;
     }
 
+    public static function makeTrace($id, TableQuery $query = null)
+    {
+
+    }
+
+    private static function getParent($id, array $traces, TableQuery $query = null)
+    {
+        /** @var Model $model */
+        $model = DI::get(__CLASS__);
+
+        if (!isset($query)) {
+            $query = DB::table($model->getSchema()->getName());
+        }
+
+        //$current = $query->where('id', $id)
+    }
+
     public abstract function getParentIDField();
 }
