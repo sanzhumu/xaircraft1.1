@@ -34,6 +34,8 @@ class {{name}} extends \Xaircraft\Database\Migration\Migration
     public function up()
     {
         // TODO: Implement up() method.
+
+        return false;
     }
 
     public function down()
