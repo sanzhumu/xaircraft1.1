@@ -71,4 +71,10 @@ class home_controller extends Controller
     {
         User::children(0, array());
     }
+
+    public function test_single()
+    {
+        $list = DB::table('user')->select("name")->single()->execute();
+        var_dump($list);
+    }
 }

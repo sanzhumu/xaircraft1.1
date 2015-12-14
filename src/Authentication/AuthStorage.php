@@ -16,6 +16,9 @@ interface AuthStorage
 {
     public function set(CurrentUser $user);
 
+    /**
+     * @return CurrentUser
+     */
     public function get();
 
     public function clear();

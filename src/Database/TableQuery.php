@@ -241,6 +241,15 @@ class TableQuery implements QueryStringBuilder
         return $this;
     }
 
+    public function single()
+    {
+        $this->queryType = self::QUERY_SELECT;
+
+        $this->selectQuerySettings['single_field'] = true;
+
+        return $this;
+    }
+
     public function format(array $formats)
     {
         $this->queryType = self::QUERY_SELECT;
