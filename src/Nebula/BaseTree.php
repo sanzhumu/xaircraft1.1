@@ -10,24 +10,27 @@ namespace Xaircraft\Nebula;
 
 
 use Xaircraft\Core\Strings;
+use Xaircraft\Database\TableQuery;
 use Xaircraft\DB;
 use Xaircraft\DI;
 
 trait BaseTree
 {
-    public static function children($parentID, array $selections)
+    public static function children($parentID, array $selections, TableQuery $query = null)
     {
         /** @var Model $model */
         $model = DI::get(__CLASS__);
-        return DB::table($model->getSchema()->getName())
-            ->where($model->getParentIDField(), $parentID)
+        if (!isset($query)) {
+            $query = DB::table($model->getSchema()->getName());
+        }
+        return $query->where($model->getParentIDField(), $parentID)
             ->select($selections)
             ->execute();
     }
 
-    public static function makeTrees($parentID, array $selections)
+    public static function makeTrees($parentID, array $selections, TableQuery $query = null)
     {
-        $children = self::children($parentID, $selections);
+        $children = self::children($parentID, $selections, $query);
 
         if (!empty($children)) {
             $nodes = array();
@@ -36,7 +39,7 @@ trait BaseTree
                 foreach ($selections as $field) {
                     $node[$field] = $item[$field];
                 }
-                $node['children'] = self::makeTrees($item['id'], $selections);
+                $node['children'] = self::makeTrees($item['id'], $selections, $query);
                 $nodes[] = $node;
             }
             return $nodes;
