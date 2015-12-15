@@ -1,5 +1,5 @@
 # xaircraft1.1
-PHP framework 1.1 for Xaircraft
+PHP framework 1.1 for Xaircraft Co.
 
 ## 为什么要有这个框架？
 
