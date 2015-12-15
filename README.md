@@ -60,3 +60,24 @@ array (size=6)
   4 => int 5
   5 => int 6
 ```
+
+支持参数的可空设置，示例如下：
+```PHP
+class home_controller extends Controller
+{
+    /**
+     * @param $ids
+     */
+     public function index(array $ids = null)
+     {
+        var_dump($ids);
+     }
+}
+```
+若请求 URL：http://localhost/
+
+则页面会输出：
+
+```PHP
+null
+```
