@@ -21,6 +21,9 @@ class SingleModelGenerator extends ModelCommandExecutor
         $this->checkArgs(array('table'));
 
         $namespace = array_key_exists('namespace', $this->args) ? $this->args['namespace'] : null;
+        if (!isset($namespace)) {
+            $namespace = array_key_exists('ns', $this->args) ? $this->args['ns'] : null;
+        }
         $table = $this->args['table'];
         $class = array_key_exists('class', $this->args) ? $this->args['class'] : Strings::snakeToCamel($table);
         $path = $this->path($class, $namespace);

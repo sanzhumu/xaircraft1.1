@@ -21,21 +21,26 @@ class Template
 
     private static function getTemplate()
     {
-        return '
+        return "
 <?php
 
 /**
  * Date: {{date}}
  * Author: {{author}}
  */
-class {{name}} extends \Xaircraft\Database\Migration\Migration
+class {{name}} extends \\Xaircraft\\Database\\Migration\\Migration
 {
 
     public function up()
     {
-        // TODO: Implement up() method.
+        \$sql = <<<'EOT'
 
-        return false;
+EOT;
+
+        if (false === \\Xaircraft\\DB::statement(\$sql))
+            return false;
+
+        return true;
     }
 
     public function down()
@@ -43,6 +48,6 @@ class {{name}} extends \Xaircraft\Database\Migration\Migration
         // TODO: Implement down() method.
     }
 }
-';
+";
     }
 }
