@@ -60,6 +60,8 @@ array (size=6)
   4 => int 5
   5 => int 6
 ```
+此时若请求 URL：http://localhost/
+会抛出参数不能为空的异常。
 
 支持参数的可空设置，示例如下：
 ```PHP
