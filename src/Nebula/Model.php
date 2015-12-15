@@ -203,6 +203,24 @@ abstract class Model extends Container
         return $model;
     }
 
+    public static function load(array $fields)
+    {
+        if (empty($fields)) {
+            return null;
+        }
+
+        /** @var Model $model */
+        $model = self::model();
+
+        foreach ($fields as $field) {
+            if (array_search($field, $model->schema->columns())) {
+                $model->$field = $fields[$field];
+            }
+        }
+
+        return $model;
+    }
+
     public function __get($field)
     {
         return $this->entity->$field;
