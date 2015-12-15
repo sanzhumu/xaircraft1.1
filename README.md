@@ -9,4 +9,26 @@ WEB框架的意义在于：将良好的WEB开发过程、经验通过框架提�
 
 需要特别说明的是，该框架是在实际项目开发过程中创建、完善的，因此依然存在不少问题。
 
-## 
+## Action 参数注入
+
+支持 Action 参数注入，示例如下：
+
+```PHP
+class home_controller extends Controller
+{
+    /**
+     * @param $index
+     */
+     public function index($index = 0)
+     {
+        var_dump($index);
+     }
+}
+```
+若请求 URL：http://localhost/?index=1
+
+则页面会输出：
+
+```PHP
+1
+```
