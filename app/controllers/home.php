@@ -103,4 +103,10 @@ class home_controller extends Controller
 
         var_dump(DB::getQueryLog());
     }
+
+    public function test_model_exists()
+    {
+        var_dump(User::exists(144));
+        var_dump(User::exists(User::query()->where('id', 1)));
+    }
 }

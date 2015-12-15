@@ -175,6 +175,26 @@ abstract class Model extends Container
     }
 
     /**
+     * @param $arg
+     * @return bool
+     * @throws \Xaircraft\Exception\DataTableException
+     */
+    public static function exists($arg)
+    {
+        $model = self::model();
+        if ($arg instanceof TableQuery) {
+            $query = $arg->count();
+        } else if (is_numeric($arg)) {
+            $query = DB::table($model->schema->getName())
+                ->where($model->schema->getAutoIncrementField(), $arg)
+                ->count();
+        } else {
+            return false;
+        }
+        return $query->execute() > 0;
+    }
+
+    /**
      * @return TableQuery
      */
     public static function query()
