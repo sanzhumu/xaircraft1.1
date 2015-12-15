@@ -32,3 +32,31 @@ class home_controller extends Controller
 ```PHP
 1
 ```
+
+支持定义数组类型的参数，示例如下：
+
+```PHP
+class home_controller extends Controller
+{
+    /**
+     * @param $ids
+     */
+     public function index(array $ids)
+     {
+        var_dump($ids);
+     }
+}
+```
+若请求 URL：http://localhost/?ids=[1,2,3,4,5,6]
+
+则页面会输出：
+
+```PHP
+array (size=6)
+  0 => int 1
+  1 => int 2
+  2 => int 3
+  3 => int 4
+  4 => int 5
+  5 => int 6
+```
