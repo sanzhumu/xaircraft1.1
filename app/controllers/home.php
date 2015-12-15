@@ -94,14 +94,13 @@ class home_controller extends Controller
     public function test_model_load()
     {
         $user = User::load(array(
-            "id" => 1,
+            "id" => 144,
             "name" => "3",
             "password" => "asdf",
             "level" => "admin"
         ));
         $user->save();
 
-        var_dump($user);
         var_dump(DB::getQueryLog());
     }
 }

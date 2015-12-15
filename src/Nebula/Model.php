@@ -213,7 +213,7 @@ abstract class Model extends Container
         $model = self::model();
 
         foreach ($fields as $key => $value) {
-            if (array_search($key, $model->schema->columns())) {
+            if (false !== array_search($key, $model->schema->columns())) {
                 $model->$key = $fields[$key];
             }
         }
