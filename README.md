@@ -60,7 +60,7 @@ array (size=6)
 class home_controller extends Controller
 {
     /**
-     * @param $ids
+     * @param array $ids
      */
      public function index(array $ids = null)
      {
@@ -74,4 +74,38 @@ class home_controller extends Controller
 
 ```PHP
 null
+```
+
+支持定义参数的类型，示例如下：
+
+定义一个类：Message
+```PHP
+class Message
+{
+    public $id;
+
+    public $content;
+}
+```
+可以在 Action 参数中指定 Message 类型：
+```PHP
+class home_controller extends Controller
+{
+    /**
+     * @param Message $message
+     */
+     public function index(Message $message)
+     {
+        var_dump($message);
+     }
+}
+```
+
+若请求 URL：http://localhost/?message={"id":1,"content":"这是内容"}
+
+则页面会输出：
+```PHP
+object(Message)[52]
+  public 'id' => int 12
+  public 'content' => string 'asdf' (length=4)
 ```
