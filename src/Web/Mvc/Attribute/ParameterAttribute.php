@@ -72,7 +72,7 @@ class ParameterAttribute extends Attribute
         if (!empty($attributes)) {
             /** @var ParameterAttribute $attribute */
             foreach ($attributes as $attribute) {
-                if ($name === $attribute->name) {
+                if ($attribute instanceof ParameterAttribute && $name === $attribute->name) {
                     return $attribute;
                 }
             }

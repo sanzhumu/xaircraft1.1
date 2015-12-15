@@ -32,7 +32,12 @@ class SelectionQueryBuilder
                         throw new QueryException("Sub-query error in Selection [" . implode(' ', $statements) . "]");
                     }
                 } else {
-                    $item = $field->getName($context);
+                    $value = $field->getValue();
+                    if (isset($value)) {
+                        $item = $field->getValueColumnSymbol();
+                    } else {
+                        $item = $field->getName($context);
+                    }
                 }
 
                 $statements[] = $item;

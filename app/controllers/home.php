@@ -47,13 +47,15 @@ class home_controller extends Controller
         var_dump(DB::getQueryLog());
     }
 
+    /**
+     * @throws \Xaircraft\Exception\ModelException
+     * @output_status_exception
+     */
     public function test_model()
     {
         /** @var User $user */
-        $user = \Account\User::find(140);
+        $user = \Account\User::model();
         $user->name = "3";
-        $user->password = "test";
-        $user->level = "admin";
         $user->save();
 
         var_dump($user->isModified("name"));
@@ -112,7 +114,7 @@ class home_controller extends Controller
      * @param Message $message
      * @param $id
      */
-    public function test_model_exists(array $ids, User $user, Message $message, $id)
+    public function test_model_exists(array $ids = null, User $user, Message $message, $id)
     {
         var_dump($id);
         var_dump($ids);

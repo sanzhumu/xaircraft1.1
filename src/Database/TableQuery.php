@@ -229,7 +229,7 @@ class TableQuery implements QueryStringBuilder
                         if (is_callable($value)) {
                             $fields[] = FieldInfo::make($key, $key, $value);
                         } else {
-                            $fields[] = FieldInfo::make($value, $key);
+                            $fields[] = FieldInfo::makeValueColumn($key, $value);
                         }
                     }
                 }

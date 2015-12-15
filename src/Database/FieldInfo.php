@@ -29,6 +29,8 @@ class FieldInfo
 
     public $queryHandler;
 
+    private $value;
+
     public static function make($name, $alias = null, $queryHandler = null)
     {
         $field = new FieldInfo();
@@ -42,6 +44,15 @@ class FieldInfo
         $field->queryHandler = $queryHandler;
 
         $field->parseName();
+
+        return $field;
+    }
+
+    public static function makeValueColumn($alias, $value)
+    {
+        $field = new FieldInfo();
+        $field->alias = $alias;
+        $field->value = $value;
 
         return $field;
     }
@@ -60,6 +71,16 @@ class FieldInfo
                 throw new QueryException("Field's alias pls use array('{{field}}' => '{{alias}}')");
             }
         }
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function getValueColumnSymbol()
+    {
+        return "$this->value AS $this->alias";
     }
 
     public function getName(QueryContext $context)

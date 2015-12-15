@@ -42,8 +42,10 @@ abstract class Argument
             }
         }
         if (!isset($this->value)) {
-            $defaultValue = $this->reflectionParameter->getDefaultValue();
-            $this->value = $defaultValue;
+            if ($this->reflectionParameter->isOptional()) {
+                $defaultValue = $this->reflectionParameter->getDefaultValue();
+                $this->value = $defaultValue;
+            }
         }
         $class = $this->reflectionParameter->getClass();
         if (isset($class)) {
@@ -68,6 +70,10 @@ abstract class Argument
                 $value = $object;
             }
             $this->value = $value;
+        }
+
+        if (!$this->reflectionParameter->allowsNull() && !isset($this->value)) {
+            throw new ArgumentInvalidException($this->name, "Argument [$this->name] can't be null.");
         }
     }
 
