@@ -87,7 +87,7 @@ abstract class Controller
         if (!$controller->isEnded) {
             $actionInfo = new ActionInfo($controller, $action);
             try {
-                $actionResult = $actionInfo->invoke($controller->req->params());
+                $actionResult = $actionInfo->invoke($controller->req->params(), $controller->req->posts());
                 return $actionResult;
             } catch (\Exception $ex) {
                 if ($controller instanceof OutputStatusException ||

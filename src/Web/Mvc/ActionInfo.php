@@ -11,6 +11,7 @@ namespace Xaircraft\Web\Mvc;
 
 use Xaircraft\DI;
 use Xaircraft\Exception\HttpAuthenticationException;
+use Xaircraft\Web\Mvc\Argument\Argument;
 use Xaircraft\Web\Mvc\Attribute\AttributeCollection;
 use Xaircraft\Web\Mvc\Attribute\OutputStatusExceptionAttribute;
 
@@ -48,18 +49,19 @@ class ActionInfo
         $this->initializeAttributes();
     }
 
-    public function invoke($params)
+    public function invoke(array $params = null, array $posts = null)
     {
         $this->attributes->invoke();
         $this->controller->attributes->invoke();
-        $args = array();
-        foreach ($this->parameters as $parameter) {
-            if (array_key_exists($parameter->name, $params)) {
-                $args[$parameter->name] = $params[$parameter->name];
-            } else {
-                $args[$parameter->name] = null;
-            }
-        }
+        $args = Argument::createArgs($this->attributes, $this->parameters, $params, $posts);
+//        foreach ($this->parameters as $parameter) {
+//            var_dump($parameter->getClass());
+//            if (array_key_exists($parameter->name, $params)) {
+//                $args[$parameter->name] = $params[$parameter->name];
+//            } else {
+//                $args[$parameter->name] = null;
+//            }
+//        }
         return $this->reflector->invokeArgs($this->controller, $args);
     }
 

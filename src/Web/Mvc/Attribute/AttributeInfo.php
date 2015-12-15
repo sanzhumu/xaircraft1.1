@@ -30,7 +30,7 @@ class AttributeInfo
                 $type = isset($match['type']) ? $match['type'] : null;
                 if (isset($type)) {
                     $value = isset($match['value']) ? $match['value'] : null;
-                    $attributes[] = new AttributeInfo($type, $value);
+                    $attributes[] = new AttributeInfo($type, trim($value));
                 }
             }
             return $attributes;

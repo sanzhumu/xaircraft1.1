@@ -7,6 +7,8 @@ use Xaircraft\Database\Data\FieldType;
 use Xaircraft\Database\Func\Func;
 use Xaircraft\Database\WhereQuery;
 use Xaircraft\DB;
+use Xaircraft\Nebula\Model;
+use Xaircraft\Web\Mvc\Argument\Post;
 use Xaircraft\Web\Mvc\Controller;
 
 /**
@@ -104,9 +106,15 @@ class home_controller extends Controller
         var_dump(DB::getQueryLog());
     }
 
-    public function test_model_exists()
+    /**
+     * @param array $ids post
+     * @param User $user post
+     * @param Message $message post
+     */
+    public function test_model_exists(array $ids, User $user, Message $message)
     {
-        var_dump(User::exists(144));
-        var_dump(User::exists(User::query()->where('id', 1)));
+        var_dump($ids);
+        var_dump($message);
+        var_dump($user);
     }
 }

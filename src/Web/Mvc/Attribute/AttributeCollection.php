@@ -9,8 +9,6 @@
 namespace Xaircraft\Web\Mvc\Attribute;
 
 
-use Xaircraft\Core\Container;
-
 class AttributeCollection
 {
     private $attributes;
@@ -53,5 +51,21 @@ class AttributeCollection
             }
         }
         return false;
+    }
+
+    public function attributes($class = null)
+    {
+        if (empty($this->attributes)) {
+            return null;
+        }
+
+        $attributes = array();
+        foreach ($this->attributes as $attribute) {
+            if ($class === get_class($attribute)) {
+                $attributes[] = $attribute;
+            }
+        }
+
+        return $this->attributes;
     }
 }

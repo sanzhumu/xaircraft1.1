@@ -21,6 +21,9 @@ abstract class Attribute
     public static function createFromAttributeInfo(AttributeInfo $info)
     {
         switch (strtolower($info->type)) {
+            case "param":
+                $attribute = new ParameterAttribute();
+                break;
             case "auth":
                 $attribute = new AuthorizeAttribute();
                 break;
