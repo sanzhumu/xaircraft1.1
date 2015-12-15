@@ -177,12 +177,16 @@ abstract class Model extends Container
     /**
      * @param $arg
      * @return bool
+     * @throws ModelException
      * @throws \Xaircraft\Exception\DataTableException
      */
     public static function exists($arg)
     {
         $model = self::model();
         if ($arg instanceof TableQuery) {
+            if ($arg->getTableSchema()->getName() !== $model->schema->getName()) {
+                throw new ModelException("TableQuery must be table [" . $model->schema->getName() . "]'s query.");
+            }
             $query = $arg->count();
         } else if (is_numeric($arg)) {
             $query = DB::table($model->schema->getName())
@@ -206,6 +210,9 @@ abstract class Model extends Container
     {
         $model = self::model();
         if ($arg instanceof TableQuery) {
+            if ($arg->getTableSchema()->getName() !== $model->schema->getName()) {
+                throw new ModelException("TableQuery must be table [" . $model->schema->getName() . "]'s query.");
+            }
             $query = $arg;
         } else if (is_numeric($arg)) {
             $query = DB::table($model->schema->getName())
