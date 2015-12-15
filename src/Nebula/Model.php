@@ -51,7 +51,7 @@ abstract class Model extends Container
     {
     }
 
-    public function afterSave()
+    public function afterSave($isAppend = false)
     {
     }
     /**
@@ -99,9 +99,10 @@ abstract class Model extends Container
         }
 
         return DB::transaction(function () use ($fields) {
+            $isAppend = !$this->isExists();
             if (false === $this->beforeSave()) return false;
             $result = $this->entity->save($fields);
-            if ($result) $this->afterSave();
+            if ($result) $this->afterSave($isAppend);
 
             return $result;
         });

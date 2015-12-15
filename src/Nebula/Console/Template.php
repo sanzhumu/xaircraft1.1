@@ -68,7 +68,7 @@ class {{model}} extends Model
         // TODO: Implement beforeSave() method.
     }
 
-    public function afterSave()
+    public function afterSave($isAppend = false)
     {
         // TODO: Implement afterSave() method.
     }
