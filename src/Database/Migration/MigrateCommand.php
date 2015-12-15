@@ -97,7 +97,7 @@ class MigrateCommand extends Command
     private function clearTableSchema($name)
     {
         if (preg_match('#m[\d]+(Create|Alter)(?<table>[a-zA-Z][a-zA-Z0-9\_]+)Table#i', $name, $matches)) {
-            $table = strtolower(Strings::snakeToCamel($matches['table']));
+            $table = strtolower(Strings::camelToSnake($matches['table']));
             $path = App::path('cache') . "/schema/" . DB::getDatabaseName() . "/$table.dat";
             if (file_exists($path)) {
                 unlink($path);
