@@ -109,3 +109,17 @@ object(Message)[52]
   public 'id' => int 12
   public 'content' => string 'asdf' (length=4)
 ```
+
+对于 POST 提交的数据字段，需要在 Action 的 DocComment 中对应参数声明加上 POST 关键字，示例如下：
+```PHP
+class home_controller extends Controller
+{
+    /**
+     * @param Message $message POST
+     */
+     public function index(Message $message)
+     {
+        var_dump($message);
+     }
+}
+```
