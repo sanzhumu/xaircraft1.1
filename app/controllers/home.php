@@ -109,10 +109,12 @@ class home_controller extends Controller
     /**
      * @param array $ids post
      * @param User $user post
-     * @param Message $message post
+     * @param Message $message
+     * @param $id
      */
-    public function test_model_exists(array $ids, User $user, Message $message)
+    public function test_model_exists(array $ids, User $user, Message $message, $id)
     {
+        var_dump($id);
         var_dump($ids);
         var_dump($message);
         var_dump($user);
