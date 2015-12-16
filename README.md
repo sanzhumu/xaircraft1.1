@@ -136,6 +136,7 @@ class Message
 
     public $content;
 }
+```
 
 进行JSON字符串解析并自动转换成Message对象：
 ```PHP
