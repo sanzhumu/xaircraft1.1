@@ -38,20 +38,20 @@ class WhereBetweenConditionBuilder extends ConditionBuilder
         return !empty($statements) ? '(' . implode(' ', $statements) . ')' : null;
     }
 
-    public static function makeBetween(QueryContext $context, $field, $range)
+    public static function makeBetween(QueryContext $context, $field, $range, $isSubQuery = false)
     {
         $condition = new WhereBetweenConditionBuilder($context);
-        $condition->field = $field;
+        $condition->field = FieldInfo::make($field, null, null, $isSubQuery);
         $condition->range = $range;
         $condition->notBetween = false;
 
         return $condition;
     }
 
-    public static function makeNotBetween(QueryContext $context, $field, $range)
+    public static function makeNotBetween(QueryContext $context, $field, $range, $isSubQuery = false)
     {
         $condition = new WhereBetweenConditionBuilder($context);
-        $condition->field = $field;
+        $condition->field = FieldInfo::make($field, null, null, $isSubQuery);
         $condition->range = $range;
         $condition->notBetween = true;
 

@@ -58,11 +58,11 @@ class WhereQuery implements QueryStringBuilder
             $field = $args[0];
             if (2 === $argsLen) {
                 $this->addCondition(ConditionInfo::make(
-                    $orAnd, WhereConditionBuilder::makeNormal($this->context, $field, '=', $args[1])));
+                    $orAnd, WhereConditionBuilder::makeNormal($this->context, $field, '=', $args[1], true)));
             }
             if (3 === $argsLen) {
                 $this->addCondition(ConditionInfo::make(
-                    $orAnd, WhereConditionBuilder::makeNormal($this->context, $field, $args[1], $args[2])
+                    $orAnd, WhereConditionBuilder::makeNormal($this->context, $field, $args[1], $args[2], true)
                 ));
             }
         }
@@ -73,12 +73,12 @@ class WhereQuery implements QueryStringBuilder
         if (isset($params) && is_array($params)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereInConditionBuilder::makeNormal($this->context, $field, $params, $notIn)
+                WhereInConditionBuilder::makeNormal($this->context, $field, $params, $notIn, true)
             ));
         } else if (isset($params) && is_callable($params)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereInConditionBuilder::makeClause($this->context, $field, $params, $notIn)
+                WhereInConditionBuilder::makeClause($this->context, $field, $params, $notIn, true)
             ));
         }
     }

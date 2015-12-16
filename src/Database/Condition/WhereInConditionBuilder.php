@@ -59,20 +59,20 @@ class WhereInConditionBuilder extends ConditionBuilder
         return !empty($statements) ? '(' . implode(' ', $statements) . ')' : null;
     }
 
-    public static function makeNormal(QueryContext $context, $field, $range, $notIn = false)
+    public static function makeNormal(QueryContext $context, $field, $range, $notIn = false, $isSubQuery = false)
     {
         $condition = new WhereInConditionBuilder($context);
-        $condition->field = $field;
+        $condition->field = FieldInfo::make($field, null, null, $isSubQuery);
         $condition->range = $range;
         $condition->notIn = $notIn;
 
         return $condition;
     }
 
-    public static function makeClause(QueryContext $context, $field, $clause, $notIn = false)
+    public static function makeClause(QueryContext $context, $field, $clause, $notIn = false, $isSubQuery = false)
     {
         $condition = new WhereInConditionBuilder($context);
-        $condition->field = $field;
+        $condition->field = FieldInfo::make($field, null, null, $isSubQuery);
         $condition->clause = $clause;
         $condition->notIn = $notIn;
 

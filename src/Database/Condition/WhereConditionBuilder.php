@@ -48,10 +48,10 @@ class WhereConditionBuilder extends ConditionBuilder
         return !empty($statements) ? '(' . implode(' ', $statements) . ')' : null;
     }
 
-    public static function makeNormal(QueryContext $context, $field, $operator, $value)
+    public static function makeNormal(QueryContext $context, $field, $operator, $value, $isSubQuery = false)
     {
         $builder = new WhereConditionBuilder($context);
-        $builder->field = FieldInfo::make($field);
+        $builder->field = FieldInfo::make($field, null, null, $isSubQuery);
         $builder->operator = $operator;
         $builder->value = $value;
 
