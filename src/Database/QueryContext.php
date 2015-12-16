@@ -15,6 +15,11 @@ class QueryContext
 {
     private $schemas = array();
 
+    /**
+     * @var TableSchema[]
+     */
+    private $subQuerySchemas = array();
+
     private $parameters = array();
 
     public function param($value)
@@ -27,22 +32,28 @@ class QueryContext
         return $this->parameters;
     }
 
-    public function schema(TableSchema $schema)
+    public function schema(TableSchema $schema, $isSubSchema = false)
     {
-        $this->schemas[$schema->getSymbol()] = $schema;
+        if (!$isSubSchema) {
+            $this->schemas[$schema->getSymbol()] = $schema;
+        } else {
+            $this->subQuerySchemas[$schema->getSymbol()] = $schema;
+        }
     }
 
-    public function getField($field, $prefix = null)
+    public function getField($field, $prefix = null, $isSubQueryField = false)
     {
         if (!isset($field)) {
             throw new QueryException("Invalid field.");
         }
 
-        if (empty($this->schemas)) {
+        $schemas = $isSubQueryField ? $this->subQuerySchemas : $this->schemas;
+
+        if (empty($schemas)) {
             return $field;
         }
 
-        $count = $this->fieldExistsCountInSchemas($field, $prefix);
+        $count = $this->fieldExistsCountInSchemas($field, $prefix, $isSubQueryField);
         if (0 === $count) {
             throw new QueryException("Field [$field] not exists in any schema.");
         }
@@ -50,7 +61,7 @@ class QueryContext
             throw new QueryException("Field [$field] ambiguous.");
         }
         /** @var TableSchema $schema */
-        foreach ($this->schemas as $key => $schema) {
+        foreach ($schemas as $key => $schema) {
             if (isset($prefix) && $prefix !== $schema->getPrefix(false)) {
                 continue;
             }
@@ -62,16 +73,18 @@ class QueryContext
         return $field;
     }
 
-    private function fieldExistsCountInSchemas($field, $prefix = null)
+    private function fieldExistsCountInSchemas($field, $prefix = null, $isSubQueryField = false)
     {
-        if (empty($this->schemas)) {
+        $schemas = $isSubQueryField ? $this->subQuerySchemas : $this->schemas;
+
+        if (empty($schemas)) {
             return true;
         }
 
         $count = 0;
 
         /** @var TableSchema $schema */
-        foreach ($this->schemas as $key => $schema) {
+        foreach ($schemas as $key => $schema) {
             if (false !== array_search($field, $schema->columns())) {
                 if (isset($prefix) && $prefix !== $schema->getPrefix(false)) {
                     continue;

@@ -133,10 +133,10 @@ class WhereQuery implements QueryStringBuilder
                 $fields = array();
                 foreach ($params as $key => $value) {
                     if (!is_string($key)) {
-                        $fields[] = FieldInfo::make($value);
+                        $fields[] = FieldInfo::make($value, null, null, true);
                     } else {
                         if (is_callable($value)) {
-                            $fields[] = FieldInfo::make($key, $key, $value);
+                            $fields[] = FieldInfo::make($key, $key, $value, true);
                         } else {
                             $fields[] = FieldInfo::makeValueColumn($key, $value);
                         }
@@ -168,7 +168,7 @@ class WhereQuery implements QueryStringBuilder
     {
         $this->subQuery = true;
         $this->subQueryTableSchema = new TableSchema($table);
-        $this->context->schema($this->subQueryTableSchema);
+        $this->context->schema($this->subQueryTableSchema, true);
 
         return $this;
     }
@@ -188,7 +188,7 @@ class WhereQuery implements QueryStringBuilder
             }
             return ConditionQueryBuilder::toString($this->conditions);
         } else {
-            if (!$this->softDeleteLess) {
+            if (!$this->softDeleteLess && $this->subQueryTableSchema->getSoftDelete()) {
                 $this->addCondition(ConditionInfo::make(
                     ConditionInfo::CONDITION_AND,
                     WhereConditionBuilder::makeNormal($this->context, $this->subQueryTableSchema->getFieldSymbol(TableSchema::SOFT_DELETE_FIELD, false), '=', 0)

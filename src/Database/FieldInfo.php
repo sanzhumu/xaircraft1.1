@@ -31,7 +31,9 @@ class FieldInfo
 
     private $value;
 
-    public static function make($name, $alias = null, $queryHandler = null)
+    private $isSubQueryField = false;
+
+    public static function make($name, $alias = null, $queryHandler = null, $isSubQueryField = false)
     {
         $field = new FieldInfo();
         if ($name instanceof FieldFunction) {
@@ -42,6 +44,7 @@ class FieldInfo
         }
         $field->alias = isset($alias) ? trim($alias) : null;
         $field->queryHandler = $queryHandler;
+        $field->isSubQueryField = $isSubQueryField;
 
         $field->parseName();
 
@@ -55,6 +58,11 @@ class FieldInfo
         $field->value = $value;
 
         return $field;
+    }
+
+    public function setSubQueryField()
+    {
+        $this->isSubQueryField = true;
     }
 
     private function parseName()
@@ -88,7 +96,7 @@ class FieldInfo
         if (isset($this->func)) {
             $field = $this->func->getString($context);
         } else {
-            $field = $context->getField($this->field, $this->prefix);
+            $field = $context->getField($this->field, $this->prefix, $this->isSubQueryField);
         }
         if (isset($this->alias)) {
             $field = "$field AS $this->alias";
