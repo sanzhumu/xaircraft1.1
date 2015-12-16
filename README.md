@@ -211,6 +211,6 @@ class user_home_controller extends Controller
 执行结果：
 ```PHP
 object(Message)[30]
-  public 'id' => int 0
+  public 'id' => int 1
   public 'content' => string 'Hello message.' (length=14)
 ```
