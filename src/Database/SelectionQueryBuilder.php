@@ -27,7 +27,7 @@ class SelectionQueryBuilder
                 if (isset($field->queryHandler) && is_callable($field->queryHandler)) {
                     $whereQuery = new WhereQuery($context, true);
                     call_user_func($field->queryHandler, $whereQuery);
-                    $item = '(' . $whereQuery->getQueryString() . ')';
+                    $item = '(' . $whereQuery->getQueryString() . ') AS ' . $field->getAlias();
                     if ($item === '') {
                         throw new QueryException("Sub-query error in Selection [" . implode(' ', $statements) . "]");
                     }

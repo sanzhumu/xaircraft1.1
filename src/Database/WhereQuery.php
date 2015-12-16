@@ -11,6 +11,7 @@ namespace Xaircraft\Database;
 
 use Xaircraft\Database\Condition\WhereConditionBuilder;
 use Xaircraft\Database\Condition\WhereInConditionBuilder;
+use Xaircraft\Database\Func\Func;
 use Xaircraft\Exception\QueryException;
 
 class WhereQuery implements QueryStringBuilder
@@ -121,7 +122,9 @@ class WhereQuery implements QueryStringBuilder
         $fields = array();
         if (func_num_args() > 0) {
             foreach (func_get_args() as $item) {
-                $fields[] = FieldInfo::make($item);
+                if (is_string($item)) {
+                    $fields[] = FieldInfo::make($item);
+                }
             }
         }
         if (1 === func_num_args()) {
@@ -135,7 +138,7 @@ class WhereQuery implements QueryStringBuilder
                         if (is_callable($value)) {
                             $fields[] = FieldInfo::make($key, $key, $value);
                         } else {
-                            $fields[] = FieldInfo::make($value, $key);
+                            $fields[] = FieldInfo::makeValueColumn($key, $value);
                         }
                     }
                 }
@@ -150,6 +153,13 @@ class WhereQuery implements QueryStringBuilder
     {
         $this->limit = true;
         $this->limitCount = 1;
+
+        return $this;
+    }
+
+    public function count()
+    {
+        $this->selectFields = array(FieldInfo::make(Func::count("*"), 'total_count'));
 
         return $this;
     }

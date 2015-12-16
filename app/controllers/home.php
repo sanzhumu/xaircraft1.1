@@ -121,4 +121,15 @@ class home_controller extends Controller
         var_dump($message);
         var_dump($user);
     }
+
+    public function test_query()
+    {
+        $list = DB::table('user')->select(array(
+            "count" => function (WhereQuery $whereQuery) {
+                $whereQuery->count()->from('user');
+            }
+        ))->single()->execute();
+
+        var_dump($list);
+    }
 }
