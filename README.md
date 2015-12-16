@@ -1,7 +1,7 @@
 # xaircraft1.1
 PHP framework 1.1 for Xaircraft Co.
 
-## Action 参数注入
+## 1. Action 参数注入
 
 支持 Action 参数注入，示例如下：
 
@@ -122,4 +122,48 @@ class home_controller extends Controller
         var_dump($message);
      }
 }
+```
+
+## 2. Json 工具类
+
+支持将JSON字符串转换成指定的对象，示例如下：
+
+定义一个类：Message
+```PHP
+class Message
+{
+    public $id;
+
+    public $content;
+}
+
+进行JSON字符串解析并自动转换成Message对象：
+```PHP
+$message = Json::toObject('{"id":12,"content":"hello"}', Message::class);
+var_dump($message);
+```
+
+执行结果：
+```PHP
+object(Message)[37]
+  public 'id' => int 12
+  public 'content' => string 'hello' (length=5)
+```
+
+支持将JSON字符串转换成数组，示例如下：
+
+```PHP
+$list = Json::toArray("[1,2,3,4,5,6]");
+var_dump($list);
+```
+
+执行结果：
+```PHP
+array (size=6)
+  0 => int 1
+  1 => int 2
+  2 => int 3
+  3 => int 4
+  4 => int 5
+  5 => int 6
 ```

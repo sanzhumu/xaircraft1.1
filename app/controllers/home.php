@@ -2,6 +2,7 @@
 use Account\User;
 use Xaircraft\Authentication\Auth;
 use Xaircraft\Authentication\Contract\CurrentUser;
+use Xaircraft\Core\Json;
 use Xaircraft\Core\Strings;
 use Xaircraft\Database\Data\FieldType;
 use Xaircraft\Database\Func\Func;
@@ -110,16 +111,14 @@ class home_controller extends Controller
 
     /**
      * @param array $ids post
-     * @param User $user post
      * @param Message $message
      * @param $id
      */
-    public function test_model_exists(array $ids = null, User $user, Message $message, $id)
+    public function test_model_exists(array $ids = null, Message $message, $id)
     {
         var_dump($id);
         var_dump($ids);
         var_dump($message);
-        var_dump($user);
     }
 
     public function test_query()
@@ -130,6 +129,15 @@ class home_controller extends Controller
             }
         ))->single()->execute();
 
+        var_dump($list);
+    }
+
+    public function test_json()
+    {
+        $message = Json::toObject('{"id":12,"content":"hello"}', Message::class);
+        var_dump($message);
+
+        $list = Json::toArray("[1,2,3,4,5,6]");
         var_dump($list);
     }
 }

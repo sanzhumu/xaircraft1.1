@@ -10,6 +10,7 @@ namespace Xaircraft\Web\Mvc\Argument;
 
 
 use ReflectionParameter;
+use Xaircraft\Core\Json;
 use Xaircraft\DI;
 use Xaircraft\Exception\ArgumentInvalidException;
 use Xaircraft\Nebula\Model;
@@ -36,10 +37,7 @@ abstract class Argument
     private function initialize()
     {
         if ($this->reflectionParameter->isArray()) {
-            $this->value = json_decode($this->value, true);
-            if (JSON_ERROR_NONE !== json_last_error()) {
-                throw new ArgumentInvalidException($this->name, "Invalid argument [$this->name].");
-            }
+            $this->value = Json::toArray($this->value);
         }
         if (!isset($this->value)) {
             if ($this->reflectionParameter->isOptional()) {
@@ -49,27 +47,7 @@ abstract class Argument
         }
         $class = $this->reflectionParameter->getClass();
         if (isset($class)) {
-            $value = json_decode($this->value, true);
-            if (JSON_ERROR_NONE !== json_last_error()) {
-                throw new ArgumentInvalidException($this->name, "Invalid argument [$this->name].");
-            }
-            if (!empty($value)) {
-                $object = DI::get($class->name);
-                if ($object instanceof Model) {
-                    $object = $object->load($value);
-                } else {
-                    $properties = $class->getProperties();
-                    if (!empty($properties)) {
-                        foreach ($properties as $property) {
-                            if (array_key_exists($property->name, $value)) {
-                                $property->setValue($object, $value[$property->name]);
-                            }
-                        }
-                    }
-                }
-                $value = $object;
-            }
-            $this->value = $value;
+            $this->value = Json::toObject($this->value, $class);
         }
 
         if (!$this->reflectionParameter->allowsNull() && !isset($this->value)) {
