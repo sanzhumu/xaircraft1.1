@@ -290,3 +290,69 @@ object(Message)[33]
 
 string 'Email send to [Bob], content is [Hello message.].' (length=49)
 ```
+
+### 示例2. 单例
+
+DI支持进行单例绑定，例如：
+
+在 /app/config/inject.php 配置文件中编写如下代码：
+```PHP
+DI::bindSingleton(Message::class);
+```
+
+执行如下代码：
+```PHP
+    public function test_message()
+    {
+        $message1 = DI::get(Message::class);
+        $message1->id = 2;
+        $message2 = DI::get(Message::class);
+        $message2->id = 3;
+
+        var_dump($message1);
+        var_dump($message2);
+    }
+```
+
+结果如下：
+```PHP
+string 'I'm Message.' (length=12)
+
+object(Message)[33]
+  public 'id' => int 3
+  public 'content' => string 'Hello message.' (length=14)
+  private 'emailSender' =>
+    object(EmailSenderImpl)[34]
+
+object(Message)[33]
+  public 'id' => int 3
+  public 'content' => string 'Hello message.' (length=14)
+  private 'emailSender' =>
+    object(EmailSenderImpl)[34]
+```
+
+可见，$message1和$message2实际上是同一个对象。
+
+为了验证这一点，可以将 /app/config/inject.php 配置文件中的如下代码删除：
+```PHP
+DI::bindSingleton(Message::class);
+```
+
+再次执行得到的结果如下：
+```PHP
+string 'I'm Message.' (length=12)
+
+string 'I'm Message.' (length=12)
+
+object(Message)[37]
+  public 'id' => int 2
+  public 'content' => string 'Hello message.' (length=14)
+  private 'emailSender' =>
+    object(EmailSenderImpl)[34]
+
+object(Message)[38]
+  public 'id' => int 3
+  public 'content' => string 'Hello message.' (length=14)
+  private 'emailSender' =>
+    object(EmailSenderImpl)[34]
+```

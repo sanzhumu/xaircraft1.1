@@ -17,6 +17,8 @@ class Message
     public function __construct(EmailSender $emailSender)
     {
         $this->emailSender = $emailSender;
+
+        var_dump("I'm Message.");
     }
 
     public function sendEmail($to)

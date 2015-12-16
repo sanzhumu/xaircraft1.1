@@ -1,4 +1,5 @@
 <?php
+use Xaircraft\DI;
 use Xaircraft\Web\Mvc\Controller;
 
 /**
@@ -23,5 +24,16 @@ class user_home_controller extends Controller
     {
         var_dump($this->message);
         $this->message->sendEmail("Bob");
+    }
+
+    public function test_message()
+    {
+        $message1 = DI::get(Message::class);
+        $message1->id = 2;
+        $message2 = DI::get(Message::class);
+        $message2->id = 3;
+
+        var_dump($message1);
+        var_dump($message2);
     }
 }

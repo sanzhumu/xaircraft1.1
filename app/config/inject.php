@@ -12,4 +12,4 @@ use Xaircraft\Web\Session\SessionProvider;
 
 DI::bindSingleton(SessionProvider::class, new FileSessionProvider());
 
-DI::bind(EmailSender::class, EmailSenderImpl::class);
+DI::bindSingleton(EmailSender::class, EmailSenderImpl::class);
