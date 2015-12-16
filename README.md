@@ -214,3 +214,79 @@ object(Message)[30]
   public 'id' => int 1
   public 'content' => string 'Hello message.' (length=14)
 ```
+
+DI会自动检测每一个关联的类，并自动创建和注入每一个依赖。
+
+定义一个 EmailSender 接口：
+```PHP
+interface EmailSender
+{
+    public function send($to, $content);
+}
+```
+
+定义一个 EmailSender 的实现 -- EmailSenderImpl：
+```PHP
+class EmailSenderImpl implements EmailSender
+{
+
+    public function send($to, $content)
+    {
+        var_dump("Email send to [$to], content is [$content].");
+    }
+}
+```
+
+修改 Message 类，让其依赖 EmailSender，此时 Message 并不关心具体实现 EmailSender 接口的是什么类。
+```PHP
+class Message
+{
+    public $id = 1;
+
+    public $content = "Hello message.";
+
+    private $emailSender;
+
+    public function __construct(EmailSender $emailSender)
+    {
+        $this->emailSender = $emailSender;
+    }
+
+    public function sendEmail($to)
+    {
+        $this->emailSender->send($to, $this->content);
+    }
+}
+```
+
+将 user_home_controller 的 index 更改如下：
+```PHP
+public function index()
+{
+    var_dump($this->message);
+    $this->message->sendEmail("Bob");
+}
+```
+
+此时访问 index Action，则会抛出异常：
+> Catchable fatal error: Argument 1 passed to Message::__construct() must implement interface EmailSender, null given in Message.php
+
+原因是并未告诉 DI -- EmailSender 接口由 EmailSenderImpl 实现。
+
+具体方式如下：
+
+在 /app/config/inject.php 配置文件中增加如下代码：
+```PHP
+DI::bind(EmailSender::class, EmailSenderImpl::class);
+```
+
+再次访问 index Action，得到如下结果：
+```PHP
+object(Message)[33]
+  public 'id' => int 1
+  public 'content' => string 'Hello message.' (length=14)
+  private 'emailSender' =>
+    object(EmailSenderImpl)[34]
+
+string 'Email send to [Bob], content is [Hello message.].' (length=49)
+```

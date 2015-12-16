@@ -22,5 +22,6 @@ class user_home_controller extends Controller
     public function index()
     {
         var_dump($this->message);
+        $this->message->sendEmail("Bob");
     }
 }

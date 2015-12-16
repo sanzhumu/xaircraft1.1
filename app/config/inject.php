@@ -11,3 +11,5 @@ use Xaircraft\Web\Session\FileSessionProvider;
 use Xaircraft\Web\Session\SessionProvider;
 
 DI::bindSingleton(SessionProvider::class, new FileSessionProvider());
+
+DI::bind(EmailSender::class, EmailSenderImpl::class);

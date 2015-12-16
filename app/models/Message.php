@@ -11,4 +11,16 @@ class Message
     public $id = 1;
 
     public $content = "Hello message.";
+
+    private $emailSender;
+
+    public function __construct(EmailSender $emailSender)
+    {
+        $this->emailSender = $emailSender;
+    }
+
+    public function sendEmail($to)
+    {
+        $this->emailSender->send($to, $this->content);
+    }
 }
