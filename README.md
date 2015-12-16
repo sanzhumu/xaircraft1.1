@@ -136,6 +136,7 @@ class Message
 
     public $content;
 }
+```
 
 进行JSON字符串解析并自动转换成Message对象：
 ```PHP
@@ -166,4 +167,43 @@ array (size=6)
   3 => int 4
   4 => int 5
   5 => int 6
+```
+
+## 3. 依赖注入和控制反转
+
+通过DI工具类，可以实现依赖注入和控制反转。
+
+### 示例1. 依赖注入
+
+一个 Controller，依赖 Message 类，在访问该 Controller 时，框架会自动创建 Message 对象并注入。
+
+定义一个 Message 类：
+```PHP
+class Message
+{
+    public $id = 1;
+
+    public $content = "Hello message.";
+}
+```
+
+定义一个 Controller：
+```PHP
+class user_home_controller extends Controller
+{
+    /**
+     * @var Message
+     */
+    private $message;
+
+    public function __construct(Message $message)
+    {
+        $this->message = $message;
+    }
+
+    public function index()
+    {
+        var_dump($this->message);
+    }
+}
 ```

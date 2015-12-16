@@ -8,7 +8,7 @@
  */
 class Message
 {
-    public $id;
+    public $id = 0;
 
-    public $content;
+    public $content = "Hello message.";
 }

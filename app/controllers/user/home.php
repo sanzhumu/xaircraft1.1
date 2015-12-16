@@ -1,4 +1,5 @@
 <?php
+use Xaircraft\Web\Mvc\Controller;
 
 /**
  * Created by PhpStorm.
@@ -6,14 +7,20 @@
  * Date: 2015/11/12
  * Time: 17:44
  */
-class user_home_controller extends \Xaircraft\Web\Mvc\Controller
+class user_home_controller extends Controller
 {
+    /**
+     * @var Message
+     */
+    private $message;
 
-    public function index($username, $password)
+    public function __construct(Message $message)
     {
-        var_dump($username);
-        var_dump($password);
+        $this->message = $message;
+    }
 
-        return $this->status('test', 200, array('username' => \Xaircraft\Web\Session::get('test')));
+    public function index()
+    {
+        var_dump($this->message);
     }
 }
