@@ -41,4 +41,16 @@ class user_home_controller extends Controller
     {
         var_dump(\Xaircraft\DB::table('user')->pluck('id')->where('id', 23423)->execute());
     }
+
+    public function test_multi_database()
+    {
+        //var_dump(\Xaircraft\DB::getDatabaseName());
+        $user = \Xaircraft\DB::entity('user');
+        var_dump($user);
+
+        \Xaircraft\DB::database('agri_data_center');
+        //var_dump(\Xaircraft\DB::getDatabaseName());
+        $user = \Xaircraft\DB::entity('user');
+        var_dump($user);
+    }
 }
