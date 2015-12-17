@@ -6,6 +6,7 @@ PHP framework 1.1 for Xaircraft Co.
 1. Action 参数注入
 2. Json 工具类
 3. 依赖注入和控制反转
+4. Action 异常输出控制
 
 ## 1. Action 参数注入
 

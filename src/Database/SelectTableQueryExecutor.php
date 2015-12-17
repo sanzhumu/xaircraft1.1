@@ -141,6 +141,10 @@ class SelectTableQueryExecutor extends TableQueryExecutor
             if ($this->detail) {
                 return isset($formatResult[0]) ? $formatResult[0] : null;
             }
+        } else {
+            if ($this->pluck || $this->detail) {
+                return null;
+            }
         }
 
         return $formatResult;

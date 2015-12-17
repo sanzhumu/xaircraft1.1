@@ -36,4 +36,9 @@ class user_home_controller extends Controller
         var_dump($message1);
         var_dump($message2);
     }
+
+    public function test_pluck()
+    {
+        var_dump(\Xaircraft\DB::table('user')->pluck('id')->where('id', 23423)->execute());
+    }
 }
