@@ -129,7 +129,7 @@ class DI {
                     } else if ($item->isDefaultValueAvailable()) {
                         $defaultValue = $item->getDefaultValue();
                         $injectParams[] = $defaultValue;
-                    } if ($item->allowsNull()) {
+                    } else if ($item->allowsNull()) {
                         $injectParams[] = null;
                     } else {
                         throw new \Exception("缺少参数 [$item->name]");

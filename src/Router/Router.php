@@ -31,7 +31,8 @@ class Router
                 'expression' => '/{controller}?/{action}?/{id}?',
                 'default'    => array(
                     'controller' => 'home',
-                    'action'     => 'index'
+                    'action'     => 'index',
+                    'id'         => 0
                 )
             )
         );
@@ -53,11 +54,11 @@ class Router
             'tail'       => self::PATTERN_TAIL,
         );
     /**
-     * @var \Xaircraft\RouteResult
+     * @var \Xaircraft\Router\RouteResult
      */
     public $routeResult;
     /**
-     * @var array Xaircraft\Filter
+     * @var array Xaircraft\Router\Filter
      */
     private $filters = array();
     private $isAbort = false;
@@ -69,7 +70,7 @@ class Router
     private $timestamp = -1;
     private $source;
     /**
-     * @var \Xaircraft\RouteCache
+     * @var \Xaircraft\Router\RouteCache
      */
     private $routeCache;
     private $filterBinders = array();
@@ -190,7 +191,7 @@ class Router
         if ($this->isMatched() === true) {
             list($beforeFilters, $afterFilters) = $this->matchFilter();
             /**
-             * @var $route \Xaircraft\Route
+             * @var $route \Xaircraft\Router\Route
              */
             $route = $this->routes[$this->routeResult->mappingName];
             array_push($route->beforeFilters, $beforeFilters);
@@ -265,7 +266,7 @@ class Router
     public function reverseByRoute($routeName, $params)
     {
         /**
-         * @var $route \Xaircraft\Route
+         * @var $route \Xaircraft\Router\Route
          */
         $route      = $this->routes[$routeName];
         $expression = $this->mappings[$routeName]['expression'];

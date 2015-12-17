@@ -9,13 +9,20 @@
 
 namespace Xaircraft;
 
-
+use Xaircraft\Configuration\Settings;
+use Xaircraft\Console\Console;
+use Xaircraft\Console\ConsoleLoader;
+use Xaircraft\Core\Container;
+use Xaircraft\Exception\ConsoleException;
+use Xaircraft\Exception\ExceptionManager;
+use Xaircraft\Inject\InjectModule;
 use Xaircraft\Module\AppModuleLoader;
 use Xaircraft\Module\AppModuleState;
 use Xaircraft\Core\Runtime;
 use Xaircraft\Exception\AppModuleException;
-use Xaircraft\Router\Router;
-use Xaircraft\Router\RouterAppModule;
+use Xaircraft\Module\AutoLoader;
+use Xaircraft\Module\EnvironmentPathModule;
+use Xaircraft\Web\WebAppModule;
 
 class App extends Container
 {
@@ -30,31 +37,53 @@ class App extends Container
 
     private $appModules = array();
 
+    private $killedAppModules = array();
+
+    private $currentModule;
+
     public function run()
     {
         if (isset($this->appModules) && !empty($this->appModules)) {
-            $currentModule = "";
             try {
-                $state = new AppModuleState();
-                foreach ($this->appModules as $item) {
-                    $currentModule = $item;
-                    /**
-                     * @var $module \Xaircraft\Core\AppModule
-                     */
-                    $module = DI::get($item, array('state' => $state));
-                    $module->handle();
-                    $state = $module->state();
-                    if ($state->stop) {
-                        break;
-                    }
-                }
+                DI::bindSingleton(AppModuleState::class, new AppModuleState());
+                $this->fireAppModule('appStart');
+                $this->fireAppModule('handle');
+                $this->fireAppModule('appEnd');
             } catch (\Exception $ex) {
-                $this->onErrorAppModule(new AppModuleException($currentModule, $ex->getMessage(), $ex->getCode(), $ex));
+                $this->onError(new AppModuleException($this->currentModule, $ex->getMessage(), $ex->getCode(), $ex));
             }
         }
     }
 
-    public function bindPath($paths)
+    private function fireAppModule($action)
+    {
+        if (!isset($action) || false === array_search($action, array('appStart', 'handle', 'appEnd'))) {
+            return;
+        }
+
+        $index = 0;
+        while ($index < count($this->appModules)) {
+            $this->currentModule = $this->appModules[$index];
+            $index++;
+            if (false !== array_search($this->currentModule, $this->killedAppModules)) {
+                continue;
+            }
+            /**
+             * @var $module \Xaircraft\Module\AppModule
+             */
+            $module = DI::get($this->currentModule);
+            if (true === $module->enable()) {
+                call_user_func(array($module, $action));
+            }
+
+            $state = $module->state();
+            if ($state->stop) {
+                break;
+            }
+        }
+    }
+
+    public function bindPaths($paths)
     {
         if (isset($paths)) {
             if (is_array($paths) && !empty($paths)) {
@@ -74,9 +103,14 @@ class App extends Container
         return self::$app;
     }
 
-    public static function path($key)
+    public static function path($key, $value = null)
     {
-        return self::instance()->getPath($key);
+        $path = self::instance()->getPath($key);
+        if (!isset($path) && isset($value)) {
+            $path = $value;
+            self::instance()->paths[$key] = $value;
+        }
+        return $path;
     }
 
     public static function environment($key, $value = null)
@@ -90,7 +124,20 @@ class App extends Container
     public static function module($module)
     {
         DI::bindSingleton($module, $module);
-        self::instance()->appModules[] = $module;
+        if (false === array_search($module, self::instance()->appModules)) {
+            self::instance()->appModules[] = $module;
+        }
+        $killedIndex = array_search($module, self::instance()->killedAppModules);
+        if (false !== $killedIndex) {
+            unset(self::instance()->killedAppModules[$killedIndex]);
+        }
+    }
+
+    public static function killModule($module)
+    {
+        if (false !== array_search($module, self::instance()->appModules)) {
+            self::instance()->killedAppModules[] = $module;
+        }
     }
 
     private function initialize()
@@ -117,13 +164,19 @@ class App extends Container
             $this->environment[Globals::ENV_RUNTIME_MODE] = php_sapi_name();
             $this->environment[Globals::ENV_OS] = Runtime::getOS();
             $this->environment[Globals::ENV_OS_INFO] = php_uname();
+            $this->environment[Globals::ENV_MVC_VIEW_FILE_EXTENSION] = 'phtml';
+            $this->environment[Globals::ENV_DATABASE_PROVIDER] = Globals::DATABASE_PROVIDER_PDO;
         }
     }
 
     private function initializeBaseModules()
     {
+        self::module(AutoLoader::class);
+        self::module(InjectModule::class);
         self::module(AppModuleLoader::class);
-        self::module(RouterAppModule::class);
+        self::module(EnvironmentPathModule::class);
+        self::module(WebAppModule::class);
+        self::module(ConsoleLoader::class);
     }
 
     private function getEnvironment($key)
@@ -156,8 +209,8 @@ class App extends Container
         }
     }
 
-    private function onErrorAppModule(AppModuleException $ex)
+    private function onError(AppModuleException $ex)
     {
-        var_dump($ex);
+        ExceptionManager::handle($ex);
     }
 }
