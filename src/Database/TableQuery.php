@@ -30,7 +30,7 @@ class TableQuery implements QueryStringBuilder
     /**
      * @var QueryContext
      */
-    private $context;
+    //private $context;
 
     const QUERY_SELECT = 'QUERY_SELECT';
     const QUERY_INSERT = 'QUERY_INSERT';
@@ -50,8 +50,6 @@ class TableQuery implements QueryStringBuilder
 
     private $orders = array();
 
-    private $contextLock = false;
-
     private $groups = array();
 
     private $havings = array();
@@ -66,11 +64,9 @@ class TableQuery implements QueryStringBuilder
 
     private $insertGetId = false;
 
-    public function __construct($table, QueryContext $context = null)
+    public function __construct($table)
     {
         $this->schema = new TableSchema($table);
-
-        $this->context = isset($context) ? $context : DI::get(QueryContext::class);
     }
 
     public function getTableName()
@@ -88,37 +84,28 @@ class TableQuery implements QueryStringBuilder
         return $this->queryType;
     }
 
-    public function execute()
+    public function execute(QueryContext $context = null)
     {
-        if ($this->contextLock) {
-            throw new DataTableException(
-                $this->schema->getName(),
-                "Can't execute the TableQuery when the query has been run [getQueryString()] method.
-                You should try [DB::getQueryString()]
-                "
-            );
-        }
+        $context = isset($context) ? $context : DI::get(QueryContext::class);
 
-        $tableQueryExecutor = $this->parseTableQuery();
+        $tableQueryExecutor = $this->parseTableQuery($context);
 
         $result = null;
         if (isset($tableQueryExecutor)) {
-            $result = $tableQueryExecutor->execute();
+            $result = $tableQueryExecutor->execute($context);
         }
 
-        $this->context = DI::get(QueryContext::class);
         return $result;
     }
 
-    private function parseTableQuery()
+    private function parseTableQuery(QueryContext $context)
     {
-        $this->context->schema($this->schema);
+        $context->schema($this->schema);
 
         switch ($this->queryType) {
             case self::QUERY_SELECT:
                 return TableQueryExecutor::makeSelect(
                     $this->schema,
-                    $this->context,
                     $this->softDeleteLess,
                     $this->selectFields,
                     $this->conditions,
@@ -131,21 +118,18 @@ class TableQuery implements QueryStringBuilder
             case self::QUERY_UPDATE:
                 return TableQueryExecutor::makeUpdate(
                     $this->schema,
-                    $this->context,
                     $this->updates,
                     $this->conditions
                 );
             case self::QUERY_DELETE:
                 return TableQueryExecutor::makeDelete(
                     $this->schema,
-                    $this->context,
                     $this->conditions,
                     $this->forceDelete
                 );
             case self::QUERY_INSERT:
                 return TableQueryExecutor::makeInsert(
                     $this->schema,
-                    $this->context,
                     $this->inserts,
                     $this->insertGetId
                 );
@@ -361,14 +345,13 @@ class TableQuery implements QueryStringBuilder
         if (2 === $argsLen) {
             $clause = $args[1];
             if (isset($clause) && is_callable($clause)) {
-                $this->joins[] = JoinInfo::makeClause($this->context, $table, $clause, $leftJoin);
+                $this->joins[] = JoinInfo::makeClause($table, $clause, $leftJoin);
             } else {
                 throw new QueryException("Join query error - it should be a sub-query clause here. [$table]");
             }
         }
         if (3 === $argsLen) {
             $this->joins[] = JoinInfo::makeNormal(
-                $this->context,
                 $table,
                 JoinConditionInfo::make(ConditionInfo::CONDITION_AND, $args[1], '=', $args[2], false),
                 $leftJoin
@@ -376,7 +359,6 @@ class TableQuery implements QueryStringBuilder
         }
         if (4 === $argsLen) {
             $this->joins[] = JoinInfo::makeNormal(
-                $this->context,
                 $table,
                 JoinConditionInfo::make(ConditionInfo::CONDITION_AND, $args[1], $args[2], $args[3], false),
                 $leftJoin
@@ -390,17 +372,17 @@ class TableQuery implements QueryStringBuilder
             $handler = $args[0];
             if (is_callable($handler)) {
                 $this->addCondition(ConditionInfo::make(
-                    $orAnd, WhereConditionBuilder::makeClause($this->context, $handler)));
+                    $orAnd, WhereConditionBuilder::makeClause($handler)));
             }
         } else {
             $field = $args[0];
             if (2 === $argsLen) {
                 $this->addCondition(ConditionInfo::make(
-                    $orAnd, WhereConditionBuilder::makeNormal($this->context, $field, '=', $args[1])));
+                    $orAnd, WhereConditionBuilder::makeNormal($field, '=', $args[1])));
             }
             if (3 === $argsLen) {
                 $this->addCondition(ConditionInfo::make(
-                    $orAnd, WhereConditionBuilder::makeNormal($this->context, $field, $args[1], $args[2])
+                    $orAnd, WhereConditionBuilder::makeNormal($field, $args[1], $args[2])
                 ));
             }
         }
@@ -431,7 +413,7 @@ class TableQuery implements QueryStringBuilder
         if (2 === count($ranges)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereBetweenConditionBuilder::makeBetween($this->context, $field, $ranges)));
+                WhereBetweenConditionBuilder::makeBetween($field, $ranges)));
         }
 
         return $this;
@@ -442,7 +424,7 @@ class TableQuery implements QueryStringBuilder
         if (2 === count($ranges)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereBetweenConditionBuilder::makeNotBetween($this->context, $field, $ranges)));
+                WhereBetweenConditionBuilder::makeNotBetween($field, $ranges)));
         }
 
         return $this;
@@ -453,12 +435,12 @@ class TableQuery implements QueryStringBuilder
         if (isset($params) && is_array($params)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereInConditionBuilder::makeNormal($this->context, FieldInfo::make($field), $params, $notIn)
+                WhereInConditionBuilder::makeNormal($field, $params, $notIn)
             ));
         } else if (isset($params) && is_callable($params)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereInConditionBuilder::makeClause($this->context, FieldInfo::make($field), $params, $notIn)
+                WhereInConditionBuilder::makeClause($field, $params, $notIn)
             ));
         }
     }
@@ -482,7 +464,7 @@ class TableQuery implements QueryStringBuilder
         if (isset($clause) && is_callable($clause)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereExistsConditionBuilder::make($this->context, $clause)
+                WhereExistsConditionBuilder::make($clause)
             ));
         }
 
@@ -494,7 +476,7 @@ class TableQuery implements QueryStringBuilder
         if (isset($clause) && is_callable($clause)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_OR,
-                WhereExistsConditionBuilder::make($this->context, $clause)
+                WhereExistsConditionBuilder::make($clause)
             ));
         }
 
@@ -508,14 +490,16 @@ class TableQuery implements QueryStringBuilder
         return $this;
     }
 
-    public function getQueryString()
+    public function getQueryString(QueryContext $context = null)
     {
-        $tableQueryExecutor = $this->parseTableQuery();
+        $context = isset($context) ? $context : DI::get(QueryContext::class);
+
+        $tableQueryExecutor = $this->parseTableQuery($context);
 
         $this->contextLock = true;
 
         if (isset($tableQueryExecutor)) {
-            return $tableQueryExecutor->toQueryString();
+            return $tableQueryExecutor->toQueryString($context);
         }
         return null;
     }

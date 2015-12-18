@@ -23,24 +23,24 @@ class WhereBetweenConditionBuilder extends ConditionBuilder
 
     public $notBetween = false;
 
-    public function getQueryString()
+    public function getQueryString(QueryContext $context)
     {
-        $field = $this->field->getName($this->context);
+        $field = $this->field->getName($context);
         $statements = array();
         if (!$this->notBetween) {
             $statements[] = "$field BETWEEN ? AND ?";
         } else {
             $statements[] = "$field < ? OR $field > ?";
         }
-        $this->context->param($this->range[0]);
-        $this->context->param($this->range[1]);
+        $context->param($this->range[0]);
+        $context->param($this->range[1]);
 
         return !empty($statements) ? '(' . implode(' ', $statements) . ')' : null;
     }
 
-    public static function makeBetween(QueryContext $context, $field, $range, $isSubQuery = false)
+    public static function makeBetween($field, $range, $isSubQuery = false)
     {
-        $condition = new WhereBetweenConditionBuilder($context);
+        $condition = new WhereBetweenConditionBuilder();
         $condition->field = FieldInfo::make($field, null, null, $isSubQuery);
         $condition->range = $range;
         $condition->notBetween = false;
@@ -48,9 +48,9 @@ class WhereBetweenConditionBuilder extends ConditionBuilder
         return $condition;
     }
 
-    public static function makeNotBetween(QueryContext $context, $field, $range, $isSubQuery = false)
+    public static function makeNotBetween($field, $range, $isSubQuery = false)
     {
-        $condition = new WhereBetweenConditionBuilder($context);
+        $condition = new WhereBetweenConditionBuilder();
         $condition->field = FieldInfo::make($field, null, null, $isSubQuery);
         $condition->range = $range;
         $condition->notBetween = true;

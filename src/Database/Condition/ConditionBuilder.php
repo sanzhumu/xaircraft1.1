@@ -13,15 +13,5 @@ use Xaircraft\Database\QueryContext;
 
 abstract class ConditionBuilder
 {
-    /**
-     * @var QueryContext
-     */
-    protected $context;
-
-    public function __construct(QueryContext $context)
-    {
-        $this->context = $context;
-    }
-
-    public abstract function getQueryString();
+    public abstract function getQueryString(QueryContext $context);
 }

@@ -21,9 +21,11 @@ trait BaseTree
         /** @var Model $model */
         $model = DI::get(__CLASS__);
         if (!isset($query)) {
-            $query = DB::table($model->getSchema()->getName());
+            $realQuery = DB::table($model->getSchema()->getName());
+        } else {
+            $realQuery = $query;
         }
-        return $query->where($model->getParentIDField(), $parentID)
+        return $realQuery->where($model->getParentIDField(), $parentID)
             ->select($selections)
             ->execute();
     }

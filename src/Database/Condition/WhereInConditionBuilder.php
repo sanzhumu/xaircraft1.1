@@ -27,9 +27,9 @@ class WhereInConditionBuilder extends ConditionBuilder
 
     public $notIn = false;
 
-    public function getQueryString()
+    public function getQueryString(QueryContext $context)
     {
-        $field = $this->field->getName($this->context);
+        $field = $this->field->getName($context);
         $statements = array();
         if (!isset($this->clause)) {
             $statements[] = "$field IN (";
@@ -37,7 +37,7 @@ class WhereInConditionBuilder extends ConditionBuilder
                     $values = array();
                     foreach ($this->range as $item) {
                         $values[] = '?';
-                        $this->context->param($item);
+                        $context->param($item);
                     }
                     $statements[] = implode(',', $values);
                 } else {
@@ -45,10 +45,10 @@ class WhereInConditionBuilder extends ConditionBuilder
                 }
             $statements[] = ")";
         } else {
-            $whereQuery = new WhereQuery($this->context, true);
+            $whereQuery = new WhereQuery(true);
             call_user_func($this->clause, $whereQuery);
             $statements[] = "$field IN (";
-            $item = $whereQuery->getQueryString();
+            $item = $whereQuery->getQueryString($context);
             if (!isset($item)) {
                 throw new QueryException("WhereIn Condition build error.");
             }
@@ -59,9 +59,9 @@ class WhereInConditionBuilder extends ConditionBuilder
         return !empty($statements) ? '(' . implode(' ', $statements) . ')' : null;
     }
 
-    public static function makeNormal(QueryContext $context, $field, $range, $notIn = false, $isSubQuery = false)
+    public static function makeNormal($field, $range, $notIn = false, $isSubQuery = false)
     {
-        $condition = new WhereInConditionBuilder($context);
+        $condition = new WhereInConditionBuilder();
         $condition->field = FieldInfo::make($field, null, null, $isSubQuery);
         $condition->range = $range;
         $condition->notIn = $notIn;
@@ -69,9 +69,9 @@ class WhereInConditionBuilder extends ConditionBuilder
         return $condition;
     }
 
-    public static function makeClause(QueryContext $context, $field, $clause, $notIn = false, $isSubQuery = false)
+    public static function makeClause($field, $clause, $notIn = false, $isSubQuery = false)
     {
-        $condition = new WhereInConditionBuilder($context);
+        $condition = new WhereInConditionBuilder();
         $condition->field = FieldInfo::make($field, null, null, $isSubQuery);
         $condition->clause = $clause;
         $condition->notIn = $notIn;

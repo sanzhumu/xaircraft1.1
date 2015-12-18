@@ -13,7 +13,7 @@ use Xaircraft\Exception\QueryException;
 
 class ConditionQueryBuilder
 {
-    public static function toString(array $conditions)
+    public static function toString(QueryContext $context, array $conditions)
     {
         $statements = array();
 
@@ -24,7 +24,7 @@ class ConditionQueryBuilder
             if (count($statements) > 0) {
                 $statements[] = $condition->orAnd;
             }
-            $item = $condition->conditionBuilder->getQueryString();
+            $item = $condition->conditionBuilder->getQueryString($context);
             if (!isset($item)) {
                 throw new QueryException("Condition query string build error.");
             }

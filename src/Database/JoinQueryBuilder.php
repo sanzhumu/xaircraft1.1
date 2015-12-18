@@ -23,6 +23,8 @@ class JoinQueryBuilder
 
     private static function parseJoinInfo(QueryContext $context, JoinInfo $join)
     {
+        $context->schema($join->schema);
+
         $conditions = array();
         if (isset($join->clause)) {
             $joinQuery = new JoinQuery();

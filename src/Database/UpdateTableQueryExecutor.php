@@ -18,17 +18,12 @@ class UpdateTableQueryExecutor extends TableQueryExecutor
      * @var TableSchema
      */
     private $schema;
-    /**
-     * @var QueryContext
-     */
-    private $context;
     private $updates;
     private $conditions;
 
-    public function __construct(TableSchema $schema, QueryContext $context, array $updates, array $conditions)
+    public function __construct(TableSchema $schema, array $updates, array $conditions)
     {
         $this->schema = $schema;
-        $this->context = $context;
         $this->updates = $updates;
         $this->conditions = $conditions;
 
@@ -37,17 +32,17 @@ class UpdateTableQueryExecutor extends TableQueryExecutor
         }
     }
 
-    public function execute()
+    public function execute(QueryContext $context)
     {
-        $query = $this->toQueryString();
+        $query = $this->toQueryString($context);
 
-        return DB::update($query, $this->context->getParams());
+        return DB::update($query, $context->getParams());
     }
 
-    public function toQueryString()
+    public function toQueryString(QueryContext $context)
     {
-        $updatetion = UpdatetionQueryBuilder::toString($this->schema, $this->context, $this->updates);
-        $condition = ConditionQueryBuilder::toString($this->conditions);
+        $updatetion = UpdatetionQueryBuilder::toString($this->schema, $context, $this->updates);
+        $condition = ConditionQueryBuilder::toString($context, $this->conditions);
 
         $statements = array();
 

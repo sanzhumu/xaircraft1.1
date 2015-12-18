@@ -29,20 +29,21 @@ class home_controller extends Controller
      */
     public function index($id, $title)
     {
-        //$query = \Xaircraft\DB::table('user AS u')->select('u.id')->join('project AS p', 'p.id', 'u.id')->where('p.id', '>', 0);
+        $query = \Xaircraft\DB::table('user AS u')->select('u.id')->join('project AS p', 'p.id', 'u.id')->where('p.id', '>', 0);
         //$query = \Xaircraft\DB::table('user AS u')->select('u.id')->join('project AS p', 'p.id', 'u.id')->where('u.id', '>', 0);
-        $query = \Xaircraft\DB::table('user')->select('name')->whereIn('id', function (WhereQuery $whereQuery) {
-            $whereQuery->select('u.id')->from('user AS u')->where('u.id', 9);
-        })->groupBy('user.id', 'user.name')->having('user.id', 0);
+//        $query = \Xaircraft\DB::table('user')->select('name')->whereIn('id', function (WhereQuery $whereQuery) {
+//            $whereQuery->select('u.id')->from('user AS u')->where('u.id', 9);
+//        })->groupBy('user.id', 'user.name')->having('user.id', 0);
 //        $query = DB::table('user')->update(array(
 //            'name' => '5',
 //            'password' => 'adf',
 //            'level' => 'admin'
 //        ))->where('id', 9);
 
-        $queryString = $query->execute();
-        //$queryString = $query->getQueryString();
+        $result = $query->execute();
+        $queryString = $query->getQueryString();
 
+        var_dump($result);
         var_dump($queryString);
 
         var_dump(DB::getQueryLog());
@@ -79,7 +80,7 @@ class home_controller extends Controller
 
     public function test_single()
     {
-        $list = DB::table('user')->select()->format(array(
+        $list = DB::table('user')->select('create_at')->single()->format(array(
             'create_at' => FieldType::DATE
         ))->execute();
         var_dump($list);
@@ -99,7 +100,7 @@ class home_controller extends Controller
     public function test_model_load()
     {
         $user = User::load(array(
-            "id" => 144,
+            "id" => 168,
             "name" => "3",
             "password" => "asdf",
             "level" => "admin"

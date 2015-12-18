@@ -13,7 +13,6 @@ abstract class TableQueryExecutor
 {
     public static function makeSelect(
         TableSchema $schema,
-        QueryContext $context,
         $softDeleteLess,
         array $selectFields,
         array $conditions,
@@ -25,7 +24,6 @@ abstract class TableQueryExecutor
     {
         return new SelectTableQueryExecutor(
             $schema,
-            $context,
             $softDeleteLess,
             $selectFields,
             $conditions,
@@ -37,22 +35,22 @@ abstract class TableQueryExecutor
         );
     }
 
-    public static function makeUpdate($schema, $context, $updates, $conditions)
+    public static function makeUpdate($schema, $updates, $conditions)
     {
-        return new UpdateTableQueryExecutor($schema, $context, $updates, $conditions);
+        return new UpdateTableQueryExecutor($schema, $updates, $conditions);
     }
 
-    public static function makeDelete($schema, $context, $conditions, $forceDelete)
+    public static function makeDelete($schema, $conditions, $forceDelete)
     {
-        return new DeleteTableQueryExecutor($schema, $context, $conditions, $forceDelete);
+        return new DeleteTableQueryExecutor($schema, $conditions, $forceDelete);
     }
 
-    public static function makeInsert($schema, $context, $inserts, $insertGetId)
+    public static function makeInsert($schema, $inserts, $insertGetId)
     {
-        return new InsertTableQueryExecutor($schema, $context, $inserts, $insertGetId);
+        return new InsertTableQueryExecutor($schema, $inserts, $insertGetId);
     }
 
-    public abstract function execute();
+    public abstract function execute(QueryContext $context);
 
-    public abstract function toQueryString();
+    public abstract function toQueryString(QueryContext $context);
 }
