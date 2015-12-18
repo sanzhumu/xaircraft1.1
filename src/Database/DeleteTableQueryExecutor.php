@@ -40,7 +40,7 @@ class DeleteTableQueryExecutor extends TableQueryExecutor
 
         $query = $this->toQueryString($context);
 
-        return DB::delete($query, $this->context->getParams());
+        return DB::delete($query, $context->getParams());
     }
 
     public function toQueryString(QueryContext $context)

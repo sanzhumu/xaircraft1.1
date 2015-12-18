@@ -23,8 +23,9 @@ trait BaseTree
         if (!isset($query)) {
             $realQuery = DB::table($model->getSchema()->getName());
         } else {
-            $realQuery = $query;
+            $realQuery = clone $query;
         }
+
         return $realQuery->where($model->getParentIDField(), $parentID)
             ->select($selections)
             ->execute();
@@ -64,7 +65,7 @@ trait BaseTree
         if (!isset($query)) {
             $realQuery = DB::table($model->getSchema()->getName());
         } else {
-            $realQuery = $query;
+            $realQuery = clone $query;
         }
 
         $current = $realQuery->where('id', $id)->select()->detail()->execute();
