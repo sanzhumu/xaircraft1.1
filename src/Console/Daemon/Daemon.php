@@ -11,7 +11,6 @@ namespace Xaircraft\Console\Daemon;
 
 use Xaircraft\App;
 use Xaircraft\Core\IO\File;
-use Xaircraft\Core\Strings;
 use Xaircraft\DI;
 use Xaircraft\Exception\ConsoleException;
 
