@@ -141,4 +141,14 @@ class home_controller extends Controller
         $list = Json::toArray("[1,2,3,4,5,6]");
         var_dump($list);
     }
+
+    public function test_order()
+    {
+        $query = DB::table('user')->orderBy('id', \Xaircraft\Database\OrderInfo::SORT_ASC)->select(array(
+            "id", "name",
+            "project_id" => function (WhereQuery $whereQuery) {
+                $whereQuery->from('project')->select('id')->top();
+            }
+        ))->execute();
+    }
 }

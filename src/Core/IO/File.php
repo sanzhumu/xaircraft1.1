@@ -9,6 +9,8 @@
 namespace Xaircraft\Core\IO;
 
 
+use Xaircraft\Exception\IOException;
+
 class File
 {
     public static function writeText($path, $content)
@@ -18,6 +20,23 @@ class File
             Directory::makeDir($dir);
         }
         $handler = fopen($path, 'w+');
+        if (false === $handler) {
+            throw new IOException("I/O Error.");
+        }
+        fwrite($handler, $content);
+        fclose($handler);
+    }
+
+    public static function appendText($path, $content)
+    {
+        $dir = dirname($path);
+        if (!file_exists($dir)) {
+            Directory::makeDir($dir);
+        }
+        $handler = fopen($path, 'a+');
+        if (false === $handler) {
+            throw new IOException("I/O Error.");
+        }
         fwrite($handler, $content);
         fclose($handler);
     }

@@ -20,6 +20,9 @@ class EnvironmentPathModule extends AppModule
         App::path('migration_history', App::path('migration') . '/history.dat');
         App::path('cache', App::path('app') . '/cache');
         App::path('exception', App::path('config') . '/exception.php');
+        App::path('runtime', App::path('app') . '/runtime');
+        App::path('daemons', App::path('config') . '/daemons.php');
+        App::path('commands', App::path('config') . '/commands.php');
     }
 
     public function handle()

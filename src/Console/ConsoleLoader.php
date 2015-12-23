@@ -13,7 +13,9 @@ use Xaircraft\App;
 use Xaircraft\Authentication\AuthStorage;
 use Xaircraft\Authentication\CacheAuthStorage;
 use Xaircraft\Configuration\Settings;
+use Xaircraft\Console\Daemon\Daemon;
 use Xaircraft\Console\Daemon\DaemonCommand;
+use Xaircraft\Console\Daemon\IdleDaemon;
 use Xaircraft\Database\Migration\MigrateCommand;
 use Xaircraft\Database\Migration\MigrationCommand;
 use Xaircraft\DI;
@@ -39,7 +41,10 @@ class ConsoleLoader extends AppModule
         Command::bind('migration', MigrationCommand::class);
         Command::bind('daemon', DaemonCommand::class);
 
+        Daemon::bind('idle', IdleDaemon::class);
+
         Settings::load('commands');
+        Settings::load('daemons');
 
         DI::bindSingleton(AuthStorage::class, CacheAuthStorage::class);
     }
