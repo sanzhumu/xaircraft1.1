@@ -4,7 +4,9 @@ namespace Xaircraft\Console\Daemon;
 use Xaircraft\App;
 use Xaircraft\Console\Command;
 use Xaircraft\Console\Console;
+use Xaircraft\Console\IPC\MessageQueue;
 use Xaircraft\Exception\ConsoleException;
+use Xaircraft\Exception\DaemonException;
 use Xaircraft\Globals;
 
 
@@ -31,6 +33,8 @@ class DaemonCommand extends Command
             gc_enable();
         }
 
+        MessageQueue::register('schedule_daemon', __FILE__);
+
         $daemon = Daemon::make($_SERVER['argc'], $_SERVER['argv']);
 
         try {
@@ -43,7 +47,7 @@ class DaemonCommand extends Command
                 Console::line("Daemon [" . $daemon->getPID() . "] started.");
             }
         } catch (\Exception $ex) {
-            throw new ConsoleException($ex->getMessage(), $ex);
+            throw new DaemonException($daemon->getName(), $ex->getMessage(), $ex);
         }
     }
 }

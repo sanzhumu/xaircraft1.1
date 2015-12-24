@@ -9,7 +9,9 @@
 namespace Xaircraft\Console\Daemon;
 
 
+use Xaircraft\App;
 use Xaircraft\Console\IPC\MessageQueue;
+use Xaircraft\Core\IO\File;
 
 class ScheduleDaemon extends Daemon
 {
@@ -17,14 +19,25 @@ class ScheduleDaemon extends Daemon
 
     public function handle()
     {
-        MessageQueue::register('schedule_daemon', __FILE__);
-
         while (true) {
             if (MessageQueue::getMsgCount('schedule_daemon') > 0) {
                 MessageQueue::receive('schedule_daemon', 0, $messageType, 1024, $message, true, MSG_IPC_NOWAIT);
-                
+                File::appendText(App::path('cache') . "/" . get_called_class() . ".log", $message . "/" . time());
+                if ($message == "stop") {
+                    break;
+                }
             }
             sleep(2);
         }
+    }
+
+    public function beforeStart()
+    {
+        // TODO: Implement beforeStart() method.
+    }
+
+    public function beforeStop()
+    {
+        File::appendText(App::path('cache') . "/" . get_called_class() . "_stop.log", $this->getPID() . "_" . posix_getpid() . "_" . time() . "\r\n");
     }
 }

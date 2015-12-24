@@ -56,6 +56,8 @@ class Globals
 
     const EXCEPTION_ERROR_WEB = 4800;
 
+    const EXCEPTION_ERROR_DAEMON = 4900;
+
 
     const RUNTIME_MODE_APACHE2HANDLER = 'apache2handler';
     const RUNTIME_MODE_CLI = 'cli';

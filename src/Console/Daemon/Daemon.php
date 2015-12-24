@@ -13,6 +13,7 @@ use Xaircraft\App;
 use Xaircraft\Core\IO\File;
 use Xaircraft\DI;
 use Xaircraft\Exception\ConsoleException;
+use Xaircraft\Exception\DaemonException;
 
 abstract class Daemon
 {
@@ -83,6 +84,12 @@ abstract class Daemon
         return $results;
     }
 
+    public abstract function beforeStart();
+
+    public abstract function beforeStop();
+
+    public abstract function handle();
+
     public function start()
     {
         if ($this->started) {
@@ -102,28 +109,30 @@ abstract class Daemon
             posix_setsid();
 
             if (pcntl_fork() === 0) {
-                chdir("/");
+                try {
+                    chdir("/");
 
-                fclose(STDIN);
-                fclose(STDOUT);
-                fclose(STDERR);
+                    fclose(STDIN);
+                    fclose(STDOUT);
+                    fclose(STDERR);
 
-                $stdin = fopen("/dev/null", "r");
-                $stdout = fopen("/dev/null", "a");
-                $stderr = fopen("/dev/null", "a");
+                    $stdin = fopen("/dev/null", "r");
+                    $stdout = fopen("/dev/null", "a");
+                    $stderr = fopen("/dev/null", "a");
 
-                if ($this->singleton) {
-                    $this->createPidFile();
+                    if ($this->singleton) {
+                        $this->createPidFile();
+                    }
+
+                    $this->handle();
+                    $this->onStop();
+                } catch (\Exception $ex) {
+                    throw new DaemonException($this->getName(), $ex->getMessage(), $ex);
                 }
-
-                $this->handle();
-                $this->onStop();
             }
             App::end();
         }
     }
-
-    public abstract function handle();
 
     public function stop()
     {
@@ -136,7 +145,7 @@ abstract class Daemon
             $this->onStop();
             return true;
         }
-        throw new ConsoleException("The daemon process end abnormally.");
+        throw new DaemonException($this->getName(), "The daemon process end abnormally.");
     }
 
     public function getPID()
@@ -147,6 +156,11 @@ abstract class Daemon
         $pid = file_get_contents($this->pidFilePath);
         $pid = intval($pid);
         return $pid;
+    }
+
+    public function getName()
+    {
+        return get_called_class();
     }
 
     private function initialize()
@@ -194,6 +208,7 @@ abstract class Daemon
 
     private function onStop()
     {
+        $this->beforeStop();
         if (file_exists($this->pidFilePath)) {
             unlink($this->pidFilePath);
         }
