@@ -33,8 +33,6 @@ class DaemonCommand extends Command
             gc_enable();
         }
 
-        MessageQueue::register('schedule_daemon', __FILE__);
-
         $daemon = Daemon::make($_SERVER['argc'], $_SERVER['argv']);
 
         try {

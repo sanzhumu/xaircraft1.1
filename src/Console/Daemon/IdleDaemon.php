@@ -10,6 +10,7 @@ namespace Xaircraft\Console\Daemon;
 
 
 use Xaircraft\App;
+use Xaircraft\Console\IPC\MessageQueue;
 use Xaircraft\Core\IO\File;
 
 class IdleDaemon extends Daemon
@@ -17,19 +18,19 @@ class IdleDaemon extends Daemon
 
     public function handle()
     {
-        $this->fork(function () {
-            for ($i = 0; $i < 30; $i++) {
-                File::appendText(App::path('cache') . "/" . get_called_class() . ".log", $this->getPID() . "_" . posix_getpid() . "_" . $i . "_" . time() . "\r\n");
-                sleep(1);
-            }
-        });
-        $this->fork(function () {
-            for ($i = 0; $i < 35; $i++) {
-                $message = $this->getPID() . "_" . posix_getpid() . "_" . $i . "_" . time() . "\r\n";
-                File::appendText(App::path('cache') . "/" . get_called_class() . ".log", $message);
-                sleep(1);
-            }
-        });
+        $messageQueueKey = ftok(App::path('cache') . "/queue/daemon.queue", "a");
+        $messageQueue = msg_get_queue($messageQueueKey, 0666);
+
+        for ($i = 0; $i < 60; $i++) {
+            $message = new MessageQueue();
+            $message->pid = $this->getPID();
+            $message->name = "IdleDaemon";
+            $message->timestamp = time();
+
+            msg_send($messageQueue, 1, $message);
+
+            sleep(1);
+        }
     }
 
     public function beforeStart()

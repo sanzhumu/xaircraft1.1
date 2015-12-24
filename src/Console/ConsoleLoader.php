@@ -17,6 +17,7 @@ use Xaircraft\Console\Daemon\Daemon;
 use Xaircraft\Console\Daemon\DaemonCommand;
 use Xaircraft\Console\Daemon\IdleDaemon;
 use Xaircraft\Console\Daemon\ScheduleDaemon;
+use Xaircraft\Console\Daemon\ServiceCommand;
 use Xaircraft\Database\Migration\MigrateCommand;
 use Xaircraft\Database\Migration\MigrationCommand;
 use Xaircraft\DI;
@@ -41,6 +42,7 @@ class ConsoleLoader extends AppModule
         Command::bind('migrate', MigrateCommand::class);
         Command::bind('migration', MigrationCommand::class);
         Command::bind('daemon', DaemonCommand::class);
+        Command::bind('service', ServiceCommand::class);
 
         Daemon::bind('idle', IdleDaemon::class);
         Daemon::bind('schedule', ScheduleDaemon::class);

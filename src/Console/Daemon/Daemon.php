@@ -188,6 +188,7 @@ abstract class Daemon
                 case SIGHUP:
                 case SIGQUIT:
                     $this->onStop();
+                    App::end();
                     break;
                 default:
                     return false;

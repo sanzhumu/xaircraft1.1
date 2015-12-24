@@ -10,7 +10,6 @@ namespace Xaircraft\Console\Daemon;
 
 
 use Xaircraft\App;
-use Xaircraft\Console\IPC\MessageQueue;
 use Xaircraft\Core\IO\File;
 
 class ScheduleDaemon extends Daemon
@@ -19,14 +18,14 @@ class ScheduleDaemon extends Daemon
 
     public function handle()
     {
-        while (true) {
-            if (MessageQueue::getMsgCount('schedule_daemon') > 0) {
-                MessageQueue::receive('schedule_daemon', 0, $messageType, 1024, $message, true, MSG_IPC_NOWAIT);
-                File::appendText(App::path('cache') . "/" . get_called_class() . ".log", $message . "/" . time());
-                if ($message == "stop") {
-                    break;
-                }
-            }
+        $messageQueueKey = ftok(App::path('cache') . "/queue/daemon.queue", "a");
+        $messageQueue = msg_get_queue($messageQueueKey, 0666);
+
+        $count = 0;
+
+        while ($count < 5) {
+            msg_receive($messageQueue, 0, $messageType, 1024, $message, true, MSG_IPC_NOWAIT);
+            File::appendText(App::path('cache') . "/" . __CLASS__ . ".txt", $message);
             sleep(2);
         }
     }
