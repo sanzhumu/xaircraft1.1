@@ -10,6 +10,7 @@ namespace Xaircraft\Console\Daemon;
 
 
 use Xaircraft\App;
+use Xaircraft\Console\Process;
 use Xaircraft\Core\IO\File;
 use Xaircraft\DI;
 use Xaircraft\Exception\ConsoleException;
@@ -20,6 +21,8 @@ abstract class Daemon
     private $started = false;
 
     private $pidFilePath;
+
+    private $childProcesses = array();
 
     protected $singleton = true;
 
@@ -127,6 +130,7 @@ abstract class Daemon
                     $this->handle();
                     $this->onStop();
                 } catch (\Exception $ex) {
+                    $this->onStop();
                     throw new DaemonException($this->getName(), $ex->getMessage(), $ex);
                 }
             }
@@ -143,7 +147,7 @@ abstract class Daemon
         $pid = intval($pid);
         if ($pid > 0 && posix_kill($pid, SIGKILL)) {
             $this->onStop();
-            return true;
+            App::end();
         }
         throw new DaemonException($this->getName(), "The daemon process end abnormally.");
     }
@@ -161,6 +165,15 @@ abstract class Daemon
     public function getName()
     {
         return get_called_class();
+    }
+
+    public function fork($target)
+    {
+        $process = Process::fork($target);
+
+        $this->childProcesses[] = $process;
+
+        return $process;
     }
 
     private function initialize()
@@ -209,10 +222,15 @@ abstract class Daemon
     private function onStop()
     {
         $this->beforeStop();
+
+        /** @var Process $process */
+        foreach ($this->childProcesses as $process) {
+            $process->stop();
+        }
+
         if (file_exists($this->pidFilePath)) {
             unlink($this->pidFilePath);
         }
-        App::end();
     }
 
     private function registeSignalHandler($closure)
