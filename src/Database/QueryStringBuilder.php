@@ -11,5 +11,5 @@ namespace Xaircraft\Database;
 
 interface QueryStringBuilder
 {
-    public function getQueryString();
+    public function getQueryString(QueryContext $context);
 }

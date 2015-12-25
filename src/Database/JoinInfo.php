@@ -10,8 +10,6 @@ namespace Xaircraft\Database;
 
 
 
-use Xaircraft\Database\Symbol\TableSymbol;
-
 class JoinInfo
 {
     public $table;
@@ -27,31 +25,24 @@ class JoinInfo
      */
     public $schema;
 
-    /**
-     * @var QueryContext
-     */
-    public $context;
-
-    public static function makeNormal(QueryContext $context, $table, JoinConditionInfo $condition, $leftJoin = false)
+    public static function makeNormal($table, JoinConditionInfo $condition, $leftJoin = false)
     {
         $joinInfo = new JoinInfo();
         $joinInfo->table = $table;
         $joinInfo->condition = $condition;
         $joinInfo->leftJoin = $leftJoin;
-        $joinInfo->context = $context;
 
         $joinInfo->parseTable();
 
         return $joinInfo;
     }
 
-    public static function makeClause(QueryContext $context, $table, $clause, $leftJoin = false)
+    public static function makeClause($table, $clause, $leftJoin = false)
     {
         $joinInfo = new JoinInfo();
         $joinInfo->table = $table;
         $joinInfo->clause = $clause;
         $joinInfo->leftJoin = $leftJoin;
-        $joinInfo->context = $context;
 
         $joinInfo->parseTable();
 
@@ -61,6 +52,5 @@ class JoinInfo
     private function parseTable()
     {
         $this->schema = new TableSchema($this->table);
-        $this->context->schema($this->schema);
     }
 }

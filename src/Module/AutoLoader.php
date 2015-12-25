@@ -33,6 +33,7 @@ class AutoLoader extends AppModule
         $paths[] = '/service';
         $paths[] = '/job';
         $paths[] = '/command';
+        $paths[] = '/daemon';
         $paths[] = '/module';
         $paths[] = '/models';
         $paths[] = '/test';

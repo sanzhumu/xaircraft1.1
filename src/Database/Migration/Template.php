@@ -33,9 +33,9 @@ class {{name}} extends \\Xaircraft\\Database\\Migration\\Migration
 
     public function up()
     {
-        \$sql = <<<'EOT'
+        \$sql = <<<QUERY
 
-EOT;
+QUERY;
 
         if (false === \\Xaircraft\\DB::statement(\$sql))
             return false;

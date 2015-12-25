@@ -15,14 +15,14 @@ class WhereExistsConditionBuilder extends  ConditionBuilder
 {
     public $clause;
 
-    public function getQueryString()
+    public function getQueryString(QueryContext $context)
     {
         // TODO: Implement getQueryString() method.
     }
 
-    public static function make(QueryContext $context, $clause)
+    public static function make($clause)
     {
-        $condition = new WhereExistsConditionBuilder($context);
+        $condition = new WhereExistsConditionBuilder();
         $condition->clause = $clause;
 
         return $condition;

@@ -140,6 +140,11 @@ class App extends Container
         }
     }
 
+    public static function end($code = 0)
+    {
+        exit($code);
+    }
+
     private function initialize()
     {
         $this->initializeEnvironment();

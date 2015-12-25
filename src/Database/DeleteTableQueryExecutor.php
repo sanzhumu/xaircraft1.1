@@ -18,37 +18,32 @@ class DeleteTableQueryExecutor extends TableQueryExecutor
      * @var TableSchema
      */
     private $schema;
-    /**
-     * @var QueryContext
-     */
-    private $context;
     private $conditions;
     private $forceDelete = false;
 
-    public function __construct(TableSchema $schema, QueryContext $context, $conditions, $forceDelete)
+    public function __construct(TableSchema $schema, $conditions, $forceDelete)
     {
         $this->schema = $schema;
-        $this->context = $context;
         $this->conditions = $conditions;
         $this->forceDelete = $forceDelete;
     }
 
-    public function execute()
+    public function execute(QueryContext $context)
     {
         if (!$this->forceDelete && $this->schema->getSoftDelete()) {
-            $executor = TableQueryExecutor::makeUpdate($this->schema, $this->context, array(
+            $executor = TableQueryExecutor::makeUpdate($this->schema, array(
                 TableSchema::SOFT_DELETE_FIELD => time()
             ), $this->conditions);
 
-            return $executor->execute();
+            return $executor->execute($context);
         }
 
-        $query = $this->toQueryString();
+        $query = $this->toQueryString($context);
 
-        return DB::delete($query, $this->context->getParams());
+        return DB::delete($query, $context->getParams());
     }
 
-    public function toQueryString()
+    public function toQueryString(QueryContext $context)
     {
         if (empty($this->conditions)) {
             throw new DataTableException($this->schema->getSymbol(), "Can't execute DELETE query without conditions.");
@@ -58,7 +53,7 @@ class DeleteTableQueryExecutor extends TableQueryExecutor
             "DELETE FROM",
             $this->schema->getSymbol(),
             "WHERE",
-            ConditionQueryBuilder::toString($this->conditions)
+            ConditionQueryBuilder::toString($context, $this->conditions)
         );
 
         return implode(' ', $statements);

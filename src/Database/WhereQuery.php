@@ -16,11 +16,6 @@ use Xaircraft\Exception\QueryException;
 
 class WhereQuery implements QueryStringBuilder
 {
-    /**
-     * @var QueryContext
-     */
-    private $context;
-
     private $subQuery = false;
 
     private $conditions = array();
@@ -40,9 +35,8 @@ class WhereQuery implements QueryStringBuilder
 
     private $subQueryLimit = false;
 
-    public function __construct(QueryContext $context, $subQueryLimit = false)
+    public function __construct($subQueryLimit = false)
     {
-        $this->context = $context;
         $this->subQueryLimit = $subQueryLimit;
     }
 
@@ -52,17 +46,17 @@ class WhereQuery implements QueryStringBuilder
             $handler = $args[0];
             if (is_callable($handler)) {
                 $this->addCondition(ConditionInfo::make(
-                    $orAnd, WhereConditionBuilder::makeClause($this->context, $handler)));
+                    $orAnd, WhereConditionBuilder::makeClause($handler)));
             }
         } else {
             $field = $args[0];
             if (2 === $argsLen) {
                 $this->addCondition(ConditionInfo::make(
-                    $orAnd, WhereConditionBuilder::makeNormal($this->context, $field, '=', $args[1], true)));
+                    $orAnd, WhereConditionBuilder::makeNormal($field, '=', $args[1], true)));
             }
             if (3 === $argsLen) {
                 $this->addCondition(ConditionInfo::make(
-                    $orAnd, WhereConditionBuilder::makeNormal($this->context, $field, $args[1], $args[2], true)
+                    $orAnd, WhereConditionBuilder::makeNormal($field, $args[1], $args[2], true)
                 ));
             }
         }
@@ -73,12 +67,12 @@ class WhereQuery implements QueryStringBuilder
         if (isset($params) && is_array($params)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereInConditionBuilder::makeNormal($this->context, $field, $params, $notIn, true)
+                WhereInConditionBuilder::makeNormal($field, $params, $notIn, true)
             ));
         } else if (isset($params) && is_callable($params)) {
             $this->addCondition(ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereInConditionBuilder::makeClause($this->context, $field, $params, $notIn, true)
+                WhereInConditionBuilder::makeClause($field, $params, $notIn, true)
             ));
         }
     }
@@ -168,7 +162,6 @@ class WhereQuery implements QueryStringBuilder
     {
         $this->subQuery = true;
         $this->subQueryTableSchema = new TableSchema($table);
-        $this->context->schema($this->subQueryTableSchema, true);
 
         return $this;
     }
@@ -180,25 +173,26 @@ class WhereQuery implements QueryStringBuilder
         return $this;
     }
 
-    public function getQueryString()
+    public function getQueryString(QueryContext $context)
     {
         if (!$this->subQuery) {
             if ($this->subQueryLimit) {
-                throw new QueryException("Must be sub-query in [" . ConditionQueryBuilder::toString($this->conditions) . "]");
+                throw new QueryException("Must be sub-query in [" . ConditionQueryBuilder::toString($context, $this->conditions) . "]");
             }
-            return ConditionQueryBuilder::toString($this->conditions);
+            return ConditionQueryBuilder::toString($context, $this->conditions);
         } else {
+            $context->schema($this->subQueryTableSchema);
             if (!$this->softDeleteLess && $this->subQueryTableSchema->getSoftDelete()) {
                 $this->addCondition(ConditionInfo::make(
                     ConditionInfo::CONDITION_AND,
-                    WhereConditionBuilder::makeNormal($this->context, $this->subQueryTableSchema->getFieldSymbol(TableSchema::SOFT_DELETE_FIELD, false), '=', 0)
+                    WhereConditionBuilder::makeNormal($this->subQueryTableSchema->getFieldSymbol(TableSchema::SOFT_DELETE_FIELD, false), '=', 0)
                 ));
             }
 
             $statements = array();
-            $statements[] = SelectionQueryBuilder::toString($this->context, $this->selectFields);
+            $statements[] = SelectionQueryBuilder::toString($context, $this->selectFields);
             $statements[] = 'FROM ' . $this->subQueryTableSchema->getSymbol();
-            $condition = ConditionQueryBuilder::toString($this->conditions);
+            $condition = ConditionQueryBuilder::toString($context, $this->conditions);
             if (isset($condition)) {
                 $statements[] = "WHERE " . $condition;
             }

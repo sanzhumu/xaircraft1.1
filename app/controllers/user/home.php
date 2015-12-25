@@ -1,39 +1,23 @@
 <?php
 use Xaircraft\DI;
 use Xaircraft\Web\Mvc\Controller;
+use Xaircraft\Web\Mvc\OutputStatusException;
 
 /**
- * Created by PhpStorm.
- * User: lbob
- * Date: 2015/11/12
- * Time: 17:44
+ * @output_status_exception
  */
-class user_home_controller extends Controller
+class user_home_controller extends Controller implements OutputStatusException
 {
-    /**
-     * @var Message
-     */
-    private $message;
-
-    public function __construct(Message $message)
+    public function test_error()
     {
-        $this->message = $message;
-    }
+        $query = \Xaircraft\DB::table('user')->whereIn('id', function (\Xaircraft\Database\WhereQuery $whereQuery) {
+            $whereQuery->from('user')->select('id');
+        });
+        $query1 = $query;
+        $list = $query->select()->execute();
+        $list = $query1->select()->execute();
 
-    public function index()
-    {
-        var_dump($this->message);
-        $this->message->sendEmail("Bob");
-    }
-
-    public function test_message()
-    {
-        $message1 = DI::get(Message::class);
-        $message1->id = 2;
-        $message2 = DI::get(Message::class);
-        $message2->id = 3;
-
-        var_dump($message1);
-        var_dump($message2);
+        var_dump($list);
+        var_dump(\Xaircraft\DB::getQueryLog());
     }
 }

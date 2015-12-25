@@ -21,14 +21,17 @@ trait BaseTree
         /** @var Model $model */
         $model = DI::get(__CLASS__);
         if (!isset($query)) {
-            $query = DB::table($model->getSchema()->getName());
+            $realQuery = DB::table($model->getSchema()->getName());
+        } else {
+            $realQuery = clone $query;
         }
-        return $query->where($model->getParentIDField(), $parentID)
+
+        return $realQuery->where($model->getParentIDField(), $parentID)
             ->select($selections)
             ->execute();
     }
 
-    public static function makeTrees($parentID, array $selections, TableQuery $query = null)
+    public static function makeTrees($parentID, array $selections, TableQuery $query = null, $callback = null, $state = null)
     {
         $children = self::children($parentID, $selections, $query);
 
@@ -39,7 +42,10 @@ trait BaseTree
                 foreach ($selections as $field) {
                     $node[$field] = $item[$field];
                 }
-                $node['children'] = self::makeTrees($item['id'], $selections, $query);
+                if (isset($callback) && is_callable($callback)) {
+                    $state = call_user_func($callback, $state, $node);
+                }
+                $node['children'] = self::makeTrees($item['id'], $selections, $query, $callback, $state);
                 $nodes[] = $node;
             }
             return $nodes;
@@ -62,7 +68,7 @@ trait BaseTree
         if (!isset($query)) {
             $realQuery = DB::table($model->getSchema()->getName());
         } else {
-            $realQuery = $query;
+            $realQuery = clone $query;
         }
 
         $current = $realQuery->where('id', $id)->select()->detail()->execute();

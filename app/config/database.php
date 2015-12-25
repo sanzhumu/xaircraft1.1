@@ -15,5 +15,14 @@ return array(
         'password'  => '',
         'charset'   => 'utf8',
         'collation' => 'utf8_general_ci',
+    ),
+    'agri_data_center' => array(
+        'driver'    => 'mysql',
+        'host'      => 'localhost',
+        'database'  => 'agri_data_center',
+        'username'  => 'root',
+        'password'  => '',
+        'charset'   => 'utf8',
+        'collation' => 'utf8_general_ci',
     )
 );

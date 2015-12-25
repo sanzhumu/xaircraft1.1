@@ -19,43 +19,37 @@ class InsertTableQueryExecutor extends TableQueryExecutor
      * @var TableSchema
      */
     private $schema;
-    /**
-     * @var QueryContext
-     */
-    private $context;
     private $inserts;
     private $insertGetId;
 
     /**
      * InsertTableQueryExecutor constructor.
      * @param $schema
-     * @param $context
      * @param $inserts
      */
-    public function __construct(TableSchema $schema, QueryContext $context, array $inserts, $insertGetId)
+    public function __construct(TableSchema $schema, array $inserts, $insertGetId)
     {
         $this->schema = $schema;
-        $this->context = $context;
         $this->inserts = $inserts;
         $this->insertGetId = $insertGetId;
     }
 
-    public function execute()
+    public function execute(QueryContext $context)
     {
-        $query = $this->toQueryString();
+        $query = $this->toQueryString($context);
 
         if (true === $this->insertGetId) {
-            if (true === DB::insert($query, $this->context->getParams())) {
+            if (true === DB::insert($query, $context->getParams())) {
                 return DB::table($this->schema->getName())
                     ->orderBy($this->schema->getAutoIncrementField(), 'DESC')
                     ->pluck($this->schema->getAutoIncrementField())
                     ->execute();
             }
         }
-        return DB::insert($query, $this->context->getParams());
+        return DB::insert($query, $context->getParams());
     }
 
-    public function toQueryString()
+    public function toQueryString(QueryContext $context)
     {
         if (empty($this->inserts)) {
             throw new DataTableException($this->schema->getSymbol(), "Can't execute INSERT without inserts.");
@@ -122,7 +116,7 @@ class InsertTableQueryExecutor extends TableQueryExecutor
 
             $fields[] = "`$key`";
             $values[] = "?";
-            $this->context->param($value);
+            $context->param($value);
         }
 
         $statements = array(

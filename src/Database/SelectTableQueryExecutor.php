@@ -27,11 +27,6 @@ class SelectTableQueryExecutor extends TableQueryExecutor
 
     private $softDeleteLess;
 
-    /**
-     * @var QueryContext
-     */
-    private $context;
-
     private $joins;
 
     private $orders;
@@ -58,7 +53,6 @@ class SelectTableQueryExecutor extends TableQueryExecutor
 
     public function __construct(
         TableSchema $schema,
-        QueryContext $context,
         $softDeleteLess,
         array $selectFields,
         array $conditions,
@@ -72,7 +66,6 @@ class SelectTableQueryExecutor extends TableQueryExecutor
         $this->selectFields = $selectFields;
         $this->conditions = $conditions;
         $this->softDeleteLess = $softDeleteLess;
-        $this->context = $context;
         $this->joins = $joins;
         $this->orders = $orders;
         $this->groups = $groups;
@@ -82,16 +75,16 @@ class SelectTableQueryExecutor extends TableQueryExecutor
         $this->parseSettings();
     }
 
-    public function execute()
+    public function execute(QueryContext $context)
     {
-        $query = $this->toQueryString();
+        $query = $this->toQueryString($context);
 
-        return $this->getQueryResult($query);
+        return $this->getQueryResult($context, $query);
     }
 
-    private function getQueryResult($query)
+    private function getQueryResult(QueryContext $context, $query)
     {
-        $result = DB::select($query, $this->context->getParams());
+        $result = DB::select($query, $context->getParams());
 
         if (!empty($this->formats)) {
             $formatResult = array();
@@ -141,6 +134,10 @@ class SelectTableQueryExecutor extends TableQueryExecutor
             if ($this->detail) {
                 return isset($formatResult[0]) ? $formatResult[0] : null;
             }
+        } else {
+            if ($this->pluck || $this->detail) {
+                return null;
+            }
         }
 
         return $formatResult;
@@ -180,21 +177,21 @@ class SelectTableQueryExecutor extends TableQueryExecutor
         }
     }
 
-    public function toQueryString()
+    public function toQueryString(QueryContext $context)
     {
         if ($this->schema->getSoftDelete() && !$this->softDeleteLess) {
             $this->conditions[] = ConditionInfo::make(
                 ConditionInfo::CONDITION_AND,
-                WhereConditionBuilder::makeNormal($this->context, $this->schema->getFieldSymbol(TableSchema::SOFT_DELETE_FIELD, false), '=', 0)
+                WhereConditionBuilder::makeNormal($this->schema->getFieldSymbol(TableSchema::SOFT_DELETE_FIELD, false), '=', 0)
             );
         }
 
-        $selection = SelectionQueryBuilder::toString($this->context, $this->selectFields) . ' FROM ' . $this->schema->getSymbol();
-        $join = JoinQueryBuilder::toString($this->context, $this->joins);
-        $condition = ConditionQueryBuilder::toString($this->conditions);
-        $orders = OrderQueryBuilder::toString($this->context, $this->orders);
-        $groups = GroupQueryBuilder::toString($this->context, $this->groups);
-        $havings = HavingQueryBuilder::toString($this->context, $this->havings);
+        $selection = SelectionQueryBuilder::toString($context, $this->selectFields) . ' FROM ' . $this->schema->getSymbol();
+        $join = JoinQueryBuilder::toString($context, $this->joins);
+        $condition = ConditionQueryBuilder::toString($context, $this->conditions);
+        $orders = OrderQueryBuilder::toString($context, $this->orders);
+        $groups = GroupQueryBuilder::toString($context, $this->groups);
+        $havings = HavingQueryBuilder::toString($context, $this->havings);
 
         $statements = array($selection);
 

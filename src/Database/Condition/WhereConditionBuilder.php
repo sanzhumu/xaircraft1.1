@@ -28,29 +28,29 @@ class WhereConditionBuilder extends ConditionBuilder
 
     public $clause;
 
-    public function getQueryString()
+    public function getQueryString(QueryContext $context)
     {
         $statements = array();
-        $field = $this->field->getName($this->context);
+        $field = $this->field->getName($context);
         if (!isset($this->clause)) {
             if ($this->value instanceof Raw) {
                 $statements[] = "$field $this->operator " . $this->value->getValue();
             } else {
                 $statements[] = "$field $this->operator ?";
-                $this->context->param($this->value);
+                $context->param($this->value);
             }
         } else {
-            $whereQuery = new WhereQuery($this->context);
+            $whereQuery = new WhereQuery($context);
             call_user_func($this->clause, $whereQuery);
-            $statements[] = $whereQuery->getQueryString();
+            $statements[] = $whereQuery->getQueryString($context);
         }
 
         return !empty($statements) ? '(' . implode(' ', $statements) . ')' : null;
     }
 
-    public static function makeNormal(QueryContext $context, $field, $operator, $value, $isSubQuery = false)
+    public static function makeNormal($field, $operator, $value, $isSubQuery = false)
     {
-        $builder = new WhereConditionBuilder($context);
+        $builder = new WhereConditionBuilder();
         $builder->field = FieldInfo::make($field, null, null, $isSubQuery);
         $builder->operator = $operator;
         $builder->value = $value;
@@ -58,9 +58,9 @@ class WhereConditionBuilder extends ConditionBuilder
         return $builder;
     }
 
-    public static function makeClause(QueryContext $context, $clause)
+    public static function makeClause($clause)
     {
-        $builder = new WhereConditionBuilder($context);
+        $builder = new WhereConditionBuilder();
         $builder->clause = $clause;
 
         return $builder;
